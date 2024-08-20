@@ -165,10 +165,8 @@ const Row = () => {
         </Button>
       </TableCell>
       <TableCell>
-        <EditRoleDialog />
       </TableCell>
       <TableCell>
-        <DeleteRoleDialog />
       </TableCell>
     </TableRow>
   );
