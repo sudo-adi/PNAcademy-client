@@ -168,6 +168,7 @@ const Row = () => {
       <TableCell>
       </TableCell>
       <TableCell>
+        <DeleteRoleDialog />
       </TableCell>
     </TableRow>
   );

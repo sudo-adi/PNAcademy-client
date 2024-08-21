@@ -1,8 +1,6 @@
 import axios from 'axios'
 import { getRefreshToken, saveTokens, clearTokens, getAccessToken } from './tokenManager'
 
-
-
 // method to get and save the new accessToken Along with the exisiting refreshToken
 export const getNewAccessToken = async (): Promise<string | undefined> => {
   try {
