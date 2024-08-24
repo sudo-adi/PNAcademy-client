@@ -16,7 +16,7 @@ const Header = () => {
     <HeaderTitle title={'My Assessments'} icon={<Files />} />,
     <HeaderTitle title={'Manage Reports'} icon={<PieChart />} />,
     <HeaderTitle title={'My Reports'} icon={<FilePieChart />} />,
-    <HeaderTitle title={'Manage Users'} icon={<UserCog />} />,
+    <HeaderTitle title={'Manage Users & Roles'} icon={<UserCog />} />,
     <HeaderTitle title={'Manage Groups'} icon={<Users />} />,
     <HeaderTitle title={'Manage Notifications'} icon={<BellPlus />} />,
     <HeaderTitle title={'Settings'} icon={<Settings />} />,

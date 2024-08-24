@@ -5,5 +5,5 @@ export const formatDateInIST = (dateString: string) => {
     dateStyle: 'short',
     timeStyle: 'short',
     hour12: true
-  });
+  }).toLocaleUpperCase();
 };

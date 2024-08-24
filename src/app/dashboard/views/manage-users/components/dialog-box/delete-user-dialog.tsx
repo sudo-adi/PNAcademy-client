@@ -1,50 +1,38 @@
 "use client";
-import { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Trash2, Loader2 } from 'lucide-react';
-import React from 'react';
 import { useUsers } from '../../hooks/useUsers';
-import { DeleteUsersProps } from '@/lib/types/userTypes';
+import { DeleteUsersDialogProps } from '@/lib/types/userTypes';
 
-interface DeleteUserDialogProps {
-  refreshUsers: () => void;
-  userId: string;
-}
-
-const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ refreshUsers, userId }) => {
-  const { error, handleDeleteUsers } = useUsers();
+const DeleteUserDialog: React.FC<DeleteUsersDialogProps> = ({ refreshUsers, userId }) => {
+  const { error, removeUsers } = useUsers();
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
 
-  const closeDialogs = () => {
-    setDialogOpen(false);
-    setStatusDialogOpen(false);
-  };
-
-  const onSubmit = async (data: DeleteUsersProps) => {
+  const onSubmit = useCallback(async () => {
     setLoading(true);
     try {
-      await handleDeleteUsers(data);
-      setStatusDialogOpen(true);
+      await removeUsers({ userIds: [userId] });
     } catch (err) {
-      console.error(err);
+      console.error('Error deleting user:', err);
     } finally {
       setLoading(false);
       refreshUsers();
+
     }
-  };
+  }, [removeUsers, userId,]);
 
   return (
     <>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" className='bg-transparent'>
-            <Trash2 className='h-4 w-4' />
+          <Button variant="outline" className="bg-transparent">
+            <Trash2 className="h-4 w-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="w-[800px]">
+        <DialogContent className="w-[400px]">
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
@@ -54,32 +42,19 @@ const DeleteUserDialog: React.FC<DeleteUserDialogProps> = ({ refreshUsers, userI
           <DialogFooter>
             <Button
               variant="destructive"
-              onClick={() => onSubmit({ userIds: [userId] })}
+              onClick={onSubmit}
               disabled={loading}
             >
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
             </Button>
-            <DialogClose asChild>
-              <Button variant="outline" onClick={closeDialogs}>Cancel</Button>
-            </DialogClose>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancel
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Status Dialog */}
-      <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{error ? error.status : "Success"}</DialogTitle>
-          </DialogHeader>
-          <DialogDescription>{error ? error.message : "User Deleted Successfully"}</DialogDescription>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="default" onClick={closeDialogs}>Close</Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };

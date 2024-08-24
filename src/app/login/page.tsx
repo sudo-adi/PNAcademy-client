@@ -29,7 +29,6 @@ const LoginPage = () => {
   };
 
   return (
-
     <>
       <DisableRightClick />
       {loading ? (

@@ -1,94 +1,119 @@
-import { createRole, getRoleDetails, getRoles } from "@/lib/services/user-service/role-service";
-import { Permission } from "@/lib/types/permissions";
-import { Role } from "@/lib/types/role";
-import { useState, useEffect } from "react";
+// hooks/useRoles.ts
+import { useState } from 'react';
+import {
+  createRole,
+  getRoles,
+  updateRole,
+  deleteRoles
+} from '@/lib/services/user-service/role-service'; // Adjust the import path as needed
+import { ApiError } from '@/lib/api/apiError';
+import { CreateRoleProps, GetRolesProps, UpdateRoleProps, DeleteRolesProps, Role, CreateRoleResponse, UpdateRoleResponse, DeleteRoleResponse, GetRolesResponse } from '@/lib/types/roleTypes';
 
-export const useRoleDetails = () => {
-  const [permissions, setPermissions] = useState<Permission>();
-  const [error, setError] = useState<any>(null);
-  useEffect(() => {
-    const fetchRoleDetails = async () => {
-      try {
-        const permissions = await getRoleDetails();
-        setPermissions(permissions);
-      } catch (err) {
-        setError(err);
-      }
-    };
-
-    fetchRoleDetails();
-  }, []);
-
-  return { permissions, error };
-};
-
-
-export const useCreateRole = () => {
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<any>(null);
+export const useRoles = () => {
+  // State for managing loading and error states
   const [loading, setLoading] = useState<boolean>(false);
-
-  const createNewRole = async (roleName: string, permissions: Permission) => {
-    try {
-      setLoading(true);
-      const data = await createRole(roleName, permissions);
-      setData(data);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { data, error, loading, createNewRole };
-};
-
-
-export const useRoles = (page: number, pageSize: number) => {
+  const [error, setError] = useState<ApiError | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
-  const [error, setError] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [addedRoleRes, setAddedRoleRes] = useState<CreateRoleResponse>();
+  const [fetchedRoleRes, setFetchedRoleRes] = useState<GetRolesResponse>();
+  const [patchedRoleRes, setPatchedRoleRes] = useState<UpdateRoleResponse>();
+  const [removedRolesRes, setRemovedRolesRes] = useState<DeleteRoleResponse>();
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        setLoading(true);
-        const roles = await getRoles(page, pageSize);
-        setRoles(roles);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRoles();
-  }, [page, pageSize]);
-
-  return { roles, error, loading };
-};
-
-
-export const useDeleteRole = () => {
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const deleteRole = async (roleIds: string[]) => {
-    const requestBody = {
-      roleIds: roleIds.map(id => ({ roleId: id })),
-    };
-
+  // Function to create a role
+  const addRole = async (data: CreateRoleProps) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      // const data = await deleteRole();
-      setData(data);
+      const response: CreateRoleResponse | null = await createRole(data);
+      if (response) {
+        console.info('Role created:', response);
+        setAddedRoleRes(response);
+      }
     } catch (err) {
-      setError(err);
+      if (err instanceof ApiError) {
+        setError(err);
+      } else {
+        setError(new ApiError(500, 'An unexpected error occurred', err));
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  return { data, error, loading, deleteRole };
+  // Function to get roles
+  const fetchRoles = async (data: GetRolesProps) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response: GetRolesResponse | null = await getRoles(data);
+      if (response) {
+        setRoles(response.data.roles);
+        setFetchedRoleRes(response);
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err);
+      } else {
+        setError(new ApiError(500, 'An unexpected error occurred', err));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to update a role
+  const patchRole = async (data: UpdateRoleProps) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response: UpdateRoleResponse | null = await updateRole(data);
+      if (response) {
+        console.info('Role updated:', response);
+        setPatchedRoleRes(response)
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err);
+      } else {
+        setError(new ApiError(500, 'An unexpected error occurred', err));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to delete roles
+  const removeRoles = async (data: DeleteRolesProps) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response: DeleteRoleResponse | null = await deleteRoles(data);
+      if (response) {
+        console.info('Roles deleted:', response);
+        setRemovedRolesRes(response)
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err);
+      } else {
+        setError(new ApiError(500, 'An unexpected error occurred', err));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    roles,
+    loading,
+    error,
+    addRole,
+    fetchRoles,
+    patchRole,
+    removeRoles,
+    addedRoleRes,
+    removedRolesRes,
+    fetchedRoleRes,
+    patchedRoleRes
+  };
 };

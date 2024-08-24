@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -35,7 +34,7 @@ interface EditUserDialogProps {
 const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) => {
   const { activePageIndex, displayNumberOfRows } = useRolesTableStore();
   const { fetchRoles, roles } = useRoles(); // Fetch roles using your custom hook
-  const { handleUpdateUser, error } = useUsers(); // Use your custom hook for user operations
+  const { editUser, error } = useUsers(); // Use your custom hook for user operations
   const [loading, setLoading] = useState(false);
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
 
@@ -57,7 +56,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
-      await handleUpdateUser({
+      await editUser({
         ...data,
         id: user.id, // User ID
         dataToUpdate: {

@@ -5,14 +5,15 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react'; // Import Lucide loader icon
+import { Loader2, UserPlus } from 'lucide-react'; // Import Lucide loader icon
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useUsers } from '../../hooks/useUsers';
 import { useRoles } from '../../hooks/useRoles';
-import useRolesTableStore from '@/lib/stores/manage-users-store/roles-table-store';
+import { ApiError } from '@/lib/api/apiError';
+import { useUsers } from '../../hooks/useUsers';
+import { Card } from '@/components/ui/card';
 
 // Define schema using zod
 const schema = z.object({
@@ -25,20 +26,19 @@ const schema = z.object({
     .regex(/^\d{10}$/, 'Phone number must be numeric'),
   roleId: z.string().min(1, 'Role is required'),
 });
-
 type FormData = z.infer<typeof schema>;
-
 
 interface CreateUserDialogProps {
   refreshUsers: () => void;
 }
 
+
 const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => {
-  const { activePageIndex, displayNumberOfRows, sortBy, order } = useRolesTableStore();
-  const { fetchRoles, roles } = useRoles(); // Fetch roles using your custom hook
-  const { handleRegisterUser, error } = useUsers(); // Use your custom hook for user operations
-  const [loading, setLoading] = useState(false);
+  const { loading: loadingRoles, roles, fetchRoles } = useRoles();
+  const { loading, error, addUser } = useUsers();
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [createError, setCreateError] = useState<ApiError | null>(null);
+
   const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -52,13 +52,21 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
   });
 
   const onSubmit = async (data: FormData) => {
-    setLoading(true);
-    await handleRegisterUser(data);
-    setStatusDialogOpen(true);
-    reset();
-    refreshUsers();
-    setStatusDialogOpen(true);
-    setLoading(false);
+    try {
+      setStatusDialogOpen(true);
+      reset();
+      const res = await addUser(data);
+      console.log(res);
+      refreshUsers();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setCreateError(err);
+      } else {
+        setCreateError(new ApiError(500, 'An unexpected error occurred', err));
+      }
+    } finally {
+
+    }
   };
 
   const handleClear = () => {
@@ -66,7 +74,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
   };
 
   useEffect(() => {
-    fetchRoles({ page: activePageIndex, pageSize: 500, sortBy: "name", order: "ASC" });
+    fetchRoles({ page: 1, pageSize: 9999, order: "ASC", sortBy: "name" });
   }, []);
 
   return (
@@ -74,6 +82,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="default">
+            <UserPlus className='h-4 w-4 mr-2' />
             Create
           </Button>
         </DialogTrigger>
@@ -166,10 +175,14 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
               />
               {errors.phone && <p className="text-red-400">{errors.phone.message}</p>}
             </div>
-
             <div className="flex flex-col gap-2">
               <Label htmlFor="roleId">Role</Label>
-              <Controller
+              {loadingRoles ? (
+
+                <Card className='w-full h-12 flex items-center justify-center'>
+                  <Loader2 className="animate-spin" />
+                </Card>
+              ) : (<Controller
                 name="roleId"
                 control={control}
                 render={({ field }) => (
@@ -193,7 +206,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
                     </SelectContent>
                   </Select>
                 )}
-              />
+              />)}
               {errors.roleId && <p className="text-red-400">{errors.roleId.message}</p>}
             </div>
 
@@ -224,9 +237,9 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
       <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{error ? error?.status : "Success"}</DialogTitle>
+            <DialogTitle>{createError ? 'Error' : 'Success'}</DialogTitle>
           </DialogHeader>
-          <DialogDescription>{error ? error?.message : "User Created Successfully"}</DialogDescription>
+          <DialogDescription>{createError ? createError.message : 'User Created Successfully'}</DialogDescription>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="default">Close</Button>

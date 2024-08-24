@@ -1,26 +1,7 @@
 import { AxiosError } from 'axios';
 import axiosInstance from '../../api/axiosInstance';
 import { ApiError } from '../../api/apiError';
-
-// interface for createOption props
-interface CreateOptionProps {
-  question_id: string;
-  description: string;
-  is_correct: boolean;
-}
-
-// interface for createOption response
-interface CreateOptionResponse {
-  message: string;
-  data: {
-    id: string;
-    question_id: string;
-    description: string;
-    is_correct: boolean;
-    updatedAt: string;
-    createdAt: string;
-  };
-}
+import { CreateOptionProps, CreateOptionResponse, DeleteOptionProps, DeleteOptionResponse, UpdateOptionProps, UpdateOptionResponse } from '@/lib/types/optionTypes';
 
 // Function to Create an option
 export const createOption = async (data: CreateOptionProps): Promise<CreateOptionResponse | null> => {
@@ -47,27 +28,6 @@ export const createOption = async (data: CreateOptionProps): Promise<CreateOptio
     }
   }
 };
-
-
-// interface for updateOption props
-interface UpdateOptionProps {
-  id: string;
-  description: string;
-  is_correct: boolean;
-}
-
-// interface for updateOption response
-interface UpdateOptionResponse {
-  message: string;
-  data: {
-    id: string;
-    question_id: string;
-    description: string;
-    is_correct: boolean;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
 
 
 // Function to update an option
@@ -97,19 +57,6 @@ export const updateOption = async (data: UpdateOptionProps): Promise<UpdateOptio
     }
   }
 };
-
-
-// interface for deleteOption props
-interface DeleteOptionProps {
-  id: string;
-}
-
-// interface for deleteOption response
-interface DeleteOptionResponse {
-  message: string;
-  data: boolean;
-}
-
 
 // Fucntion to delete an option
 export const deleteOption = async ({ id }: DeleteOptionProps): Promise<DeleteOptionResponse | null> => {

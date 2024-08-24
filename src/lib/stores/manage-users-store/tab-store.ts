@@ -17,8 +17,7 @@ const useTabStore = create<State & Actions>()(
       setActiveTabIndex: (index) => set({ activeTabIndex: index }),
     }),
     {
-      name: 'tabState', // Key for local storage
-      // Default storage is used (localStorage in the browser)
+      name: 'tabState',
     }
   )
 );

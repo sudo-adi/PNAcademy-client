@@ -10,7 +10,6 @@ import {
 import { Search } from 'lucide-react'
 import UsersTabContent from './components/tab-content/users-tab-content'
 import RolesTabContent from './components/tab-content/roles-tab-content'
-import GroupsTabContent from './components/tab-content/groups-tab-content'
 import useTabStore from '@/lib/stores/manage-users-store/tab-store'
 
 
@@ -20,10 +19,9 @@ const ManageUsers = () => {
     <>
       <Tabs defaultValue={activeTabIndex.toString()} className="w-full ">
         <div className="flex justify-between items-center flex-row w-full">
-          <TabsList className="grid grid-cols-3">
+          <TabsList className="grid grid-cols-2">
             <TabsTrigger value="0" onClick={() => setActiveTabIndex(0)}>Users</TabsTrigger>
             <TabsTrigger value="1" onClick={() => setActiveTabIndex(1)}>Roles</TabsTrigger>
-            <TabsTrigger value="2" onClick={() => setActiveTabIndex(2)}>Groups</TabsTrigger>
           </TabsList>
           <div className="flex w-full max-w-sm items-center space-x-2">
             <Input type="email" placeholder="Search User with email, id or name..." />
@@ -38,9 +36,6 @@ const ManageUsers = () => {
         </TabsContent>
         <TabsContent value="1">
           <RolesTabContent />
-        </TabsContent>
-        <TabsContent value="2" >
-          <GroupsTabContent />
         </TabsContent>
       </Tabs >
     </>

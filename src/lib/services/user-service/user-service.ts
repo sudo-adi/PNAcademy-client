@@ -1,31 +1,7 @@
 import { ApiError } from '@/lib/api/apiError';
 import axiosInstance from '@/lib/api/axiosInstance';
+import { BulkUserProps, DeleteUsersProps, DeleteUsersResponse, GetUsersResponse, ImportUsersProps, ImportUsersResponse, RegisterUserProps, RegisterUserResponse, UpdateUserProps, UpdateUserResponse } from '@/lib/types/userTypes';
 import { AxiosError } from 'axios';
-
-// interface for Create User props
-interface RegisterUserProps {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phone: string;
-  roleId: string;
-}
-
-//  interface for create user response
-interface RegisterUserResponse {
-  message: string;
-  data: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string | null;
-    role_id: string | null;
-    updatedAt: string;
-    createdAt: string;
-  };
-}
 
 // Function to Register a User
 export const registerUser = async (data: RegisterUserProps): Promise<RegisterUserResponse | null> => {
@@ -52,35 +28,6 @@ export const registerUser = async (data: RegisterUserProps): Promise<RegisterUse
     }
   }
 };
-
-// interface for Bulk User
-interface BulkUser {
-  id: string;
-  role_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// interface for get user response
-interface GetUsersResponse {
-  message: string;
-  data: {
-    users: BulkUser[];
-    totalPages: number;
-  };
-}
-
-// interface for get user props
-interface BulkUserProps {
-  page: number;
-  pageSize: number;
-  sortBy: "id" | "first_name" | "last_name" | "email" | "phone" | "role_id" | "createdAt" | "updatedAt";
-  order: "ASC" | "DESC";
-}
 
 // Function to get all users
 export const getUsers = async (data: BulkUserProps): Promise<GetUsersResponse | null> => {
@@ -110,30 +57,6 @@ export const getUsers = async (data: BulkUserProps): Promise<GetUsersResponse | 
   }
 };
 
-// interface for get user by ID props
-interface UpdateUserProps {
-  id: string;
-  dataToUpdate: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phone?: string;
-    role_id?: string;
-  };
-}
-
-// interface for update user response
-interface UpdateUserResponse {
-  id: string;
-  dataToUpdate: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-    phone?: string;
-    role_id?: string;
-  };
-}
-
 // Function to update a user
 export const updateUser = async (data: UpdateUserProps): Promise<UpdateUserResponse | null> => {
   try {
@@ -160,15 +83,6 @@ export const updateUser = async (data: UpdateUserProps): Promise<UpdateUserRespo
   }
 };
 
-// interface for delete user props
-interface DeleteUsersProps {
-  userIds: string[];
-}
-
-// interface for delete user response
-interface DeleteUsersResponse {
-  message: string;
-}
 
 // Function to delete a user
 export const deleteUsers = async (data: DeleteUsersProps): Promise<DeleteUsersResponse | null> => {
@@ -195,3 +109,40 @@ export const deleteUsers = async (data: DeleteUsersProps): Promise<DeleteUsersRe
     }
   }
 };
+
+
+
+export const importUsers = async (data: ImportUsersProps): Promise<ImportUsersResponse | null> => {
+  try {
+    const formData = new FormData();
+    formData.append('users', data.users);
+    formData.append('updateExisiting', data.updateExisting.toString());
+
+    const response = await axiosInstance.post<ImportUsersResponse>('/v1/user/import', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    if (response.status === 200 || response.status === 201) {
+      console.info('Users imported successfully', response.data);
+      return response.data;
+    }
+    return null;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const { status, data } = error.response || {};
+      switch (status) {
+        case 409:
+          throw new ApiError(status, 'Conflict: Data conflicts', data);
+        case 500:
+          throw new ApiError(status, 'Internal Server Error', data);
+        default:
+          throw new ApiError(status!, 'An unexpected error occurred', data);
+      }
+    } else {
+      throw new ApiError(500, 'An unexpected error occurred', error);
+    }
+  }
+};
+

@@ -1,24 +1,8 @@
 
 import { ApiError } from '@/lib/api/apiError';
 import axiosInstance from '@/lib/api/axiosInstance';
+import { AddToGroupProps, AddToGroupResponse, CreateGroupProps, CreateGroupResponse, DeleteGroupsProps, DeleteGroupsResponse, GetGroupsProps, GetGroupsResponse, GetUsersByGroupIdProps, GetUsersByGroupIdResponse, RemoveFromGroupProps, RemoveFromGroupResponse, UpdateGroupProps, UpdateGroupResponse } from '@/lib/types/groupTypes';
 import { AxiosError } from 'axios';
-
-
-// interface for createGroup props
-interface CreateGroupProps {
-  name: string;
-}
-
-// interface for createGroup response
-interface CreateGroupResponse {
-  message: string;
-  data: {
-    name: string;
-    id: string;
-    updatedAt: string;
-    createdAt: string;
-  };
-}
 
 
 // Function to Create a Group
@@ -47,28 +31,6 @@ export const createGroup = async (data: CreateGroupProps): Promise<CreateGroupRe
   }
 };
 
-
-// interface for getGroups props
-interface GetGroupsProps {
-  page: number;
-  pageSize: number;
-  sortBy: "id" | "name" | "createdAt" | "updatedAt";
-  order: "ASC" | "DESC";
-}
-
-// interface for getGroups response
-interface GetGroupsResponse {
-  message: string;
-  data: {
-    groups: {
-      id: string;
-      name: string;
-      createdAt: string;
-      updatedAt: string;
-    }[];
-    totalPages: number;
-  };
-}
 
 // Function to get all groups
 export const getGroups = async (data: GetGroupsProps): Promise<GetGroupsResponse | null> => {
@@ -103,24 +65,6 @@ export const getGroups = async (data: GetGroupsProps): Promise<GetGroupsResponse
 };
 
 
-// interface for getGroupById props
-interface UpdateGroupProps {
-  id: string;
-  name: string;
-}
-
-// interface for getGroupById response
-interface UpdateGroupResponse {
-  message: string;
-  data: {
-    id: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
-
-
 // Function to get a Group by ID
 export const updateGroup = async (data: UpdateGroupProps): Promise<UpdateGroupResponse | null> => {
   try {
@@ -147,18 +91,6 @@ export const updateGroup = async (data: UpdateGroupProps): Promise<UpdateGroupRe
     }
   }
 };
-
-
-// interface for deleteGroup props
-interface DeleteGroupsProps {
-  groupIds: string[];
-}
-
-// interface for deleteGroup response
-interface DeleteGroupsResponse {
-  message: string;
-}
-
 
 
 // Function to delete a Group
@@ -193,18 +125,6 @@ export const deleteGroups = async ({ groupIds }: DeleteGroupsProps): Promise<Del
 };
 
 
-// interface for get user by ID props
-interface AddToGroupProps {
-  userIds: string[];
-  groupId: string;
-}
-
-// interface for get user by ID response
-interface AddToGroupResponse {
-  status: string;
-  message: string;
-}
-
 // Function to add users to a group
 export const addUsersToGroup = async (data: AddToGroupProps): Promise<AddToGroupResponse | null> => {
   try {
@@ -232,18 +152,6 @@ export const addUsersToGroup = async (data: AddToGroupProps): Promise<AddToGroup
     }
   }
 };
-
-// interface for remove users by IDs props
-interface RemoveFromGroupProps {
-  userIds: string[];
-  groupId: string;
-}
-
-// interface for remove users by IDs response
-interface RemoveFromGroupResponse {
-  status: string;
-  message: string;
-}
 
 // Function to remove users from group
 export const removeUsersFromGroup = async (data: RemoveFromGroupProps): Promise<RemoveFromGroupResponse | null> => {
@@ -277,37 +185,8 @@ export const removeUsersFromGroup = async (data: RemoveFromGroupProps): Promise<
   }
 };
 
-interface GetUsersByGroupIdProps {
-  page: number;
-  pageSize: number;
-  sortBy: "id" | "first_name" | "last_name" | "email" | "phone" | "role_id" | "createdAt" | "updatedAt";
-  order: "ASC" | "DESC";
-  groupId: string;
-}
 
-interface User {
-  id: string;
-  role_id: string | null;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  createdAt: string;
-  updatedAt: string;
-  // Add other properties of a user if needed
-}
-
-interface GetUsersByGroupIdResponse {
-  status: string;
-  data: {
-    users: User[];
-    totalPages: number;
-  };
-}
-
-export const GetUsersByGroupId = async (
-  data: GetUsersByGroupIdProps
-): Promise<GetUsersByGroupIdResponse | null> => {
+export const GetUsersByGroupId = async (data: GetUsersByGroupIdProps): Promise<GetUsersByGroupIdResponse | null> => {
   try {
     const response = await axiosInstance.get<GetUsersByGroupIdResponse>('/v1/user/by-group', {
       params: data,

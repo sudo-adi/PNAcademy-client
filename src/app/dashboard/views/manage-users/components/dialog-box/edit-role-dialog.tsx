@@ -8,7 +8,11 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Bell, BellPlus, Edit, FileCog, FilePen, FilePieChart, PieChart, User, UserCog, Users } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 
-const EditRoleDialog = () => {
+interface EditRoleDialogProps {
+  refreshRoles: () => void
+}
+
+const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ refreshRoles }) => {
   return (
     <>
       <Dialog>

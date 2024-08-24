@@ -42,7 +42,7 @@ export interface Role {
   canViewNotification: boolean;
   createdAt: string;
   updatedAt: string;
-  role_id: string | null;
+  role_id?: string | null;
 }
 
 export interface GetRolesProps {

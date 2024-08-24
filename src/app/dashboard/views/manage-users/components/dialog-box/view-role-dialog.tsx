@@ -3,14 +3,12 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Bell, BellPlus, Edit, Eye, FileCog, FilePen, FilePieChart, PieChart, User, UserCog, Users } from 'lucide-react'
 import { Switch } from '@/components/ui/switch'
 
 interface ViewRoleDialogProps {
-  role: Role;
+  role?: Role;
 }
 
 const ViewRoleDialog: React.FC<ViewRoleDialogProps> = ({ role }) => {
@@ -24,20 +22,12 @@ const ViewRoleDialog: React.FC<ViewRoleDialogProps> = ({ role }) => {
         </DialogTrigger>
         <DialogContent className="w-[800px]">
           <DialogHeader>
-            <DialogTitle>Create a New Role</DialogTitle>
-            <DialogDescription>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolor, quia?
-            </DialogDescription>
+            <DialogTitle>
+              Details
+            </DialogTitle>
             <div className="flex flex-col gap-2 py-4">
-              <Label htmlFor='name' className='ml-1'>Role Name</Label>
-              <Input
-                id="name"
-                type="email"
-                placeholder="manager..."
-                // onChange={(e) => setUsername(e.target.value)}
-                required />
-            </div>
 
+            </div>
             <Card
               className="xl:col-span-2 h-[400px] overflow-y-auto bg-transparent" x-chunk="dashboard-01-chunk-4"
             >

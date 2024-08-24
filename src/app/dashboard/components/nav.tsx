@@ -27,7 +27,7 @@ const Nav: React.FC = () => {
     { text: 'My Assessments', icon: <Files /> },
     { text: 'Manage Reports', icon: <PieChart /> },
     { text: 'My Reports', icon: <FilePieChart /> },
-    { text: 'Manage Users', icon: <UserCog /> },
+    { text: 'Manage Users & Roles', icon: <UserCog /> },
     { text: 'Manage Groups', icon: <Users /> },
     { text: 'Manage Notifications', icon: <BellPlus /> },
     { text: 'Settings', icon: <Settings /> }

@@ -48,7 +48,7 @@ const useRolesTableStore = create<State & Actions>()(
   (set) => ({
     activePageIndex: 1,
     displayNumberOfRows: 25,
-    sortBy: "createdAt" as 'createdAt',
+    sortBy: "name" as 'name',
     order: "ASC" as "ASC",
     setActivePageIndex: (index) => set({ activePageIndex: index }),
     setDisplayNumberOfRows(Rows) {

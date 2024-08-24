@@ -1,37 +1,8 @@
 import { ApiError } from '@/lib/api/apiError';
 import axiosInstance from '@/lib/api/axiosInstance';
+import { CreateRoleProps, CreateRoleResponse, DeleteRoleResponse, DeleteRolesProps, GetRolesProps, GetRolesResponse, Role, UpdateRoleProps, UpdateRoleResponse } from '@/lib/types/roleTypes';
 import { AxiosError } from 'axios';
 
-
-// interface for RolePermissions
-interface RolePermissions {
-  canManageAssessment: boolean;
-  canManageUser: boolean;
-  canManageRole: boolean;
-  canManageNotification: boolean;
-  canManageLocalGroup: boolean;
-  canManageReports: boolean;
-  canAttemptAssessment: boolean;
-  canViewReport: boolean;
-  canManageMyAccount: boolean;
-  canViewNotification: boolean;
-}
-
-// interface for createRole props
-interface CreateRoleProps {
-  name: string;
-  permissions: RolePermissions;
-}
-
-// interface for createRole response
-interface CreateRoleResponse {
-  message: string;
-  data: {
-    id: string;
-    name: string;
-    permissions: RolePermissions;
-  };
-}
 
 // Function to create role
 export const createRole = async (data: CreateRoleProps): Promise<CreateRoleResponse | null> => {
@@ -61,56 +32,8 @@ export const createRole = async (data: CreateRoleProps): Promise<CreateRoleRespo
 };
 
 
-// interface for Role
-interface Role {
-  id: string;
-  name: string;
-  canManageAssessment: boolean;
-  canManageUser: boolean;
-  canManageRole: boolean;
-  canManageNotification: boolean;
-  canManageLocalGroup: boolean;
-  canManageReports: boolean;
-  canAttemptAssessment: boolean;
-  canViewReport: boolean;
-  canManageMyAccount: boolean;
-  canViewNotification: boolean;
-  createdAt: string;
-  updatedAt: string;
-  role_id: string | null;
-}
-
-// interface for getRoles response
-interface GetRolesResponse {
-  message: string;
-  data: {
-    roles: Role[];
-  };
-}
-
-// interface for getRoles props
-interface getRolesProps {
-  page: number;
-  pageSize: number;
-  sortBy:
-  | "id"
-  | "name"
-  | "canManageAssessment"
-  | "canManageUser"
-  | "canManageRole"
-  | "canManageNotification"
-  | "canManageLocalGroup"
-  | "canManageReports"
-  | "canAttemptAssessment"
-  | "canViewReport"
-  | "canManageMyAccount"
-  | "canViewNotification"
-  | "createdAt"
-  | "updatedAt"; order: 'ASC' | 'DESC';
-}
-
-// Function to get rolesx
-export const getRoles = async (data: getRolesProps): Promise<Role[] | null> => {
+// Function to get roles
+export const getRoles = async (data: GetRolesProps): Promise<GetRolesResponse | null> => {
   try {
     const response = await axiosInstance.get<GetRolesResponse>('/v1/user/roles', {
       params: data,
@@ -118,7 +41,7 @@ export const getRoles = async (data: getRolesProps): Promise<Role[] | null> => {
 
     if (response.status === 200 || response.status === 201) {
       console.info('Roles fetched successfully', response.data);
-      return response.data.data.roles;
+      return response.data;
     }
     return null;
   } catch (error) {
@@ -137,37 +60,6 @@ export const getRoles = async (data: getRolesProps): Promise<Role[] | null> => {
     }
   }
 };
-
-// interface for updateRole props
-interface UpdateRoleProps {
-  roleId: string;
-  name?: string;
-  canManageAssessment?: boolean;
-  canManageUser?: boolean;
-  canManageRole?: boolean;
-  canManageNotification?: boolean;
-  canManageLocalGroup?: boolean;
-  canManageReports?: boolean;
-  canAttemptAssessment?: boolean;
-  canViewReport?: boolean;
-  canManageMyAccount?: boolean;
-  canViewNotification?: boolean;
-}
-
-// interface for updateRole response
-interface UpdateRoleResponse {
-  message: string;
-  data: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    role_id: string;
-    updatedAt: string;
-    createdAt: string;
-  };
-}
 
 
 // Function to update role
@@ -200,15 +92,6 @@ export const updateRole = async (data: UpdateRoleProps): Promise<UpdateRoleRespo
   }
 };
 
-// interface for deleteRoles props
-interface DeleteRolesProps {
-  roleIds: { roleId: string }[];
-}
-
-// interface for deleteRoles response
-interface DeleteRoleResponse {
-  message: string;
-}
 
 // Function to delete roles
 export const deleteRoles = async (data: DeleteRolesProps): Promise<DeleteRoleResponse | null> => {

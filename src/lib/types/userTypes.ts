@@ -23,7 +23,7 @@ export interface RegisterUserResponse {
   };
 }
 
-// interface for Bulk User
+// interface for Bulk Userz
 export interface SingleUser {
   id: string;
   role_id: string;
@@ -90,6 +90,17 @@ export interface DeleteUsersResponse {
   message: string;
 }
 
-export interface fetchUsersProps {
 
+export interface DeleteUsersDialogProps {
+  refreshUsers: () => void;
+  userId: string;
 }
+export interface ImportUsersProps {
+  users: File;
+  updateExisting: boolean;
+}
+
+export interface ImportUsersResponse {
+  message: string;
+}
+
