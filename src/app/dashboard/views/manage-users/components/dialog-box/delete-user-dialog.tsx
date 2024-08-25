@@ -5,8 +5,10 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Trash2, Loader2 } from 'lucide-react';
 import { useUsers } from '../../hooks/useUsers';
 import { DeleteUsersDialogProps } from '@/lib/types/userTypes';
+import { toast } from '@/components/ui/use-toast'
+import { ToastAction } from '@/components/ui/toast'
 
-const DeleteUserDialog: React.FC<DeleteUsersDialogProps> = ({ refreshUsers, userId }) => {
+const DeleteUserDialog: React.FC<DeleteUsersDialogProps> = ({ refreshUsers, user }) => {
   const { error, removeUsers } = useUsers();
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -14,15 +16,20 @@ const DeleteUserDialog: React.FC<DeleteUsersDialogProps> = ({ refreshUsers, user
   const onSubmit = useCallback(async () => {
     setLoading(true);
     try {
-      await removeUsers({ userIds: [userId] });
+      await removeUsers({ userIds: [user.id] });
     } catch (err) {
       console.error('Error deleting user:', err);
     } finally {
       setLoading(false);
       refreshUsers();
-
+      toast({
+        title: `Role ${user.first_name} ${user.last_name} deleted successfully`,
+        action: (
+          <ToastAction altText="Goto schedule to undo">Ok</ToastAction>
+        ),
+      })
     }
-  }, [removeUsers, userId,]);
+  }, [removeUsers, user.id,]);
 
   return (
     <>

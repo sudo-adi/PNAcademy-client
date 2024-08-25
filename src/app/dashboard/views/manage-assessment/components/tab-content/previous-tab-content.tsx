@@ -7,8 +7,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { BoxSelectIcon, Calendar, CircleDot, CircleDotDashed, CirclePlay, CircleStop, Clock, Copy, Edit, Link, Trash2, User } from 'lucide-react'
 import React from 'react'
-import EditRoleDialog from '../../../manage-users/components/dialog-box/edit-role-dialog'
-import DeleteRoleDialog from '../../../manage-users/components/dialog-box/delete-role-dialog'
 
 const PreviousTabContent = () => {
   return (
@@ -168,7 +166,6 @@ const Row = () => {
       <TableCell>
       </TableCell>
       <TableCell>
-        <DeleteRoleDialog />
       </TableCell>
     </TableRow>
   );

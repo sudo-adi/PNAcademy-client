@@ -4,33 +4,33 @@ import React, { useCallback, useState } from 'react'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
 import { Car, Loader2, Trash2, } from 'lucide-react'
 import { useRoles } from '../../hooks/useRoles'
-import { Role } from '@/lib/types/roleTypes'
-import { Bell, BellPlus, Calendar, Clock, Copy, Edit, FileCog, FilePen, FilePieChart, MousePointer2, PieChart, Scroll, ScrollText, User, UserCog, Users } from 'lucide-react';
+import { DeleteRoleDialogProps, } from '@/lib/types/roleTypes'
+import { Bell, BellPlus, FileCog, FilePieChart, PieChart, Scroll, User, UserCog, Users } from 'lucide-react';
 import RoleBadge from '../role-badge'
+import { toast } from '@/components/ui/use-toast'
+import { ToastAction } from '@/components/ui/toast'
 
-
-
-interface DeleteRoleDialogProps {
-  refreshRoles: () => void;
-  role: Role;
-}
 
 const DeleteRoleDialog: React.FC<DeleteRoleDialogProps> = ({ refreshRoles, role }) => {
   const { error, removeRoles } = useRoles();
   const [loading, setLoading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
 
   const onSubmit = useCallback(async () => {
     setLoading(true);
     try {
       await removeRoles({ roleIds: [{ roleId: role.id }] });
-      setStatusDialogOpen(true);
     } catch (err) {
       console.error('Error deleting user:', err);
     } finally {
       setLoading(false);
       refreshRoles();
+      toast({
+        title: `Role ${role.name} deleted successfully`,
+        action: (
+          <ToastAction altText="Goto schedule to undo">Ok</ToastAction>
+        ),
+      })
+      console.log("here is the role", role);
     }
   }, [removeRoles, role.id]);
 

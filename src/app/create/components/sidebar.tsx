@@ -15,6 +15,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { toast } from "@/components/ui/use-toast"
 
+
 // Define TypeScript interfaces
 interface FormInputs {
   dob: Date;
@@ -25,6 +26,7 @@ const FormSchema = z.object({
     required_error: "Enter a valid date",
   }),
 })
+
 
 const DatePicker: React.FC = () => (
   <Popover>
@@ -62,6 +64,15 @@ const Dropdown: React.FC<{ items: string[]; label: string }> = ({ items, label }
 )
 
 const SideBar: React.FC = () => {
+
+  const [assessmentName, setAssessmentName] = React.useState<string>('')
+  const [description, setDescription] = React.useState<string>('')
+  const [tartsAt, setStartsAt] = React.useState<string>('')
+  const [EndsAt, setEndsAt] = React.useState<string>('')
+  const [Duration, setDuration] = React.useState<string>('')
+
+
+
   const form = useForm<FormInputs>({
     resolver: zodResolver(FormSchema),
   })
@@ -88,13 +99,8 @@ const SideBar: React.FC = () => {
           <Label className='p-2'>
             Start at
           </Label>
-          <div className="flex items-center flex-row gap-2">
+          <div className="flex items-start flex-col gap-2">
             <DatePicker />
-            <Dropdown items={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]} label="HH" />
-            :
-            <Dropdown items={["5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60"]} label="MM" />
-            :
-            <Dropdown items={["AM", "PM"]} label="AM" />
           </div>
         </div>
         <div className="flex flex-col">
@@ -103,11 +109,6 @@ const SideBar: React.FC = () => {
           </Label>
           <div className="flex items-center flex-row gap-2">
             <DatePicker />
-            <Dropdown items={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]} label="HH" />
-            :
-            <Dropdown items={["5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60"]} label="MM" />
-            :
-            <Dropdown items={["AM", "PM"]} label="AM" />
           </div>
         </div>
         <div className="flex flex-col">

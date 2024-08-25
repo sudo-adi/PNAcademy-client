@@ -114,3 +114,8 @@ export interface DeleteRoleResponse {
 interface RoleId {
   roleId: string;
 }
+
+export interface DeleteRoleDialogProps {
+  refreshRoles: () => void;
+  role: Role;
+}

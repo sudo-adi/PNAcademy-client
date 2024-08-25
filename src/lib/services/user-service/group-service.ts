@@ -20,6 +20,8 @@ export const createGroup = async (data: CreateGroupProps): Promise<CreateGroupRe
       switch (status) {
         case 400:
           throw new ApiError(status, 'Bad Request: Invalid data provided', data);
+        case 409:
+          throw new ApiError(status, 'Conflict: Group Already Exists', data);
         case 500:
           throw new ApiError(status, 'Internal Server Error', data);
         default:

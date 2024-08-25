@@ -93,7 +93,7 @@ export interface DeleteUsersResponse {
 
 export interface DeleteUsersDialogProps {
   refreshUsers: () => void;
-  userId: string;
+  user: SingleUser;
 }
 export interface ImportUsersProps {
   users: File;

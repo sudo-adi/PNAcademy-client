@@ -14,7 +14,7 @@ export interface CreateGroupResponse {
   };
 }
 
-interface Group {
+export interface Group {
   id: string;
   name: string;
   createdAt: string;

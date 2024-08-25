@@ -10,8 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { formatDateInIST } from '../helper-functions/time-converter';
-import { copyToClipboard } from '../helper-functions/copy-to-clipboard';
+import { formatDateInIST } from '@/lib/helpers/time-converter';
+import { copyToClipboard } from '@/lib/helpers/copy-to-clipboard';
 import CreateUserDialog from '../dialog-box/create-user-dialog';
 import useUserTableStore from '@/lib/stores/manage-assessment-store/assigned-assessments-table';
 import ImportCsvDialog from '../dialog-box/import-users-csv-dialog';
@@ -266,7 +266,7 @@ const Row: React.FC<RowProps> = ({ user, selected, onSelectUser, refreshUsers, l
         <div className="flex gap-4">
           {loading ? (<Skeleton className="w-8 h-8" />) : (<ViewUserDialog user={user} />)}
           {loading ? (<Skeleton className="w-8 h-8" />) : (<EditUserDialog user={user} refreshUsers={refreshUsers} />)}
-          {loading ? (<Skeleton className="w-8 h-8" />) : (<DeleteUserDialog userId={user.id} refreshUsers={refreshUsers} />)}
+          {loading ? (<Skeleton className="w-8 h-8" />) : (<DeleteUserDialog user={user} refreshUsers={refreshUsers} />)}
         </div>
       </TableCell>
     </TableRow>

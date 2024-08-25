@@ -14,7 +14,7 @@ import { Label } from '@radix-ui/react-label';
 import { useRoles } from '../../hooks/useRoles';
 import useRolesTableStore from '@/lib/stores/manage-users-store/roles-table-store';
 import { Role } from '@/lib/types/roleTypes';
-import { formatDateInIST } from '../helper-functions/time-converter';
+import { formatDateInIST } from '../../../../../../lib/helpers/time-converter';
 
 
 // global props
@@ -82,6 +82,7 @@ const RolesTabContent = () => {
           <CreateRoleDialog />
           {selectedRoles.size > 0 && (
             <Button variant="destructive" onClick={handleDeleteSelected}>
+              <Trash2 className='h-4 w-4 mr-2' />
               Delete Selected
             </Button>
           )}
@@ -100,6 +101,7 @@ const RolesTabContent = () => {
           <TableBody>
             {roles.map((role: Role) => (
               <Row
+                key={role.id}
                 role={role}
                 selected={selectedRoles.has(role.id)}
                 onSelectRole={handleSelectRole}

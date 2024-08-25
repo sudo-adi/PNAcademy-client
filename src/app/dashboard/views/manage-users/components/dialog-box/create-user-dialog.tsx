@@ -5,7 +5,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
-import { Loader2, UserPlus } from 'lucide-react'; // Import Lucide loader icon
+import { Loader2, UserPlus } from 'lucide-react';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
@@ -38,7 +38,6 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
   const { loading, error, addUser } = useUsers();
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [createError, setCreateError] = useState<ApiError | null>(null);
-
   const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
