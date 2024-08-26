@@ -9,7 +9,7 @@ import useCreateAssessmentDetailsStore from "@/lib/stores/manage-assessment-stor
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const StartsAtDateTimePicker = () => {
+const EndsAtDateTimePicker = () => {
   const { endAt, setEndAt } = useCreateAssessmentDetailsStore();
 
   // Local state for date, hours, minutes, and AM/PM
@@ -143,4 +143,4 @@ const StartsAtDateTimePicker = () => {
   );
 };
 
-export default StartsAtDateTimePicker;
+export default EndsAtDateTimePicker;

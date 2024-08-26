@@ -156,7 +156,7 @@ const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelect
     <TableHead onClick={() => toggleSorting('name')}>
       <div className="flex gap-2 items-center cursor-pointer">
         <Users className="h-4 w-4" />
-        First Name {sortBy === 'name' && (order === 'ASC' ? '↓' : '↑')}
+        Name {sortBy === 'name' && (order === 'ASC' ? '↓' : '↑')}
       </div>
     </TableHead>
     <TableHead onClick={() => toggleSorting('createdAt')} className="hidden md:table-cell">

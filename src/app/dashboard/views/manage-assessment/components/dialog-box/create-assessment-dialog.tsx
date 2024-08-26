@@ -9,12 +9,12 @@ import { PlusSquare } from 'lucide-react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import EndsAtDateTimePicker from '../starts-at';
-import StartsAtDateTimePicker from '../ends-at';
 import AssessmentDuration from '../duration';
 import useCreateAssessmentDetailsStore from '@/lib/stores/manage-assessment-store/assessment-details';
 import { useAssessment } from '../../hooks/useAssessment';
 import { ApiError } from '@/lib/api/apiError';
+import StartsAtDateTimePicker from '../starts-at';
+import EndsAtDateTimePicker from '../ends-at';
 
 const assessmentSchema = z.object({
   name: z.string().min(1, { message: 'Assessment name is required' }),
@@ -35,7 +35,7 @@ const CreateAssessmentDialog = () => {
     setAssessmentName,
     setAssessmentDescription,
     setIsActive } = useCreateAssessmentDetailsStore();
-  const { createAssessmentRes, handleCreateAssessment } = useAssessment();
+  const { createAssessmentRes, addAssessment } = useAssessment();
   const [loading, setLoading] = useState<boolean>(false);
   const {
     register,
@@ -56,7 +56,7 @@ const CreateAssessmentDialog = () => {
         duration: duration,
         created_by: createdBy,
       }
-      await handleCreateAssessment(data);
+      await addAssessment(data);
       console.log(createAssessmentRes);
     } catch (err) {
       if (err as ApiError) {

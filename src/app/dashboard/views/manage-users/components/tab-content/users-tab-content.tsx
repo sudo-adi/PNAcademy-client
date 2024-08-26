@@ -13,11 +13,11 @@ import { Badge } from '@/components/ui/badge';
 import { formatDateInIST } from '@/lib/helpers/time-converter';
 import { copyToClipboard } from '@/lib/helpers/copy-to-clipboard';
 import CreateUserDialog from '../dialog-box/create-user-dialog';
-import useUserTableStore from '@/lib/stores/manage-assessment-store/assigned-assessments-table';
 import ImportCsvDialog from '../dialog-box/import-users-csv-dialog';
 import ViewUserDialog from '../dialog-box/view-user-dialog';
 import EditUserDialog from '../dialog-box/edit-user-diallog';
 import DeleteUserDialog from '../dialog-box/delete-user-dialog';
+import useUserTableStore from '@/lib/stores/manage-users-store/user-table-store';
 
 const UsersTabContent: React.FC = () => {
   const { loading, error, users, fetchedUsersRes, fetchUsers, removeUsers } = useUsers();

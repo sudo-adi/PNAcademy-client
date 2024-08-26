@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import SideBar from "./components/sidebar"
 import { FilePen, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@radix-ui/react-label"
 import { Separator } from "@/components/ui/separator"
-import Header from "./components/header"
+import Header from "../components/header"
+import SideBar from "../components/sidebar"
 
-const Create = () => {
+
+export default function Create({ params }: { params: { assessmentId: string } }) {
   return (
     <div className="flex max-h-screen flex-row overflow-y-hidden">
       <div className="flex flex-col w-full">
@@ -20,24 +21,7 @@ const Create = () => {
           <Card className="flex flex-row w-full gap-2 p-2 justify-between bg-transparent border-none">
             <div className="flex gap-2">
               <Badge variant="secondary">
-                Section 1
-              </Badge>
-              <Badge variant="outline">
-                Section 2
-              </Badge>
-              <Badge variant="outline">
-                Section 3
-              </Badge>
-              <Badge variant="outline">
-                Section 4
-              </Badge>
-              <Badge variant="outline">
-                <Plus className="h-4 w-4" />
-              </Badge>
-            </div>
-            <div className="flex">
-              <Badge variant="secondary">
-                5
+                {params.assessmentId}
               </Badge>
             </div>
           </Card>
@@ -45,21 +29,6 @@ const Create = () => {
             <div className="flex gap-2">
               <Button>
                 1
-              </Button>
-              <Button variant="outline">
-                2
-              </Button>
-              <Button variant="outline">
-                3
-              </Button>
-              <Button variant="outline">
-                4
-              </Button>
-              <Button variant="outline">
-                5
-              </Button>
-              <Button variant="outline">
-                <Plus className="w-4 h-4" />
               </Button>
             </div>
             <div className="flex gap-2">
@@ -117,4 +86,3 @@ const Create = () => {
   )
 }
 
-export default Create

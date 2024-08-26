@@ -12,6 +12,7 @@ import {
 import {
   AddGroupToAssessmentProps,
   AddGroupToAssessmentResponse,
+  Assessment,
   AssessmentResponse,
   CreateAssessmentProps,
   DeleteAssessmentProps,
@@ -19,6 +20,7 @@ import {
   GetAssessmentByIdProps,
   GetAssessmentByIdResponse,
   GetAssessmentsProps,
+  GetAssessmentsResponse,
   GetAssignedAssessmentsProps,
   GetAssignedAssessmentsResponse,
   RemoveGroupFromAssessmentProps,
@@ -28,18 +30,24 @@ import {
 } from '@/lib/types/assessmentTypes';
 
 export const useAssessment = () => {
-  const [assessments, setAssessments] = useState<AssessmentResponse | null>(null);
+  const [assessments, setAssessments] = useState<Assessment[] | null>(null);
   const [assessment, setAssessment] = useState<GetAssessmentByIdResponse | null>(null);
   const [assignedAssessments, setAssignedAssessments] = useState<GetAssignedAssessmentsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [createAssessmentRes, setCreateAssessmentRes] = useState<AssessmentResponse | null>()
+  const [fetchAssessmentsRes, setFetchAssessmentsRes] = useState<GetAssessmentsResponse | null>(null);
+  const [fetchAssessmentByIdRes, setFetchAssessmentByIdRes] = useState<GetAssessmentByIdResponse | null>(null);
+  const [createAssessmentRes, setCreateAssessmentRes] = useState<AssessmentResponse | null>(null);
+  const [removeAssessmentRes, setRemoveAssessmentRes] = useState<DeleteAssessmentResponse | null>(null);
+  const [addAssessmentToGroupRes, setAddAssessmentToGroupRes] = useState<AddGroupToAssessmentResponse | null>(null);
+  const [removeAssessmentFromGroupRes, setRemoveAssessmentFromGroupRes] = useState<RemoveGroupFromAssessmentResponse | null>(null);
+  const [updateAssessmentRes, setUpdateAssessmentRes] = useState<UpdateAssessmentResponse | null>(null);
 
-  const handleCreateAssessment = async (data: CreateAssessmentProps) => {
+  const addAssessment = async (data: CreateAssessmentProps) => {
     setLoading(true);
     try {
       const response = await createAssessment(data);
-      setCreateAssessmentRes(response)
+      setCreateAssessmentRes(response);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -47,7 +55,7 @@ export const useAssessment = () => {
     }
   };
 
-  const handleGetAssessmentById = async (data: GetAssessmentByIdProps) => {
+  const fetchAssessmentById = async (data: GetAssessmentByIdProps) => {
     setLoading(true);
     try {
       const response = await getAssessmentById(data);
@@ -59,11 +67,16 @@ export const useAssessment = () => {
     }
   };
 
-  const handleGetAssessments = async (data: GetAssessmentsProps) => {
+  const fetchAssessments = async (data: GetAssessmentsProps) => {
     setLoading(true);
     try {
-      const response = await getAssessments(data);
-      // setAssessments(response);
+      const response: GetAssessmentsResponse | null = await getAssessments(data);
+      if (response) {
+        const { data: { assesments } } = response;
+        setAssessments(assesments);
+        setFetchAssessmentsRes(response);
+        console.info('Assessments fetched:', response.data.assesments);
+      }
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -71,11 +84,11 @@ export const useAssessment = () => {
     }
   };
 
-  const handleUpdateAssessment = async (data: UpdateAssessmentProps) => {
+  const patchAssessment = async (data: UpdateAssessmentProps) => {
     setLoading(true);
     try {
-      const response = await updateAssessment(data);
-      // setAssessment(response);
+      const response: UpdateAssessmentResponse | null = await updateAssessment(data);
+      setUpdateAssessmentRes(response);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -83,11 +96,11 @@ export const useAssessment = () => {
     }
   };
 
-  const handleDeleteAssessment = async (data: DeleteAssessmentProps) => {
+  const removeAssessment = async (data: DeleteAssessmentProps) => {
     setLoading(true);
     try {
       const response = await deleteAssessment(data);
-      // setAssessments(response);
+      setRemoveAssessmentRes(response);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -95,11 +108,11 @@ export const useAssessment = () => {
     }
   };
 
-  const handleAddGroupToAssessment = async (data: AddGroupToAssessmentProps) => {
+  const addAssessmentToGroup = async (data: AddGroupToAssessmentProps) => {
     setLoading(true);
     try {
       const response = await addGroupToAssessment(data);
-      // setAssessment(response);
+      setAddAssessmentToGroupRes(response);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -107,7 +120,7 @@ export const useAssessment = () => {
     }
   };
 
-  const handleGetAssignedAssessments = async (data: GetAssignedAssessmentsProps) => {
+  const fetchAssignedAssessments = async (data: GetAssignedAssessmentsProps) => {
     setLoading(true);
     try {
       const response = await getAssignedAssessments(data);
@@ -119,11 +132,11 @@ export const useAssessment = () => {
     }
   };
 
-  const handleRemoveGroupFromAssessment = async (data: RemoveGroupFromAssessmentProps) => {
+  const removeAssessmentFromGroup = async (data: RemoveGroupFromAssessmentProps) => {
     setLoading(true);
     try {
       const response = await removeGroupFromAssessment(data);
-      // setAssessment(response);
+      setRemoveAssessmentFromGroupRes(response);
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -132,19 +145,24 @@ export const useAssessment = () => {
   };
 
   return {
-    assessments,
     assessment,
     assignedAssessments,
     error,
     loading,
     createAssessmentRes,
-    handleCreateAssessment,
-    handleGetAssessmentById,
-    handleGetAssessments,
-    handleUpdateAssessment,
-    handleDeleteAssessment,
-    handleAddGroupToAssessment,
-    handleGetAssignedAssessments,
-    handleRemoveGroupFromAssessment,
+    removeAssessmentRes,
+    addAssessmentToGroupRes,
+    removeAssessmentFromGroupRes,
+    updateAssessmentRes,
+    fetchAssessmentByIdRes,
+    fetchAssessmentsRes,
+    addAssessment,
+    fetchAssessmentById,
+    fetchAssessments,
+    patchAssessment,
+    removeAssessment,
+    addAssessmentToGroup,
+    fetchAssignedAssessments,
+    removeAssessmentFromGroup,
   };
 };

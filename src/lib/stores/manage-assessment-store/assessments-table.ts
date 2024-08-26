@@ -21,7 +21,7 @@ const useAssessmentsTableStore = create<State & Actions>()(
     (set) => ({
       activePageIndex: 1,
       displayNumberOfRows: 10,
-      sortBy: "name" as "name",
+      sortBy: "createdAt" as "createdAt",
       order: "ASC" as "ASC",
       setActivePageIndex: (index) => set({ activePageIndex: index }),
       setDisplayNumberOfRows(Rows) {
@@ -31,8 +31,7 @@ const useAssessmentsTableStore = create<State & Actions>()(
       setOrder: (order) => set({ order }),
     }),
     {
-      name: 'userTableState', // Key for local storage
-      // Default storage is used (localStorage in the browser)
+      name: 'useAssessmentTableStore',
     }
   )
 );

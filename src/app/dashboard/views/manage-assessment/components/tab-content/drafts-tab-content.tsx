@@ -4,16 +4,45 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { BoxSelectIcon, Calendar, CircleDot, CircleDotDashed, CirclePlay, CircleStop, Clock, Copy, Edit, Eye, FileIcon, Link, MousePointer2, Trash, Trash2, User } from 'lucide-react'
+import { BoxSelectIcon, Calendar, CircleDot, CircleDotDashed, CirclePlay, CircleStop, Clock, Copy, Edit, Eye, FileIcon, Link, MousePointer, Wand, Trash, Trash2, User, Timer, ArchiveX, SquareArrowUpLeft } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { useAssessment } from '../../hooks/useAssessment'
 import useAssessmentsTableStore from '@/lib/stores/manage-assessment-store/assessments-table'
 import { Assessment } from '@/lib/types/assessmentTypes'
 import { formatDateInIST } from '@/lib/helpers/time-converter'
 import { Badge } from '@/components/ui/badge'
+import {
+  Cloud,
+  CreditCard,
+  Keyboard,
+  LifeBuoy,
+  LogOut,
+  Mail,
+  MessageSquare,
+  Plus,
+  PlusCircle,
+  Settings,
+  UserPlus,
+  Users,
+} from "lucide-react"
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import useStatusIndicator from '../../hooks/useStatusIndicator'
 
-const ScheduledTabContent = () => {
+const DraftsTabContent = () => {
   const {
     assessment,
     assignedAssessments,
@@ -35,9 +64,9 @@ const ScheduledTabContent = () => {
     removeAssessmentFromGroup, } = useAssessment();
   const { activePageIndex, displayNumberOfRows, sortBy, order, setOrder, setSortBy } = useAssessmentsTableStore();
   const [selectedAssessments, setSelectedAssessments] = useState<Set<string>>(new Set());
-  const assessmentList = (fetchAssessmentsRes?.data.assesments as any[]) ?? [];
-  const allSelected = assessmentList.length > 0 && selectedAssessments.size === assessmentList.length;
-  const scheduledAssessmentsList = assessmentList.filter(assessment => { return (new Date(assessment.start_at) > new Date()) && (assessment.is_active) });
+  const assessmentList: Assessment[] = (fetchAssessmentsRes?.data.assesments as Assessment[]) ?? [];
+  const allSelected: boolean = assessmentList.length > 0 && selectedAssessments.size === assessmentList.length;
+  const draftedAssessments: Assessment[] = assessmentList.filter(assessment => assessment.is_active === false);
 
 
   useEffect(() => {
@@ -46,7 +75,6 @@ const ScheduledTabContent = () => {
 
   const refreshAssessments = () => {
     fetchAssessments({ page: 1, pageSize: 9999, sortBy, order });
-
   };
 
   const handleSelectAll = (checked: boolean) => {
@@ -77,7 +105,7 @@ const ScheduledTabContent = () => {
   };
   return (
     <>
-      <Card className='my-2 max-h-[calc(100vh-18rem)] w-full flex flex-col'>
+      <Card className='my-2 max-h-[calc(100vh-18rem)] w-full flex flex-col scrollbar-thin'>
         <Table>
           <TableHeader >
             <Schema
@@ -88,7 +116,7 @@ const ScheduledTabContent = () => {
               allSelected={allSelected} />
           </TableHeader>
           <TableBody>
-            {scheduledAssessmentsList.map(assessment => (
+            {draftedAssessments.map(assessment => (
               <Row
                 key={assessment.id}
                 assessment={assessment}
@@ -103,7 +131,7 @@ const ScheduledTabContent = () => {
       </Card >
       <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
         <Label className='text-[10px]'>
-          Showing {scheduledAssessmentsList.length} Assessments
+          Showing {draftedAssessments.length} Assessments
         </Label>
       </div>
     </>
@@ -120,7 +148,6 @@ interface SchemaProps {
 }
 const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelected, onSelectAll, }) => {
 
-
   return (
     <TableRow>
       <TableHead className="hidden sm:table-cell">
@@ -136,42 +163,27 @@ const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelect
           Assessment Name {sortBy === 'name' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>
-      <TableHead onClick={() => toggleSorting('start_at')}>
+      <TableHead onClick={() => toggleSorting('id')} className='w-[270px]'>
         <div className="flex gap-2 text-[10px] items-center cursor-pointer">
           <User className="h-4 w-4" />
-          Started at {sortBy === 'start_at' && (order === 'ASC' ? '↓' : '↑')}
-        </div>
-      </TableHead>
-      <TableHead onClick={() => toggleSorting('end_at')}>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
-          Ended at {sortBy === 'end_at' && (order === 'ASC' ? '↓' : '↑')}
+          Assessment Id {sortBy === 'id' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>
       <TableHead onClick={() => toggleSorting('createdAt')}>
-        <div className="gap-2 text-[10px] items-center cursor-pointer flex">
-          <User className="h-4 w-4" />
-          <div className="inline-block">
-            Created at {sortBy === 'createdAt' && (order === 'ASC' ? '↓' : '↑')}
-
-          </div>
+        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
+          <Timer className="h-4 w-4" />
+          CretatedAt {sortBy === 'createdAt' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>
       <TableHead onClick={() => toggleSorting('updatedAt')}>
         <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
-          Updated at {sortBy === 'updatedAt' && (order === 'ASC' ? '↓' : '↑')}
-        </div>
-      </TableHead>
-      <TableHead className="md:table-cell">
-        <div className="flex text-[10px] flex-row gap-2 items-center">
-          <CircleDotDashed className='h-4 w-4' />
-          Status
+          <Timer className="h-4 w-4" />
+          Last Drafted at {sortBy === 'updatedAt' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>
       <TableHead className="md:table-cell ">
         <div className="flex text-[10px] flex-row items-center justify-start">
-          <MousePointer2 className='mr-2 h-4 w-4' />
+          <Wand className='mr-2 h-4 w-4' />
           Actions
         </div>
       </TableHead>
@@ -205,25 +217,11 @@ const Row: React.FC<RowProps> = ({ assessment, selected, onSelectAssessment, ref
           <div className="flex flex-row gap-2 text-xs items-center">
             {loading ? (<Skeleton className="w-32 h-4" />) : assessment.name}
           </div>
-          <div className="flex">
-            <button className='hidden lg:flex px-2 py-1 rounded-sm border-2 border-dashed gap-2 text-[8px] italic hover:bg-muted' onClick={() => console.log("me here")}>
-              {loading ? (<Skeleton className="w-32 h-4" />) : assessment.id}
-            </button>
-            <button className='flex lg:hidden px-2 py-1 rounded-sm border-2 border-dashed gap-2 text-[10px] italic hover:bg-muted' onClick={() => console.log("me here")}>
-              {loading ? (<Skeleton className="w-32 h-4" />) : "Copy id"}
-            </button>
-          </div>
         </div>
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        <Badge variant={'outline'} className='text-[10px] text-center'>
-          {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(assessment.start_at)
-          }
-        </Badge>
-      </TableCell>
-      <TableCell className="hidden md:table-cell">
-        <Badge variant={'outline'} className='text-[10px] text-center'>
-          {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(assessment.end_at)}
+        <Badge variant={'outline'} className='text-[8px] text-center'>
+          {loading ? <Skeleton className="w-32 h-4" /> : assessment.id}
         </Badge>
       </TableCell>
       <TableCell className="hidden md:table-cell">
@@ -237,27 +235,44 @@ const Row: React.FC<RowProps> = ({ assessment, selected, onSelectAssessment, ref
         </Badge>
       </TableCell>
       <TableCell>
-        <Button variant="ghost" className='hover:bg-transparent text-[10px] text-center'>
-          <CircleDot className={`h-4 w-4 ${statusColor}`} />
-        </Button>
-      </TableCell>
-      <TableCell>
-        <div className="flex flex-row gap-2 h-full items-center justify-start text-[10px] text-center">
+        <div className="lg:hidden flex flex-row gap-2 h-full items-center justify-start text-[10px] text-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className='bg-transparent'>
+                <Wand className='w-4 h-4' />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-16">
+              <DropdownMenuItem>
+                <Eye className="mr-2 h-4 w-4" />
+                <span>View</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <Edit className="mr-2 h-4 w-4" />
+                <span>Edit</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <ArchiveX className="mr-2 h-4 w-4" />
+                <span>Delete</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="hidden lg:flex items-center gap-4">
           <Button variant="outline" className='bg-transparent'>
             <Eye className='h-4 w-4' />
-          </Button>
-          {/* <Button variant="outline" className='bg-transparent'>
-            <Link className='h-4 w-4' />
-          </Button>
-          <Button variant="outline" className='bg-transparent'>
-            <Copy className='h-4 w-4' />
           </Button>
           <Button variant="outline" className='bg-transparent'>
             <Edit className='h-4 w-4' />
           </Button>
           <Button variant="outline" className='bg-transparent'>
-            <Trash2 className='h-4 w-4' />
-          </Button> */}
+            <ArchiveX className='h-4 w-4' />
+          </Button>
+          <Button variant="outline" className='bg-transparent'>
+            <SquareArrowUpLeft className='h-4 w-4' />
+          </Button>
         </div>
       </TableCell>
 
@@ -265,4 +280,4 @@ const Row: React.FC<RowProps> = ({ assessment, selected, onSelectAssessment, ref
   );
 };
 
-export default ScheduledTabContent
+export default DraftsTabContent

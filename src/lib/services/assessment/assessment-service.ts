@@ -1,31 +1,9 @@
 import { AxiosError } from 'axios';
 import axiosInstance from '../../api/axiosInstance';
 import { ApiError } from '../../api/apiError';
+import { AddGroupToAssessmentProps, AddGroupToAssessmentResponse, AssessmentResponse, CreateAssessmentProps, DeleteAssessmentProps, DeleteAssessmentResponse, GetAssessmentByIdProps, GetAssessmentByIdResponse, GetAssessmentsProps, GetAssessmentsResponse, GetAssignedAssessmentsProps, GetAssignedAssessmentsResponse, RemoveGroupFromAssessmentProps, RemoveGroupFromAssessmentResponse, UpdateAssessmentProps, UpdateAssessmentResponse } from '@/lib/types/assessmentTypes';
 
-// interface for createAssessment props
-interface CreateAssessmentProps {
-  name: string;
-  description?: string;
-  is_active: boolean;
-  start_at: string;
-  end_at: string;
-  duration: number;
-  created_by: string;
-}
 
-// interface for createAssessment response
-interface AssessmentResponse {
-  id: string;
-  name: string;
-  description: string;
-  is_active: boolean;
-  start_at: string;
-  end_at: string;
-  duration: number;
-  created_by: string;
-  updatedAt: string;
-  createdAt: string;
-}
 
 // Function to create an assessment
 export const createAssessment = async (data: CreateAssessmentProps): Promise<AssessmentResponse | null> => {
@@ -52,25 +30,6 @@ export const createAssessment = async (data: CreateAssessmentProps): Promise<Ass
   }
 };
 
-// interface for getAssessment props
-interface GetAssessmentByIdProps {
-  id: string;
-}
-
-// interface for getAssessment response
-interface GetAssessmentByIdResponse {
-  id: string;
-  name: string;
-  description: string;
-  is_active: boolean;
-  start_at: string;
-  end_at: string;
-  duration: number;
-  created_by: string;
-  createdAt: string;
-  updatedAt: string;
-  questions: any[];
-}
 
 // Function to get an assessment
 export const getAssessmentById = async ({ id }: GetAssessmentByIdProps): Promise<GetAssessmentByIdResponse | null> => {
@@ -103,36 +62,8 @@ export const getAssessmentById = async ({ id }: GetAssessmentByIdProps): Promise
 };
 
 
-// interface for getAssessments props
-interface GetAssessmentsProps {
-  page: number;
-  pageSize: number;
-  sortBy: "id" | "name" | "description" | "is_active" | "start_at" | "end_at" | "duration" | "created_by" | "createdAt" | "updatedAt";
-  order: 'ASC' | 'DESC';
-}
-
-// interface for Assessment (sub part of getAssessment response)
-interface Assessment {
-  id: string;
-  name: string;
-  description: string;
-  is_active: boolean;
-  start_at: string;
-  end_at: string;
-  duration: number;
-  created_by: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 // interface for getAssessments response
-interface GetAssessmentsResponse {
-  message: string;
-  data: {
-    assessments: Assessment[];
-    totalPages: number;
-  };
-}
+
 
 export const getAssessments = async (data: GetAssessmentsProps): Promise<GetAssessmentsResponse | null> => {
   try {
@@ -165,33 +96,6 @@ export const getAssessments = async (data: GetAssessmentsProps): Promise<GetAsse
 };
 
 
-// interface for updateAssessments props
-interface UpdateAssessmentProps {
-  id: string;
-  name: string;
-  description?: string;
-  is_active: boolean;
-  start_at: string;
-  end_at: string;
-  // duration: number;
-}
-
-// interface for updateAssessments response
-interface UpdateAssessmentResponse {
-  message: string;
-  data: {
-    id: string;
-    name: string;
-    description: string;
-    is_active: boolean;
-    start_at: string;
-    end_at: string;
-    duration: number;
-    created_by: string;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
 
 // Function to update an assessment
 export const updateAssessment = async (data: UpdateAssessmentProps): Promise<UpdateAssessmentResponse | null> => {
@@ -221,17 +125,6 @@ export const updateAssessment = async (data: UpdateAssessmentProps): Promise<Upd
     }
   }
 };
-
-// interface for deleteAssessment props
-interface DeleteAssessmentProps {
-  id: string;
-}
-
-//  interface for deleteAssessment response
-interface DeleteAssessmentResponse {
-  message: string;
-  data: boolean;
-}
 
 
 // Function to delete an assessment
@@ -266,20 +159,8 @@ export const deleteAssessment = async ({ id }: DeleteAssessmentProps): Promise<D
 };
 
 
-
 // --------------------------------- Group to Assessment ---------------------------------
 
-
-// interface for addGroupToAssessment props
-interface AddGroupToAssessmentProps {
-  assessmentId: string;
-  groupId: string;
-}
-
-// interface for addGroupToAssessment response
-interface AddGroupToAssessmentResponse {
-  status: string;
-}
 // Function to Add Group to Assessment
 export const addGroupToAssessment = async (data: AddGroupToAssessmentProps): Promise<AddGroupToAssessmentResponse | null> => {
   try {
@@ -312,25 +193,7 @@ export const addGroupToAssessment = async (data: AddGroupToAssessmentProps): Pro
 };
 
 
-// interface for getAssignedAssessments Data
-interface GetAssignedAssessmentsData {
-  assessments: Assessment[];
-  totalPages: number;
-}
 
-// interface for getAssignedAssessments response
-interface GetAssignedAssessmentsResponse {
-  message: string;
-  data: GetAssignedAssessmentsData;
-}
-
-// interface for getAssignedAssessments props
-interface GetAssignedAssessmentsProps {
-  page: number;
-  pageSize: number;
-  sortBy: "id" | "name" | "description" | "is_active" | "start_at" | "end_at" | "duration" | "created_by" | "createdAt" | "updatedAt";
-  order: "ASC" | "DESC";
-}
 
 // Function to get assigned assessments
 export const getAssignedAssessments = async (data: GetAssignedAssessmentsProps): Promise<GetAssignedAssessmentsResponse | null> => {
@@ -363,18 +226,6 @@ export const getAssignedAssessments = async (data: GetAssignedAssessmentsProps):
   }
 };
 
-
-// Function to Remove Group from Assessment
-interface RemoveGroupFromAssessmentProps {
-  assessmentId: string;
-  groupId: string;
-}
-
-
-interface RemoveGroupFromAssessmentResponse {
-  status: string;
-  message: string;
-}
 
 
 export const removeGroupFromAssessment = async (data: RemoveGroupFromAssessmentProps): Promise<RemoveGroupFromAssessmentResponse | null> => {
