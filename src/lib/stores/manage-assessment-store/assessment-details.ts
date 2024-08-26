@@ -1,4 +1,5 @@
 "use client";
+import { getDecodedTokenData } from '@/lib/utils/jwtUtils';
 import { getAccessToken } from '@/lib/utils/tokenManager';
 import { create } from 'zustand';
 
@@ -19,23 +20,26 @@ interface Actions {
   setEndAt: (endAt: string) => void;
   setDuration: (duration: number) => void;
   setIsActive: (isActive: boolean) => void;
+  setCreatedBy: (createdBy: string) => void;
 }
 
-const createdBy = getAccessToken();
-const useCreateAssessmentStore = create<State & Actions>((set) => ({
-  assessmentName: "New Assessment",
+const data = getDecodedTokenData();
+const userId = data?.userId;
+const useCreateAssessmentDetailsStore = create<State & Actions>((set) => ({
+  assessmentName: "",
   assessmentDescription: "...",
-  startAt: "2024-08-14T10:18:44.781Z",
-  endAt: "2024-08-14T10:18:44.781Z",
+  startAt: "",
+  endAt: "",
   duration: 1000 * 60 * 60,
   is_active: false,
-  createdBy: createdBy || "",
+  createdBy: userId || "",
   setAssessmentName: (name) => set({ assessmentName: name }),
   setAssessmentDescription: (description) => set({ assessmentDescription: description }),
   setStartAt: (startAt) => set({ startAt }),
   setEndAt: (endAt) => set({ endAt }),
   setDuration: (duration) => set({ duration }),
   setIsActive: (is_active) => set({ is_active }),
+  setCreatedBy: (createdBy: string) => set({ createdBy })
 }));
 
-export default useCreateAssessmentStore;
+export default useCreateAssessmentDetailsStore;

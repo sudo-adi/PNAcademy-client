@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { BoxSelectIcon, Calendar, CircleDot, CircleDotDashed, CirclePlay, CircleStop, Clock, Copy, Edit, Link, Trash2, User } from 'lucide-react'
+import { BoxSelectIcon, Calendar, CircleDot, CircleDotDashed, CirclePlay, CircleStop, Clock, Copy, Edit, Link, MousePointer2, Trash2, User } from 'lucide-react'
 import React from 'react'
 import EditRoleDialog from '../../../manage-users/components/dialog-box/edit-role-dialog'
 import DeleteRoleDialog from '../../../manage-users/components/dialog-box/delete-role-dialog'
@@ -90,28 +90,10 @@ const Schema = () => {
           Status
         </div>
       </TableHead>
-      <TableHead className="md:table-cell">
-        <div className="flex flex-row gap-2 items-center">
-          <Link className='h-4 w-4' />
-          Link
-        </div>
-      </TableHead>
-      <TableHead className="md:table-cell">
-        <div className="flex flex-row gap-2 items-center">
-          <Copy className='h-4 w-4' />
-          Copy
-        </div>
-      </TableHead>
-      <TableHead className="md:table-cell">
-        <div className="flex flex-row gap-2 items-center">
-          <Edit className='h-4 w-4' />
-          Edit
-        </div>
-      </TableHead>
-      <TableHead className="md:table-cell">
-        <div className="flex flex-row gap-2 items-center">
-          <Trash2 className='h-4 w-4' />
-          Delete
+      <TableHead className="md:table-cell ">
+        <div className="flex flex-row items-center justify-start">
+          <MousePointer2 className='mr-2 h-4 w-4' />
+          Actions
         </div>
       </TableHead>
     </TableRow>
@@ -155,20 +137,15 @@ const Row = () => {
           <CircleDot className='h-4 w-4 text-red-500' />
         </Button>
       </TableCell>
-      <TableCell>
+      <TableCell className='flex flex-row gap-2'>
         <Button variant="outline" className='bg-transparent'>
           <Link className='h-4 w-4' />
         </Button>
-      </TableCell>
-      <TableCell>
         <Button variant="outline" className='bg-transparent'>
           <Copy className='h-4 w-4' />
         </Button>
       </TableCell>
-      <TableCell>
-      </TableCell>
-      <TableCell>
-      </TableCell>
+
     </TableRow>
   );
 };

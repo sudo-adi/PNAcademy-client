@@ -33,12 +33,13 @@ export const useAssessment = () => {
   const [assignedAssessments, setAssignedAssessments] = useState<GetAssignedAssessmentsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [createAssessmentRes, setCreateAssessmentRes] = useState<AssessmentResponse | null>()
 
   const handleCreateAssessment = async (data: CreateAssessmentProps) => {
     setLoading(true);
     try {
       const response = await createAssessment(data);
-      setAssessments(response);
+      setCreateAssessmentRes(response)
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -136,6 +137,7 @@ export const useAssessment = () => {
     assignedAssessments,
     error,
     loading,
+    createAssessmentRes,
     handleCreateAssessment,
     handleGetAssessmentById,
     handleGetAssessments,

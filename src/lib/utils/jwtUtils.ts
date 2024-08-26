@@ -23,7 +23,6 @@ export const getNewAccessToken = async (): Promise<string | undefined> => {
 };
 
 
-
 // method to decode jwt token
 export const getDecodedTokenData = (): any => {
   try {

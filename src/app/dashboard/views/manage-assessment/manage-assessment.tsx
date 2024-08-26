@@ -9,6 +9,7 @@ import AllTabContent from './components/tab-content/all-tab-content'
 import OnGoingTabContent from './components/tab-content/ongoing-tab-content'
 import ScheduledTabContent from './components/tab-content/scheduled-tab-content'
 import PreviousTabContent from './components/tab-content/previous-tab-content'
+import CreateAssessmentDialog from './components/dialog-box/create-assessment-dialog'
 
 const ManageAssessments = () => {
   const { activeTabIndex, setActiveTabIndex } = useTabStore()
@@ -16,10 +17,7 @@ const ManageAssessments = () => {
     <div className='flex flex-col gap-2'>
       <Card className='flex flex-row w-full p-2 justify-between items-center border-dashed gap-2'>
         <div className="flex flex-row gap-2">
-          <Button>
-            <PlusSquare className='h-4 w-4 mr-2' />
-            Create
-          </Button>
+          <CreateAssessmentDialog />
           <Button variant="link" className='hover:no-underline border-primary border'>
             <Sparkles className='h-4 w-4 mr-2' />
             Create With Ai

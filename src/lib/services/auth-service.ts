@@ -76,3 +76,5 @@ export const checkAuth = async (setLoading: (loading: boolean) => void, router: 
     router.push('/login');
   }
 };
+
+

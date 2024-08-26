@@ -8,6 +8,11 @@ import { Label } from "@radix-ui/react-label"
 import { Separator } from "@/components/ui/separator"
 import Header from "./components/header"
 
+
+interface CreateScreenProps {
+  id: string;
+}
+
 const Create = () => {
   return (
     <div className="flex max-h-screen flex-row overflow-y-hidden">

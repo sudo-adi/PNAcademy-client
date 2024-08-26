@@ -32,7 +32,6 @@ export const createAssessment = async (data: CreateAssessmentProps): Promise<Ass
   try {
     const response = await axiosInstance.post<AssessmentResponse>('/v1/assessment/create', data);
     if (response.status === 200 || response.status === 201) {
-      console.info('Assessment created successfully', response.data);
       return response.data;
     }
     return null;
