@@ -1,43 +1,32 @@
 "use client"
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import SubHeader from './sub-header'
 import { Input } from '@/components/ui/input'
 import { Label } from '@radix-ui/react-label'
 import { Textarea } from '@/components/ui/textarea'
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import TimePicker from './timePicker'
-import useCreateAssessmentStore from '@/lib/stores/manage-assessment-store/assessment-details'
-import Assessment from '@/app/assessment/page'
-
-const Dropdown: React.FC<{ items: string[]; label: string }> = ({ items, label }) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger className='w-full' asChild>
-      <Button variant="outline">{label}</Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent>
-      {items.map((item) => (
-        <DropdownMenuItem key={item}>
-          <span>{item}</span>
-        </DropdownMenuItem>
-      ))}
-    </DropdownMenuContent>
-  </DropdownMenu>
-)
+import { useAssessment } from '@/app/dashboard/views/manage-assessment/hooks/useAssessment'
+import { Loader2 } from 'lucide-react'
+import { UpdateAssessmentProps } from '@/lib/types/assessmentTypes'
+import { Card, CardContent } from '@/components/ui/card'
+import SideBarStartAtDateTimePicker from './sidebar-start-at'
+import SideBarEndsAtDateTimePicker from './sidebar-end-at'
+import SideBarAssessmentDuration from './sidebar-duration'
+import AssignedGroupsCard from './assign-groups'
 
 interface FormInputProps {
   label: string;
   placeholder: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value?: string;
+  onBlur?: () => void;
 }
 
-const FormInput: React.FC<FormInputProps> = ({ label, placeholder, onChange, value }) => (
+const FormInput: React.FC<FormInputProps> = ({ label, placeholder, onChange, value, onBlur }) => (
   <div>
     <Label className='p-2'>
       {label}
     </Label>
-    <Input placeholder={placeholder} onChange={onChange} value={value} />
+    <Input placeholder={placeholder} onChange={onChange} value={value} onBlur={onBlur} className='text-xs' />
   </div>
 )
 
@@ -46,79 +35,133 @@ interface FormTextareaProps {
   placeholder: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onBlur?: () => void;
 }
 
-const FormTextarea: React.FC<FormTextareaProps> = ({ label, placeholder, onChange, value }) => (
+const FormTextarea: React.FC<FormTextareaProps> = ({ label, placeholder, onChange, value, onBlur }) => (
   <div>
     <Label className='p-2'>
       {label}
     </Label>
-    <Textarea placeholder={placeholder} onChange={onChange} value={value} />
+    <Textarea placeholder={placeholder} onChange={onChange} value={value} onBlur={onBlur} className='text-xs max-h-[10rem]' />
   </div>
 )
 
+interface SideBarProps {
+  assessmentId: string
+}
+const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
+  const [assessmentName, setAssessmentName] = useState('');
+  const [assessmentDescription, setAssessmentDescription] = useState<string>('');
+  const [startsAt, setStartsAt] = useState<string>('');
+  const [endsAt, setEndsAt] = useState<string>('');
+  const [duration, setDuration] = useState<number>(0);
+  const [isActive, setIsActive] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const { assessment, fetchAssessmentById, patchAssessment } = useAssessment();
 
-const SideBar: React.FC = () => {
-  const {
-    assessmentName,
-    assessmentDescription,
-    startAt,
-    endAt,
-    duration,
-    createdBy,
-    setAssessmentName,
-    setAssessmentDescription,
-    setDuration,
-    setEndAt,
-    setStartAt,
-    setIsActive } = useCreateAssessmentStore()
+  useEffect(() => {
+    const fetchAndSetAssessment = async () => {
+      try {
+        setLoading(true);
+        await fetchAssessmentById({ id: assessmentId });
+      } catch (error) {
+        console.error('Failed to fetch assessment data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (assessmentId) {
+      fetchAndSetAssessment();
+    }
+  }, [assessmentId]);
+
+  useEffect(() => {
+    const initializeSideBar = () => {
+      if (assessment) {
+        setAssessmentName(assessment.name);
+        setAssessmentDescription(assessment.description);
+        setStartsAt(assessment.start_at);
+        setEndsAt(assessment.end_at);
+        setDuration(assessment.duration);
+        setIsActive(assessment.is_active);
+      }
+    }
+    initializeSideBar();
+  }, [assessment]);
+
+  const handleBlur = () => {
+    if (assessment) {
+      const data: UpdateAssessmentProps = {
+        id: assessment.id,
+        name: assessmentName,
+        description: assessmentDescription,
+        is_active: isActive,
+        start_at: startsAt,
+        end_at: endsAt,
+        duration: duration,
+      };
+
+      const updateAndSetAssessment = async () => {
+        try {
+          await patchAssessment(data);
+        } catch (err) {
+          console.error('Failed to update assessment:', err);
+        }
+      };
+
+      updateAndSetAssessment();
+    }
+  };
 
   return (
-    <div className="flex h-full flex-col gap-2 border-l">
-      <div className="flex flex-col gap-4 p-4">
-        <FormInput
-          label="Assessment Name"
-          placeholder="Enter assessment name"
-          onChange={(e) => setAssessmentName(e.target.value)}
-          value={assessmentName}
-        />
-        <FormTextarea
-          label="Assessment Description"
-          placeholder="Enter assessment description"
-          onChange={(e) => setAssessmentDescription(e.target.value)}
-          value={assessmentDescription} />
-        <div className="flex flex-col">
-          <Label className='p-2'>
-            Starts at:
-          </Label>
-          <div className="flex items-start flex-row gap-2">
-
+    <div className="flex h-[100vh] flex-col gap-2 border-l w-full overflow-y-scroll">
+      {loading ?
+        (<div className="flex h-screen w-full items-center justify-center">
+          <Loader2 className="w-12 h-12 animate-spin " />
+        </div>)
+        :
+        (<>
+          <div className="flex h-[calc(100vh)] flex-col gap-4 p-4 w-full text-xs overflow-y-scroll">
+            <FormInput
+              label="Assessment Name:"
+              placeholder="Enter assessment name"
+              onChange={(e) => setAssessmentName(e.target.value)}
+              onBlur={handleBlur}
+              value={assessmentName}
+            />
+            <FormTextarea
+              label="Assessment Description:"
+              placeholder="Enter assessment description"
+              onChange={(e) => setAssessmentDescription(e.target.value)}
+              onBlur={handleBlur}
+              value={assessmentDescription}
+            />
+            <div className="flex w-full">
+              <Card className='w-full'>
+                <CardContent className='p-2'>
+                  <SideBarStartAtDateTimePicker
+                    assessment={assessment!}
+                    patchAssessment={patchAssessment}
+                  />
+                  <div className='my-2' />
+                  <SideBarEndsAtDateTimePicker assessment={assessment!}
+                    patchAssessment={patchAssessment}
+                  />
+                  <div className='my-2' />
+                  <SideBarAssessmentDuration />
+                </CardContent>
+              </Card>
+            </div>
+            <AssignedGroupsCard assessmentId={assessment!.id} />
           </div>
-        </div>
-        <div className="flex flex-col">
-          <Label className='p-2'>
-            Ends at:
-          </Label>
-          <div className="flex items-center flex-row gap-2">
-
+          <div className="items-center">
+            <SubHeader />
           </div>
-        </div>
-        <div className="flex flex-col">
-          <Label className='p-2'>
-            Duration :
-          </Label>
-          <div className="flex items-center flex-row gap-2">
-            <Dropdown items={["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]} label="HH" />
-            :
-            <Dropdown items={["5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60"]} label="MM" />
-          </div>
-        </div>
-      </div>
-      <div className="mt-auto">
-        <SubHeader />
-      </div>
-    </div >
-  )
-}
+        </>)}
+    </div>
+  );
+};
 
-export default SideBar
+export default SideBar;

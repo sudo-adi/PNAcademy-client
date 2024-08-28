@@ -27,12 +27,9 @@ export const getNewAccessToken = async (): Promise<string | undefined> => {
 export const getDecodedTokenData = (): any => {
   try {
     const token = getAccessToken();
-    // Split the JWT into its three parts
     const payloadBase64 = token!.split('.')[1];
-    // Decode the base64 payload
     return JSON.parse(atob(payloadBase64));
   } catch (error) {
-    // If an error occurs (e.g., invalid token format), return null
     return null;
   }
 };
@@ -41,19 +38,11 @@ export const getDecodedTokenData = (): any => {
 //  method to check if the token is expired or not
 export const isTokenExpired = (token: string): boolean => {
   try {
-    // Split the JWT into its three parts
     const payloadBase64 = token.split('.')[1];
-
-    // Decode the base64 payload
     const decodedPayload = JSON.parse(atob(payloadBase64));
-
-    // Extract the expiration time (exp) claim
     const { exp } = decodedPayload;
-
-    // Check if the current time is greater than or equal to the expiration time
     return Date.now() >= exp * 1000;
   } catch (error) {
-    // If an error occurs (e.g., invalid token format), consider the token as expired
     return true;
   }
 };

@@ -11,45 +11,47 @@ import {
 import { ApiError } from '@/lib/api/apiError';
 
 export const useOptions = () => {
-  const [createResponse, setCreateResponse] = useState<CreateOptionResponse | null>(null);
-  const [updateResponse, setUpdateResponse] = useState<UpdateOptionResponse | null>(null);
-  const [deleteResponse, setDeleteResponse] = useState<DeleteOptionResponse | null>(null);
-  const [error, setError] = useState<ApiError | null>(null);
+  const [addOptionResponse, setAddOptionResponse] = useState<CreateOptionResponse | null>(null);
+  const [patchOptionResponse, setPatchOptionResponse] = useState<UpdateOptionResponse | null>(null);
+  const [removeOptionByIdResponse, setRemoveOptionByIdResponse] = useState<DeleteOptionResponse | null>(null);
+  const [optionError, setOptionError] = useState<ApiError | null>(null);
+  const [optionLoading, setOptionLoading] = useState<boolean>(false);
 
-  const create = async (data: CreateOptionProps) => {
+  const addOption = async (data: CreateOptionProps) => {
     try {
       const response = await createOption(data);
-      setCreateResponse(response);
+      setAddOptionResponse(response);
     } catch (err) {
-      setError(err as ApiError);
+      setOptionError(err as ApiError);
     }
   };
 
-  const update = async (data: UpdateOptionProps) => {
+  const patchOption = async (data: UpdateOptionProps) => {
     try {
       const response = await updateOption(data);
-      setUpdateResponse(response);
+      setPatchOptionResponse(response);
     } catch (err) {
-      setError(err as ApiError);
+      setOptionError(err as ApiError);
     }
   };
 
-  const deleteById = async (data: DeleteOptionProps) => {
+  const removeOptionById = async (data: DeleteOptionProps) => {
     try {
       const response = await deleteOption(data);
-      setDeleteResponse(response);
+      setRemoveOptionByIdResponse(response);
     } catch (err) {
-      setError(err as ApiError);
+      setOptionError(err as ApiError);
     }
   };
 
   return {
-    createResponse,
-    updateResponse,
-    deleteResponse,
-    error,
-    create,
-    update,
-    deleteById,
+    addOptionResponse,
+    patchOptionResponse,
+    removeOptionByIdResponse,
+    optionError,
+    optionLoading,
+    addOption,
+    patchOption,
+    removeOptionById,
   };
 };

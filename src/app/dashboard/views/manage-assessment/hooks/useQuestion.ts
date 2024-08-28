@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { createQuestion, getQuestionById, updateQuestion, deleteQuestion, addTagToQuestion, removeTagFromQuestion } from '@/lib/services/assessment/question-service';
+import {
+  createQuestion,
+  getQuestionById,
+  updateQuestion,
+  deleteQuestion,
+  addTagToQuestion,
+  removeTagFromQuestion,
+} from '@/lib/services/assessment/question-service';
 import {
   CreateQuestionProps,
   CreateQuestionResponse,
@@ -12,85 +19,106 @@ import {
   AddTagToQuestionProps,
   AddTagToQuestionResponse,
   RemoveTagFromQuestionProps,
-  RemoveTagFromQuestionResponse
+  RemoveTagFromQuestionResponse,
 } from '@/lib/types/questionTypes';
 import { ApiError } from '@/lib/api/apiError';
 
 export const useQuestions = () => {
-  const [question, setQuestion] = useState<GetQuestionResponse | null>(null);
-  const [createResponse, setCreateResponse] = useState<CreateQuestionResponse | null>(null);
-  const [updateResponse, setUpdateResponse] = useState<UpdateQuestionResponse | null>(null);
-  const [deleteResponse, setDeleteResponse] = useState<DeleteQuestionResponse | null>(null);
+  const [addQuestionResponse, setAddQuestionResponse] = useState<CreateQuestionResponse | null>(null);
+  const [patchQuestionResponse, setPatchQuestionResponse] = useState<UpdateQuestionResponse | null>(null);
+  const [removeQuestionResponse, setRemoveQuestionResponse] = useState<DeleteQuestionResponse | null>(null);
   const [addTagResponse, setAddTagResponse] = useState<AddTagToQuestionResponse | null>(null);
   const [removeTagResponse, setRemoveTagResponse] = useState<RemoveTagFromQuestionResponse | null>(null);
-  const [error, setError] = useState<ApiError | null>(null);
+  const [question, setQuestion] = useState<GetQuestionResponse | null>(null);
+  const [questionError, setQuestionError] = useState<ApiError | null>(null);
+  const [questionLoading, setQuestionLoading] = useState<boolean>(false);
 
-  const create = async (data: CreateQuestionProps) => {
+  const addQuestion = async (data: CreateQuestionProps) => {
+    setQuestionLoading(true);
     try {
       const response = await createQuestion(data);
-      setCreateResponse(response);
+      setAddQuestionResponse(response);
     } catch (err) {
-      setError(err as ApiError);
+      setQuestionError(err as ApiError);
+      console.log("error caught")
+    } finally {
+      setQuestionLoading(false);
     }
   };
 
-  const getById = async (data: GetQuestionByIdProps) => {
+  const getQuestion = async (data: GetQuestionByIdProps) => {
+    setQuestionLoading(true);
     try {
       const response = await getQuestionById(data);
       setQuestion(response);
     } catch (err) {
-      setError(err as ApiError);
+      setQuestionError(err as ApiError);
+    } finally {
+      setQuestionLoading(false);
     }
   };
 
-  const update = async (data: UpdateQuestionProps) => {
+  const patchQuestion = async (data: UpdateQuestionProps) => {
+    setQuestionLoading(true);
     try {
       const response = await updateQuestion(data);
-      setUpdateResponse(response);
+      setPatchQuestionResponse(response);
     } catch (err) {
-      setError(err as ApiError);
+      setQuestionError(err as ApiError);
+    } finally {
+      setQuestionLoading(false);
     }
   };
 
-  const deleteById = async (data: DeleteQuestionProps) => {
+  const removeQuestion = async (data: DeleteQuestionProps) => {
+    setQuestionLoading(true);
     try {
       const response = await deleteQuestion(data);
-      setDeleteResponse(response);
+      setRemoveQuestionResponse(response);
     } catch (err) {
-      setError(err as ApiError);
+      setQuestionError(err as ApiError);
+    } finally {
+      setQuestionLoading(false);
     }
   };
 
   const addTag = async (data: AddTagToQuestionProps) => {
+    setQuestionLoading(true);
     try {
       const response = await addTagToQuestion(data);
       setAddTagResponse(response);
     } catch (err) {
-      setError(err as ApiError);
+      setQuestionError(err as ApiError);
+    } finally {
+      setQuestionLoading(false);
     }
   };
 
   const removeTag = async (data: RemoveTagFromQuestionProps) => {
+    setQuestionLoading(true);
     try {
       const response = await removeTagFromQuestion(data);
       setRemoveTagResponse(response);
     } catch (err) {
-      setError(err as ApiError);
+      setQuestionError(err as ApiError);
+    } finally {
+      setQuestionLoading(false);
     }
   };
 
   return {
-    question,
-    createResponse,
-    updateResponse,
-    deleteResponse,
+    addQuestionResponse,
+    patchQuestionResponse,
+    removeQuestionResponse,
     addTagResponse,
     removeTagResponse,
-    error,
-    create,
-    getById,
-    update,
-    deleteById,
+    question,
+    questionError,
+    questionLoading,
+    addQuestion,
+    getQuestion,
+    patchQuestion,
+    removeQuestion,
     addTag,
     removeTag,
   };

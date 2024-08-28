@@ -58,21 +58,6 @@ export interface Assessment {
 }
 
 
-// interface for getAssessment response
-export interface GetAssessmentByIdResponse {
-  id: string;
-  name: string;
-  description: string;
-  is_active: boolean;
-  start_at: string;
-  end_at: string;
-  duration: number;
-  created_by: string;
-  createdAt: string;
-  updatedAt: string;
-  questions: any[];
-}
-
 export interface GetAssessmentsProps {
   page: number;
   pageSize: number;
@@ -103,7 +88,7 @@ export interface UpdateAssessmentProps {
   is_active: boolean;
   start_at: string;
   end_at: string;
-  // duration: number;
+  duration: number;
 }
 
 // interface for updateAssessments response
@@ -245,7 +230,13 @@ export interface GetAssessmentByIdProps {
 }
 
 // interface for getAssessment response
+
 export interface GetAssessmentByIdResponse {
+  message: string;
+  data: GetAssessmentByIdData;
+}
+
+export interface GetAssessmentByIdData {
   id: string;
   name: string;
   description: string;
@@ -256,7 +247,27 @@ export interface GetAssessmentByIdResponse {
   created_by: string;
   createdAt: string;
   updatedAt: string;
-  questions: any[];
+  questions: Question[];
+}
+
+export interface Question {
+  id: string;
+  assessment_id: string;
+  description: string;
+  marks: number;
+  section: number;
+  createdAt: string;
+  updatedAt: string;
+  options: Option[];
+}
+
+export interface Option {
+  id: string;
+  question_id: string;
+  description: string;
+  is_correct: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // interface for createAssessment props

@@ -38,7 +38,6 @@ export const getAssessmentById = async ({ id }: GetAssessmentByIdProps): Promise
       params: { id },
     });
     if (response.status === 200 || response.status === 201) {
-      console.info('Assessment fetched successfully', response.data);
       return response.data;
     }
     return null;

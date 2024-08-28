@@ -46,20 +46,17 @@ const DraftsTabContent = () => {
   const {
     assessment,
     assignedAssessments,
-    error,
-    loading,
+    assessmentLoading,
     createAssessmentRes,
     fetchAssessmentsRes,
     removeAssessmentRes,
     addAssessmentToGroupRes,
     removeAssessmentFromGroupRes,
-    updateAssessmentRes,
     addAssessment,
     fetchAssessmentById,
     fetchAssessments,
     patchAssessment,
     removeAssessment,
-    addAssessmentToGroup,
     fetchAssignedAssessments,
     removeAssessmentFromGroup, } = useAssessment();
   const { activePageIndex, displayNumberOfRows, sortBy, order, setOrder, setSortBy } = useAssessmentsTableStore();
@@ -123,7 +120,7 @@ const DraftsTabContent = () => {
                 selected={selectedAssessments.has(assessment.id)}
                 onSelectAssessment={handleSelectAssessment}
                 refreshAssessments={refreshAssessments}
-                loading={loading}
+                loading={assessmentLoading}
               />
             ))}
           </TableBody>
