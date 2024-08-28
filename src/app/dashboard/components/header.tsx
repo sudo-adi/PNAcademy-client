@@ -5,11 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import useStore from '@/lib/stores/nav-store/store'
+import { clearTokens } from '@/lib/utils/tokenManager'
 import { BellPlus, CircleUser, FileCog, FilePieChart, Files, Home, LayoutDashboard, LineChart, Menu, Package, Package2, PieChart, Settings, ShoppingCart, UserCog, Users } from 'lucide-react'
 import React from 'react'
 
 const Header = () => {
 
+  const handleLogOut = () => {
+    clearTokens();
+    window.location.href = "/login"
+  }
   const Title = [
     <HeaderTitle title={'Home'} icon={<LayoutDashboard />} />,
     <HeaderTitle title={'Manage Assessments'} icon={<FileCog />} />,
@@ -76,20 +81,6 @@ const Header = () => {
             </button>
           </nav>
           <div className="mt-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle>Upgrade to Pro</CardTitle>
-                <CardDescription>
-                  Unlock all features and get unlimited access to our
-                  support team.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button size="sm" className="w-full">
-                  Upgrade
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </SheetContent>
       </Sheet>
@@ -110,9 +101,12 @@ const Header = () => {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem>
+            <button onClick={handleLogOut}>
+              Logout
+            </button>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

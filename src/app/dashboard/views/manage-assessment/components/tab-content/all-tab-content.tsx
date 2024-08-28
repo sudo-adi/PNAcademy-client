@@ -43,6 +43,9 @@ import {
 import useStatusIndicator from '../../hooks/useStatusIndicator'
 import { copyToClipboard } from '@/lib/helpers/copy-to-clipboard'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { toast } from '@/components/ui/use-toast'
+import { ToastAction } from '@/components/ui/toast'
+import { text } from 'stream/consumers'
 
 
 
@@ -224,7 +227,16 @@ interface RowProps {
   refreshAssessments: () => void;
   loading: boolean;
 }
-
+const handleCopyAssessmentID = (assessmentId: string) => {
+  copyToClipboard(assessmentId);
+  toast({
+    title: 'Assessment Id Copied to Clipboard',
+    description: "id: " + assessmentId,
+    action: (
+      <ToastAction altText="success">Ok</ToastAction>
+    ),
+  })
+}
 
 // Single table row
 const Row: React.FC<RowProps> = ({ assessment, selected, onSelectAssessment, refreshAssessments, loading }) => {
@@ -246,8 +258,8 @@ const Row: React.FC<RowProps> = ({ assessment, selected, onSelectAssessment, ref
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <button onClick={() => copyToClipboard(assessment.id)}>
-                    <Badge variant={'outline'} className='text-[8px]'>
+                  <button onClick={() => handleCopyAssessmentID(assessment.id)}>
+                    <Badge variant={'outline'} className='text-[8px] hover:bg-primary hover:text-black transition-all duration-250'>
                       {assessment.id}
                     </Badge>
                   </button>

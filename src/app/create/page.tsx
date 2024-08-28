@@ -8,7 +8,6 @@ import { useState } from "react"
 import { useAssessment } from "../dashboard/views/manage-assessment/hooks/useAssessment"
 import { ArrowLeft, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
-
 const Create = () => {
   const [assessmentId, setAssessmentId] = useState<string>('')
   const { fetchAssessmentById, assessment, assessmentError } = useAssessment();
