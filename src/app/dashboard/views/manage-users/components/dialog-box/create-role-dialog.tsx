@@ -1,14 +1,48 @@
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Input } from '@/components/ui/input'
-import React from 'react'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
-import { Bell, BellPlus, FileCog, FilePen, FilePieChart, PieChart, ScrollText, User, UserCog, Users } from 'lucide-react'
-import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import React, { useState } from 'react';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent } from '@/components/ui/card';
+import { ScrollText, } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { useRoles } from '../../hooks/useRoles';
+import { RolePermissions } from '@/lib/types/roleTypes';
+import { boolean } from 'zod';
 
 const CreateRoleDialog = () => {
+
+  const [roleName, setRoleName] = React.useState<string>('');
+  const [permissions, setPermissions] = React.useState<RolePermissions>({
+    canManageAssessment: false,
+    canManageUser: false,
+    canManageRole: false,
+    canManageNotification: false,
+    canManageLocalGroup: false,
+    canManageReports: false,
+    canAttemptAssessment: false,
+    canViewReport: false,
+    canManageMyAccount: false,
+    canViewNotification: false,
+  });
+  const { addedRoleRes, addRole } = useRoles();
+  const [loading, setLoading] = useState<boolean>(false);
+  const handleCreateRole = async () => {
+
+    try {
+      await addRole({ name: roleName, permissions });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handlePermissionChange = (permission: keyof RolePermissions, value: boolean) => {
+    setPermissions((prevPermissions) => ({
+      ...prevPermissions,
+      [permission]: value,
+    }));
+  }
 
   return (
     <>
@@ -23,200 +57,107 @@ const CreateRoleDialog = () => {
           <DialogHeader>
             <DialogTitle>Create a New Role</DialogTitle>
             <DialogDescription>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Dolor, quia?
+              Assign permissions to the new role.
             </DialogDescription>
             <div className="flex flex-col gap-2 py-4">
               <Label htmlFor='name' className='ml-1'>Role Name</Label>
               <Input
                 id="name"
-                type="email"
+                type="text"
                 placeholder="manager..."
-                // onChange={(e) => setUsername(e.target.value)}
-                required />
+                onChange={(e) => setRoleName(e.target.value)}
+                required
+              />
             </div>
-
-            <Card
-              className="xl:col-span-2 h-[400px] overflow-y-auto bg-transparent" x-chunk="dashboard-01-chunk-4"
-            >
+            <Card className="xl:col-span-2 h-[400px] overflow-y-auto bg-transparent">
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Managing Permissions</TableHead>
-                      <TableHead className="hidden xl:table-column">
-                      </TableHead>
+                      <TableHead>Permission</TableHead>
                       <TableHead className="text-right">Toggle</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <FileCog className='h-4 w-4 mr-2' />
-                          Manage Assessments
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
+                      <TableCell>Manage Assessments</TableCell>
                       <TableCell className="text-right">
-                        <Switch />
+                        <Switch
+                          checked={permissions.canManageAssessment}
+                          onCheckedChange={(value) => handlePermissionChange('canManageAssessment', value)}
+                        />
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <UserCog className='h-4 w-4 mr-2' />
-                          Manage Users
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
+                      <TableCell>Manage Users</TableCell>
                       <TableCell className="text-right">
-                        <Switch />
+                        <Switch
+                          checked={permissions.canManageUser}
+                          onCheckedChange={(value) => handlePermissionChange('canManageUser', value)}
+                        />
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <FileCog className='h-4 w-4 mr-2' />
-                          Manage Roles
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
+                      <TableCell>Manage Roles</TableCell>
                       <TableCell className="text-right">
-                        <Switch />
+                        <Switch
+                          checked={permissions.canManageRole}
+                          onCheckedChange={(value) => handlePermissionChange('canManageRole', value)}
+                        />
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <BellPlus className='h-4 w-4 mr-2' />
-                          Manage Notifications
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
+                      <TableCell>Manage Notifications</TableCell>
                       <TableCell className="text-right">
-                        <Switch />
+                        <Switch
+                          checked={permissions.canManageNotification}
+                          onCheckedChange={(value) => handlePermissionChange('canManageNotification', value)}
+                        />
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <PieChart className='h-4 w-4 mr-2' />
-                          Manage Reports
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
+                      <TableCell>Manage Reports</TableCell>
                       <TableCell className="text-right">
-                        <Switch />
+                        <Switch
+                          checked={permissions.canManageReports}
+                          onCheckedChange={(value) => handlePermissionChange('canManageReports', value)}
+                        />
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <Users className='h-4 w-4 mr-2' />
-                          Manage Groups
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
+                      <TableCell>Attempt Assessments</TableCell>
                       <TableCell className="text-right">
-                        <Switch />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                  <TableHeader className='border-t'>
-                    <TableRow>
-                      <TableHead>Accessability Permissions</TableHead>
-                      <TableHead className="hidden xl:table-column">
-                      </TableHead>
-                      <TableHead className="text-right">Toggle</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <FilePen className='h-4 w-4 mr-2' />
-                          Attempt Assessments
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Switch />
+                        <Switch
+                          checked={permissions.canAttemptAssessment}
+                          onCheckedChange={(value) => handlePermissionChange('canAttemptAssessment', value)}
+                        />
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <FilePieChart className='h-4 w-4 mr-2' />
-                          View Reports
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
+                      <TableCell>View Reports</TableCell>
                       <TableCell className="text-right">
-                        <Switch />
+                        <Switch
+                          checked={permissions.canViewReport}
+                          onCheckedChange={(value) => handlePermissionChange('canViewReport', value)}
+                        />
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <Bell className='h-4 w-4 mr-2' />
-                          View Notifications
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
+                      <TableCell>View Notifications</TableCell>
                       <TableCell className="text-right">
-                        <Switch />
+                        <Switch
+                          checked={permissions.canViewNotification}
+                          onCheckedChange={(value) => handlePermissionChange('canViewNotification', value)}
+                        />
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <User className='h-4 w-4 mr-2' />
-                          Manage Account
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="hidden xl:table-column">
-                      </TableCell>
+                      <TableCell>Manage Account</TableCell>
                       <TableCell className="text-right">
-                        <Switch />
+                        <Switch
+                          checked={permissions.canManageMyAccount}
+                          onCheckedChange={(value) => handlePermissionChange('canManageMyAccount', value)}
+                        />
                       </TableCell>
                     </TableRow>
                   </TableBody>
@@ -232,7 +173,7 @@ const CreateRoleDialog = () => {
                 </DialogClose>
                 <Button variant="outline">Clear Selection</Button>
               </div>
-              <Button variant="default">Create Role</Button>
+              <Button variant="default" onClick={handleCreateRole}>Create Role</Button>
             </div>
           </DialogFooter>
         </DialogContent>
@@ -241,4 +182,4 @@ const CreateRoleDialog = () => {
   )
 }
 
-export default CreateRoleDialog
+export default CreateRoleDialog;

@@ -56,7 +56,6 @@ export const checkAuth = async (setLoading: (loading: boolean) => void, router: 
     clearAccessTokens();
     setLoading(false);
   }
-
   else if (refreshToken) {
     try {
       console.log('refresh token found', refreshToken);
@@ -69,11 +68,9 @@ export const checkAuth = async (setLoading: (loading: boolean) => void, router: 
       clearTokens();
       router.push('/login');
     } finally {
-      setLoading(false);
     }
   } else {
     console.log('no refresh token found hence redirecting to login page');
-    setLoading(false);
     router.push('/login');
   }
 };

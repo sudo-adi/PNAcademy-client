@@ -16,7 +16,6 @@ const LoginPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    // Check if user is logged in on component mount
     isLoggedIn();
   }, []);
 

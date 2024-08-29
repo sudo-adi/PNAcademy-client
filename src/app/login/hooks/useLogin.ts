@@ -23,10 +23,7 @@ export function useLogin() {
     setError(null);
 
     try {
-      // Validate input
       loginSchema.parse({ email, password });
-
-      // Call login function
       const success = await login(email, password);
       if (success) {
         router.push('/dashboard');

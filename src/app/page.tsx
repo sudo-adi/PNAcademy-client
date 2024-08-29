@@ -1,4 +1,5 @@
 "use client"
+import PnaLoader from "@/components/common/custom-loading-animation"
 import { isLoggedIn } from "@/lib/services/auth-service"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
@@ -15,7 +16,7 @@ const Home = () => {
   })
   return (
     <div className="flex items-center justify-center h-screen">
-      <Loader2 size={64} className="animate-spin" />
+      <PnaLoader />
     </div>
   )
 }
