@@ -13,7 +13,7 @@ const PnaLoader = () => {
         </div>
       ) : (
         <div>
-          <Image src="/logo.png" alt="Loading" width={100} height={100} />
+          <Image src="/logo.png" className='animate-pulse' alt="Loading" width={100} height={100} />
         </div>
       )}
     </>

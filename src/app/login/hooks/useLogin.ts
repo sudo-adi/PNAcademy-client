@@ -14,7 +14,7 @@ interface UseLoginProps {
 }
 
 export function useLogin() {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 

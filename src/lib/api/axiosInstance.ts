@@ -23,7 +23,6 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-
 // Response interceptor for refreshing access token
 axiosInstance.interceptors.response.use(
   (response) => response,

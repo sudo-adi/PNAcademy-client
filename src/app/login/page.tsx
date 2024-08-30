@@ -8,15 +8,19 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLogin } from "./hooks/useLogin";
 import DisableRightClick from "./disablerightclick";
+import PnaLoader from "@/components/common/custom-loading-animation";
 
 const LoginPage = () => {
-  const { isLoggedIn, handleLogin, loading, error } = useLogin();
+  const { isLoggedIn, handleLogin, error } = useLogin();
+  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
 
   useEffect(() => {
+    setLoading(true);
     isLoggedIn();
+    setLoading(false);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,8 +35,8 @@ const LoginPage = () => {
     <>
       <DisableRightClick />
       {loading ? (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <p className="text-center">Loading...</p>
+        <div className="flex flex-col items-center justify-center w-full h-screen">
+          <PnaLoader />
         </div>
       ) : (
         <form onSubmit={handleSubmit}>

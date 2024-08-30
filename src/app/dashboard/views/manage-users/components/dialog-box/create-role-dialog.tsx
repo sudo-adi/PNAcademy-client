@@ -5,12 +5,10 @@ import { Input } from '@/components/ui/input';
 import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { ScrollText, } from 'lucide-react';
+import { Bell, BellPlus, FileCog, FilePen, FilePieChart, PieChart, ScrollText, User, UserCog, Users, } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useRoles } from '../../hooks/useRoles';
 import { RolePermissions } from '@/lib/types/roleTypes';
-import { boolean } from 'zod';
-
 const CreateRoleDialog = () => {
 
   const [roleName, setRoleName] = React.useState<string>('');
@@ -74,13 +72,20 @@ const CreateRoleDialog = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Permission</TableHead>
+                      <TableHead>Managing Permissions</TableHead>
+                      <TableHead className="hidden xl:table-column">
+                      </TableHead>
                       <TableHead className="text-right">Toggle</TableHead>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
+                  </TableHeader>                  <TableBody>
                     <TableRow>
-                      <TableCell>Manage Assessments</TableCell>
+                      <div className="flex flex-row items-center justify-start font-medium py-2">
+                        <FileCog className='h-4 w-4 mr-2' />
+                        Manage Assessments
+                      </div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                      </div>
                       <TableCell className="text-right">
                         <Switch
                           checked={permissions.canManageAssessment}
@@ -89,7 +94,13 @@ const CreateRoleDialog = () => {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>Manage Users</TableCell>
+                      <div className="flex flex-row items-center justify-start font-medium py-2">
+                        <UserCog className='h-4 w-4 mr-2' />
+                        Manage Users
+                      </div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                      </div>
                       <TableCell className="text-right">
                         <Switch
                           checked={permissions.canManageUser}
@@ -98,7 +109,13 @@ const CreateRoleDialog = () => {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>Manage Roles</TableCell>
+                      <div className="flex flex-row items-center justify-start font-medium py-2">
+                        <FileCog className='h-4 w-4 mr-2' />
+                        Manage Roles
+                      </div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                      </div>
                       <TableCell className="text-right">
                         <Switch
                           checked={permissions.canManageRole}
@@ -107,7 +124,13 @@ const CreateRoleDialog = () => {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>Manage Notifications</TableCell>
+                      <div className="flex flex-row items-center justify-start font-medium py-2">
+                        <BellPlus className='h-4 w-4 mr-2' />
+                        Manage Notifications
+                      </div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                      </div>
                       <TableCell className="text-right">
                         <Switch
                           checked={permissions.canManageNotification}
@@ -116,7 +139,13 @@ const CreateRoleDialog = () => {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>Manage Reports</TableCell>
+                      <div className="flex flex-row items-center justify-start font-medium py-2">
+                        <PieChart className='h-4 w-4 mr-2' />
+                        Manage Reports
+                      </div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                      </div>
                       <TableCell className="text-right">
                         <Switch
                           checked={permissions.canManageReports}
@@ -125,7 +154,38 @@ const CreateRoleDialog = () => {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>Attempt Assessments</TableCell>
+                      <div className="flex flex-row items-center justify-start font-medium py-2">
+                        <Users className='h-4 w-4 mr-2' />
+                        Manage Groups
+                      </div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                      </div>
+                      <TableCell className="text-right">
+                        <Switch
+                          checked={permissions.canManageLocalGroup}
+                          onCheckedChange={(value) => handlePermissionChange('canManageLocalGroup', value)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                  <TableHeader className='border-t'>
+                    <TableRow>
+                      <TableHead>Accessability Permissions</TableHead>
+                      <TableHead className="hidden xl:table-column">
+                      </TableHead>
+                      <TableHead className="text-right">Toggle</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <div className="flex flex-row items-center justify-start font-medium py-2">
+                        <FilePen className='h-4 w-4 mr-2' />
+                        Attempt Assessments
+                      </div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                      </div>
                       <TableCell className="text-right">
                         <Switch
                           checked={permissions.canAttemptAssessment}
@@ -134,7 +194,13 @@ const CreateRoleDialog = () => {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>View Reports</TableCell>
+                      <div className="flex flex-row items-center justify-start font-medium py-2">
+                        <FilePieChart className='h-4 w-4 mr-2' />
+                        View Reports
+                      </div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                      </div>
                       <TableCell className="text-right">
                         <Switch
                           checked={permissions.canViewReport}
@@ -143,7 +209,13 @@ const CreateRoleDialog = () => {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>View Notifications</TableCell>
+                      <div className="flex flex-row items-center justify-start font-medium py-2">
+                        <Bell className='h-4 w-4 mr-2' />
+                        View Notifications
+                      </div>
+                      <div className="hidden text-sm text-muted-foreground md:inline">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                      </div>
                       <TableCell className="text-right">
                         <Switch
                           checked={permissions.canViewNotification}
@@ -152,7 +224,15 @@ const CreateRoleDialog = () => {
                       </TableCell>
                     </TableRow>
                     <TableRow>
-                      <TableCell>Manage Account</TableCell>
+                      <TableCell>
+                        <div className="flex flex-row items-center justify-start font-medium py-2">
+                          <User className='h-4 w-4 mr-2' />
+                          Manage Account
+                        </div>
+                        <div className="hidden text-sm text-muted-foreground md:inline">
+                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
+                        </div>
+                      </TableCell>
                       <TableCell className="text-right">
                         <Switch
                           checked={permissions.canManageMyAccount}
@@ -177,7 +257,7 @@ const CreateRoleDialog = () => {
             </div>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog >
     </>
   )
 }

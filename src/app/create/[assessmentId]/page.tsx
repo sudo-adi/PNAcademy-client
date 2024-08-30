@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { CircleX, Cross, Plus, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@radix-ui/react-label";
@@ -13,18 +13,17 @@ import { useAssessment } from "@/app/dashboard/views/manage-assessment/hooks/use
 import { useQuestions } from "@/app/dashboard/views/manage-assessment/hooks/useQuestion";
 import { GetAssessmentByIdResponse, Question } from "@/lib/types/assessmentTypes";
 import useAssessmentStore from "@/lib/stores/manage-assessment-store/assessment-store";
+import { Separator } from "@/components/ui/separator";
 
 export default function Create({ params }: { params: { assessmentId: string } }) {
   const {
     fetchAssessmentById,
     assessment,
-    assessmentLoading,
   } = useAssessment();
 
   const {
     addQuestion,
     addQuestionResponse,
-    questionLoading,
   } = useQuestions();
 
   const [sectionsList, setSectionsList] = useState<number[]>([]);
@@ -100,48 +99,18 @@ export default function Create({ params }: { params: { assessmentId: string } })
     <div className="flex max-h-screen flex-row overflow-y-hidden">
       <div className="flex flex-col w-full">
         <Header assessmentId={assessmentId} />
-        <main className="flex flex-1 flex-col lg:gap-2 p-6 overflow-y-scroll scrollbar-none">
-          <div className="flex items-center">
-            <h1 className="text-lg font-semibold md:text-2xl">Assessment Name</h1>
-          </div>
-          <Card className="flex flex-row w-full gap-2 p-2 justify-between bg-transparent border-none">
-            <div className="flex gap-2">
-              {sectionsList.map((section, index) => (
-                <button className="mounse-pointer" key={index}>
-                  {/* <Badge
-                    variant={currentSection == section ? "secondary" : "outline"}
-                    key={index}
-                  >
-                    {section}
-                  </Badge> */}
-                </button>
-              ))}
-              <button onClick={handleCreateSection} onClickCapture={handleCreateSection}>
-                <Badge variant="outline" className="cursor-pointer hover:bg-secondary">
-                  +
-                </Badge>
-              </button>
-            </div>
-          </Card>
-          <Card className="flex flex-row w-full p-2 justify-between border-dashed bg-transparent">
-            <div className="flex gap-2">
-              {questionsList.map((question, index) => (
-                <Button key={question.id}>
-                  {index + 1}
-                </Button>
-              ))}
-              <Button variant={"outline"} onClick={handleInitializeSection}>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex gap-2">
-              {/* Add any additional components or content here */}
-            </div>
-          </Card>
-          <div className="flex flex-col gap-2 w-full max-h-[calc(100vh-16rem)]">
-            <Card>
-              <div className="flex flex-col w-full p-1">
-                <Label className="p-2">Question</Label>
+        <main className="flex flex-1 flex-col lg:gap-2 p-4 overflow-y-scroll scrollbar-none">
+          <div className="flex flex-col gap-2 w-full max-h-[calc(100vh-6rem)]">
+            <Card className="border-none">
+              <div className="flex flex-col gap-2 w-full p-1">
+                <div className="flex flex-row justify-between items-center">
+                  <Badge className="text-[10px] cursor-default">
+                    Question 1
+                  </Badge>
+                  <Badge className="text-[10px] cursor-pointer" variant={"destructive"}>
+                    remove
+                  </Badge>
+                </div>
                 <Textarea
                   className="w-full max-h-[10rem]"
                   value={currentQuestion?.description}
@@ -149,22 +118,143 @@ export default function Create({ params }: { params: { assessmentId: string } })
                 />
               </div>
             </Card>
-            <Card className="flex flex-col items-center justify-start border border-dashed rounded-lg h-[26rem] min-h-[12rem] max-h-[60rem] w-full p-1 gap-4 overflow-y-auto scrollbar-none">
-              <div className="flex flex-col w-full max-h-[8rem]">
-                <Label className="p-2">Option 1</Label>
+            <Card className="flex flex-col  items-center justify-start gap-2 border border-none rounded-lg h-[30rem] min-h-[12rem] max-h-[60rem] w-full p-1 overflow-y-auto scrollbar-none">
+              <div className="flex flex-col gap-2 w-full max-h-[8rem]">
+                <div className="flex flex-row justify-between items-center">
+                  <Badge className="text-[10px]">
+                    Option 1
+                  </Badge>
+                  <CircleX className="h-4 w-4 mr-2 text-red-500" />
+                </div>
                 <Textarea
-                  className="w-full"
+                  className="w-full border-dashed focus:outline-none focus:ring-0 focus:ring-offset-0"
                   placeholder="Enter Option 1..."
                 />
               </div>
-              <Button>
-                <Plus className="h-4 w-4" />
+              <button className="text-[10px] border p-3 text-xs rounded-[8px] hover:bg-secondary flex items-center justify-center">
+                <Plus className="h-3 w-3 mr-2" />
                 Add Option
-              </Button>
+              </button>
             </Card>
-            <Card className="flex flex-row items-center justify-center min-h-[7rem] max-h-[15rem]">
-              <Badge>Python</Badge>
-            </Card>
+            <Separator />
+            <div className="flex flex-row w-full gap-2">
+              <Card className="flex flex-col w-1/4 border border-dashed h-[5rem]">
+                <div className="flex flex-wrap overflow-scroll scrollbar-none">
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                  <Badge className="text-[8px] cursor-default m-1">
+                    Python
+                    <button>
+                      <X className="h-3 w-3 ml-1 rounded-full" />
+                    </button>
+                  </Badge>
+                </div>
+              </Card>
+              <div className="flex flex-col w-3/4 justify-center gap-1 items-center">
+                <Card className="flex flex-row items-center w-full p-2 gap-2 border border-dashed bg-transparent">
+                  <div className="flex rounded-full h-6 w-6 p-2 border items-center justify-center">
+                    <button className="text-[8px]">
+                      1
+                    </button>
+                  </div>
+                  <div className="flex rounded-full h-6 w-6 p-2 border items-center justify-center">
+                    <button className="text-[8px]">
+                      +
+                    </button>
+                  </div>
+                </Card>
+                <Card className="flex flex-row w-full p-2 gap-2 border-dashed bg-transparent">
+                  <button className="border w-6 h-6 text-xs rounded-[8px] hover:bg-secondary bg-primary">
+                    1
+                  </button>
+                  <button className="border w-6 h-6 text-xs rounded-[8px] hover:bg-secondary flex items-center justify-center">
+                    <Plus className="h-3 w-3" />
+                  </button>
+                </Card>
+              </div>
+            </div>
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-row gap-2">
                 Powered by

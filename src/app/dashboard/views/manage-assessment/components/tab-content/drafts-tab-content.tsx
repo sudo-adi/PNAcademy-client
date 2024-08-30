@@ -102,30 +102,35 @@ const DraftsTabContent = () => {
   };
   return (
     <>
-      <Card className='my-2 max-h-[calc(100vh-18rem)] w-full flex flex-col scrollbar-thin'>
-        <Table>
-          <TableHeader >
-            <Schema
-              toggleSorting={toggleSorting}
-              sortBy={sortBy}
-              order={order}
-              onSelectAll={handleSelectAll}
-              allSelected={allSelected} />
-          </TableHeader>
-          <TableBody>
-            {draftedAssessments.map(assessment => (
-              <Row
-                key={assessment.id}
-                assessment={assessment}
-                selected={selectedAssessments.has(assessment.id)}
-                onSelectAssessment={handleSelectAssessment}
-                refreshAssessments={refreshAssessments}
-                loading={assessmentLoading}
-              />
-            ))}
-          </TableBody>
-        </Table>
-      </Card >
+      <Card className='my-2 h-[calc(100vh-18rem)] w-full flex flex-col'>
+        <div className="relative flex-grow overflow-hidden">
+          <div className="absolute inset-0 overflow-auto">
+            <table className="w-full">
+              <thead className="sticky top-0 bg-background z-10">
+                <Schema
+                  toggleSorting={toggleSorting}
+                  sortBy={sortBy}
+                  order={order}
+                  onSelectAll={handleSelectAll}
+                  allSelected={allSelected}
+                />
+              </thead>
+              <tbody>
+                {draftedAssessments.map(assessment => (
+                  <Row
+                    key={assessment.id}
+                    assessment={assessment}
+                    selected={selectedAssessments.has(assessment.id)}
+                    onSelectAssessment={handleSelectAssessment}
+                    refreshAssessments={refreshAssessments}
+                    loading={assessmentLoading}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </Card>
       <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
         <Label className='text-[10px]'>
           Showing {draftedAssessments.length} Assessments
@@ -146,7 +151,7 @@ interface SchemaProps {
 const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelected, onSelectAll, }) => {
 
   return (
-    <TableRow>
+    <TableRow className='bg-'>
       <TableHead className="hidden sm:table-cell">
         <div className="flex w-4 items-center gap-2">
           <Checkbox
@@ -167,15 +172,15 @@ const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelect
         </div>
       </TableHead>
       <TableHead onClick={() => toggleSorting('createdAt')}>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
+        <div className="flex gap-2 text-[10px] w-[100px] items-center cursor-pointer">
           <Timer className="h-4 w-4" />
-          CretatedAt {sortBy === 'createdAt' && (order === 'ASC' ? '↓' : '↑')}
+          Cretated at {sortBy === 'createdAt' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>
       <TableHead onClick={() => toggleSorting('updatedAt')}>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
+        <div className="flex gap-2 text-[10px] w-[100px] items-center cursor-pointer">
           <Timer className="h-4 w-4" />
-          Last Drafted at {sortBy === 'updatedAt' && (order === 'ASC' ? '↓' : '↑')}
+          Last Drafted {sortBy === 'updatedAt' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>
       <TableHead className="md:table-cell ">

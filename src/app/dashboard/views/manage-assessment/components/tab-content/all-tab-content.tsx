@@ -109,44 +109,37 @@ const AllTabContent = () => {
   };
   return (
     <>
-      <Card className='my-2 max-h-[calc(100vh-18rem)] w-full flex flex-col scrollbar-thin'>
-        <Table>
-          <TableHeader >
-            <Schema
-              toggleSorting={toggleSorting}
-              sortBy={sortBy}
-              order={order}
-              onSelectAll={handleSelectAll}
-              allSelected={allSelected} />
-          </TableHeader>
-          <TableBody>
-            {allAssessments.map(assessment => (
-              <Row
-                key={assessment.id}
-                assessment={assessment}
-                selected={selectedAssessments.has(assessment.id)}
-                onSelectAssessment={handleSelectAssessment}
-                refreshAssessments={refreshAssessments}
-                loading={assessmentLoading}
+      <Card className='my-2 h-[calc(100vh-18rem)] w-full flex flex-col'>
+        <div className="overflow-auto flex-grow">
+          <Table>
+            <TableHeader className="sticky top-0 bg-background z-10">
+              <Schema
+                toggleSorting={toggleSorting}
+                sortBy={sortBy}
+                order={order}
+                onSelectAll={handleSelectAll}
+                allSelected={allSelected}
               />
-            ))}
-          </TableBody>
-        </Table>
-      </Card >
+            </TableHeader>
+            <TableBody>
+              {allAssessments.map(assessment => (
+                <Row
+                  key={assessment.id}
+                  assessment={assessment}
+                  selected={selectedAssessments.has(assessment.id)}
+                  onSelectAssessment={handleSelectAssessment}
+                  refreshAssessments={refreshAssessments}
+                  loading={assessmentLoading}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </Card>
       <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
         <Label className='text-[10px]'>
           Showing <strong>{allAssessments.length}</strong>{" "}Assessments
         </Label>
-        {/* <div className="flex gap-2">
-          <Button variant="outline">
-            Previous
-          </Button>
-          <Button onClick={
-            () => setActivePageIndex(activePageIndex + 1)
-          }>
-            Next
-          </Button>
-        </div> */}
       </div>
     </>
   )
@@ -330,7 +323,6 @@ const Row: React.FC<RowProps> = ({ assessment, selected, onSelectAssessment, ref
           </DropdownMenu>
         </div>
       </TableCell>
-
     </TableRow >
   );
 };
