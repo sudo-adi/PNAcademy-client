@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import useTabStore from '@/lib/stores/manage-assessment-store/tab-store'
-import { Archive, PlusSquare, Search, Sparkles } from 'lucide-react'
+import { Archive, Search, Sparkles } from 'lucide-react'
 import React from 'react'
 import AllTabContent from './components/tab-content/all-tab-content'
 import OnGoingTabContent from './components/tab-content/ongoing-tab-content'
@@ -13,7 +13,7 @@ import CreateAssessmentDialog from './components/dialog-box/create-assessment-di
 import DraftsTabContent from './components/tab-content/drafts-tab-content'
 
 const ManageAssessments = () => {
-  const { activeTabIndex, setActiveTabIndex } = useTabStore()
+  const { activeTabIndex, setActiveTabIndex } = useTabStore();
   return (
     <div className='flex flex-col gap-2'>
       <Card className='flex flex-row w-full p-2 justify-between items-center border-dashed gap-2'>

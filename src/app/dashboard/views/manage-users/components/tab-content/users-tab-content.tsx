@@ -89,29 +89,33 @@ const UsersTabContent: React.FC = () => {
       </Card>
 
       <Card className="my-2 h-[calc(100vh-18rem)] flex flex-col">
-        <Table>
-          <TableHeader>
-            <Schema
-              toggleSorting={toggleSorting}
-              sortBy={sortBy}
-              order={order}
-              allSelected={allSelected}
-              onSelectAll={handleSelectAll}
-            />
-          </TableHeader>
-          <TableBody>
-            {userList.map((user: SingleUser) => (
-              <Row
-                key={user.id}
-                user={user}
-                selected={selectedUsers.has(user.id)}
-                onSelectUser={handleSelectUser}
-                refreshUsers={refreshUsers}
-                loading={loading}
-              />
-            ))}
-          </TableBody>
-        </Table>
+        <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
+          <div className="absolute inset-0 overflow-auto">
+            <table className="w-full">
+              <thead className="sticky bg-background top-0 z-10">
+                <Schema
+                  toggleSorting={toggleSorting}
+                  sortBy={sortBy}
+                  order={order}
+                  allSelected={allSelected}
+                  onSelectAll={handleSelectAll}
+                />
+              </thead>
+              <tbody>
+                {userList.map((user: SingleUser) => (
+                  <Row
+                    key={user.id}
+                    user={user}
+                    selected={selectedUsers.has(user.id)}
+                    onSelectUser={handleSelectUser}
+                    refreshUsers={refreshUsers}
+                    loading={loading}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </Card>
 
       <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
@@ -137,53 +141,52 @@ interface SchemaProps {
 
 const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelected, onSelectAll, }) => (
   <TableRow>
-    <TableHead className="w-[100px] sm:table-cell">
-      <div className="flex w-28 items-center gap-2">
+    <TableHead className="sm:table-cell">
+      <div className="flex items-center gap-2">
         <Checkbox
           checked={allSelected}
           onCheckedChange={(checked) => onSelectAll(checked as boolean)} />
-        Select All
       </div>
     </TableHead>
     <TableHead onClick={() => toggleSorting('first_name')}>
-      <div className="flex gap-2 items-center cursor-pointer">
-        <User className="h-4 w-4" />
+      <div className="flex gap-2 items-center cursor-pointer text-[10px] w-22">
+        <User className="h-3 w-3" />
         First Name {sortBy === 'first_name' && (order === 'ASC' ? '↓' : '↑')}
       </div>
     </TableHead>
     <TableHead onClick={() => toggleSorting('last_name')}>
-      <div className="flex gap-2 items-center cursor-pointer">
-        <User className="h-4 w-4" />
+      <div className="flex gap-2 items-center cursor-pointer text-[10px] w-22">
+        <User className="h-3 w-3" />
         Last Name {sortBy === 'last_name' && (order === 'ASC' ? '↓' : '↑')}
       </div>
     </TableHead>
     <TableHead onClick={() => toggleSorting('email')}>
-      <div className="flex gap-2 items-center cursor-pointer">
-        <Mail className="h-4 w-4" />
+      <div className="flex gap-2 items-center cursor-pointer text-[10px]">
+        <Mail className="h-3 w-3" />
         Email {sortBy === 'email' && (order === 'ASC' ? '↓' : '↑')}
       </div>
     </TableHead>
     <TableHead className="hidden md:table-cell">
-      <div className="flex gap-2 items-center cursor-default">
-        <Phone className='h-4 w-4' />
+      <div className="flex gap-2 items-center cursor-default text-[10px]">
+        <Phone className='h-3 w-3' />
         Phone Number
       </div>
     </TableHead>
     <TableHead onClick={() => toggleSorting('createdAt')} className="hidden md:table-cell">
-      <div className="flex gap-2 items-center cursor-pointer">
-        <Calendar className="h-4 w-4" />
+      <div className="flex gap-2 items-center cursor-pointer text-[10px]">
+        <Calendar className="h-3 w-3" />
         Created At {sortBy === 'createdAt' && (order === 'ASC' ? '↓' : '↑')}
       </div>
     </TableHead>
     <TableHead onClick={() => toggleSorting('updatedAt')} className="hidden md:table-cell">
-      <div className="flex gap-2 items-center cursor-pointer">
-        <Clock className="h-4 w-4" />
+      <div className="flex gap-2 items-center cursor-pointer text-[10px]">
+        <Clock className="h-3 w-3" />
         Updated At {sortBy === 'updatedAt' && (order === 'ASC' ? '↓' : '↑')}
       </div>
     </TableHead>
     <TableHead>
-      <div className="flex items-center cursor-default">
-        <MousePointer2 className='h-4 w-4 mr-2' />
+      <div className="flex items-center cursor-default text-[10px]">
+        <MousePointer2 className='h-3 w-3 mr-2' />
         Actions
       </div>
     </TableHead>
@@ -198,9 +201,6 @@ interface RowProps {
   loading: boolean;
 }
 
-
-
-
 const Row: React.FC<RowProps> = ({ user, selected, onSelectUser, refreshUsers, loading }) => {
   return (
     <TableRow>
@@ -210,21 +210,21 @@ const Row: React.FC<RowProps> = ({ user, selected, onSelectUser, refreshUsers, l
           onCheckedChange={(checked) => onSelectUser(user.id, checked as boolean)}
         />
       </TableCell>
-      <TableCell className="font-medium text-left">
-        {loading ? (<Skeleton className="w-32 h-4" />) : user.first_name}
+      <TableCell className="font-medium text-left text-xs">
+        {loading ? (<Skeleton className="w-10 h-4" />) : user.first_name}
       </TableCell>
-      <TableCell className="font-medium text-left">
-        {loading ? (<Skeleton className="w-32 h-4" />) : user.last_name}
+      <TableCell className="font-medium text-left text-xs">
+        {loading ? (<Skeleton className="w-8 h-4" />) : user.last_name}
       </TableCell>
       <TableCell>
         {loading ? (
-          <Skeleton className="w-32 h-4" />
+          <Skeleton className="w-10 h-4" />
         ) : (
           <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button onClick={() => copyToClipboard(user.email)}>
-                  <Badge variant="outline" className="hover:bg-secondary">
+                  <Badge variant="outline" className="hover:bg-secondary text-[10px]">
                     {user.email}
                   </Badge>
                 </button>
@@ -238,13 +238,13 @@ const Row: React.FC<RowProps> = ({ user, selected, onSelectUser, refreshUsers, l
       </TableCell>
       <TableCell>
         {loading ? (
-          <Skeleton className="w-32 h-4" />
+          <Skeleton className="w-10 h-4" />
         ) : (
           <TooltipProvider delayDuration={100}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button onClick={() => copyToClipboard(user.phone)}>
-                  <Badge variant="outline" className="hover:bg-secondary">
+                  <Badge variant="outline" className="hover:bg-secondary text-[10px]">
                     {user.phone}
                   </Badge>
                 </button>
@@ -257,10 +257,16 @@ const Row: React.FC<RowProps> = ({ user, selected, onSelectUser, refreshUsers, l
         )}
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(user.createdAt)}
+        {loading ? <Skeleton className="w-10 h-4" /> :
+          <Badge variant={'outline'} className='text-[10px] bg-transparent cursor-default'>
+            {formatDateInIST(user.createdAt)}
+          </Badge>}
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(user.updatedAt)}
+        {loading ? <Skeleton className="w-10 h-4" /> :
+          <Badge variant={'outline'} className='text-[10px] bg-transparent cursor-default'>
+            {formatDateInIST(user.updatedAt)}
+          </Badge>}
       </TableCell>
       <TableCell>
         <div className="flex gap-4">

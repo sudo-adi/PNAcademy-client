@@ -14,6 +14,7 @@ import { useRoles } from '../../hooks/useRoles';
 import useRolesTableStore from '@/lib/stores/manage-users-store/roles-table-store';
 import { Role } from '@/lib/types/roleTypes';
 import { formatDateInIST } from '../../../../../../lib/helpers/time-converter';
+import { Badge } from '@/components/ui/badge';
 
 
 // global props
@@ -26,7 +27,6 @@ const RolesTabContent = () => {
   const { activePageIndex, displayNumberOfRows, sortBy, order, setOrder, setSortBy } = useRolesTableStore();
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set());
   const allSelected = roles.length > 0 && selectedRoles.size === roles.length;
-
 
   useEffect(() => {
     fetchRoles({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy, order });
@@ -88,27 +88,31 @@ const RolesTabContent = () => {
         </div>
       </Card>
       <Card className='my-2 h-[calc(100vh-18rem)] flex flex-col'>
-        <Table>
-          <TableHeader >
-            <Schema
-              toggleSorting={toggleSorting}
-              sortBy={sortBy}
-              order={order}
-              allSelected={allSelected}
-              onSelectAll={handleSelectAll} />
-          </TableHeader>
-          <TableBody>
-            {roles.map((role: Role) => (
-              <Row
-                key={role.id}
-                role={role}
-                selected={selectedRoles.has(role.id)}
-                onSelectRole={handleSelectRole}
-                refreshRoles={refreshRoles}
-                loading={loading}
-              />))}
-          </TableBody>
-        </Table>
+        <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
+          <div className="absolute inset-0 overflow-auto">
+            <table className="w-full">
+              <thead className="sticky bg-background top-0 z-10">
+                <Schema
+                  toggleSorting={toggleSorting}
+                  sortBy={sortBy}
+                  order={order}
+                  allSelected={allSelected}
+                  onSelectAll={handleSelectAll} />
+              </thead>
+              <tbody>
+                {roles.map((role: Role) => (
+                  <Row
+                    key={role.id}
+                    role={role}
+                    selected={selectedRoles.has(role.id)}
+                    onSelectRole={handleSelectRole}
+                    refreshRoles={refreshRoles}
+                    loading={loading}
+                  />))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </Card >
       <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
         <Label className='text-xs'>
@@ -155,35 +159,34 @@ interface SchemaProps {
 const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelected, onSelectAll }) => {
   return (
     <TableRow>
-      <TableHead className="hidden w-[100px] sm:table-cell">
-        <div className="flex w-28 items-center gap-2 flex-row cursor-pointer">
+      <TableHead className="hidden sm:table-cell">
+        <div className="flex items-center gap-2 flex-row cursor-pointer">
           <Checkbox
             checked={allSelected}
             onCheckedChange={(checked) => onSelectAll(checked as boolean)} />
-          Select All
         </div>
       </TableHead>
       <TableHead onClick={() => toggleSorting({ field: "name" })}>
-        <div className="flex flex-row gap-2 items-center cursor-pointer" >
-          <ScrollText className='h-4 w-4' />
+        <div className="flex flex-row gap-2 items-center cursor-pointer text-[10px]">
+          <ScrollText className='h-3 w-3' />
           Role Name {sortBy === 'name' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>
       <TableHead className="hidden md:table-cell" onClick={() => toggleSorting({ field: "createdAt" })}>
-        <div className="flex flex-row gap-2 items-center cursor-pointer">
-          <Calendar className='h-4 w-4' />
+        <div className="flex flex-row gap-2 items-center cursor-pointer text-[10px]">
+          <Calendar className='h-3 w-3' />
           Created At {sortBy === 'createdAt' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>
       <TableHead className="hidden md:table-cell" onClick={() => toggleSorting({ field: "updatedAt" })}>
-        <div className="flex flex-row gap-2 items-center cursor-pointer">
-          <Clock className='h-4 w-4' />
+        <div className="flex flex-row gap-2 items-center cursor-pointer text-[10px]">
+          <Clock className='h-3 w-3' />
           Updated At {sortBy === 'updatedAt' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>
       <TableHead className="md:table-cell">
-        <div className="flex flex-row gap-2 items-center">
-          <MousePointer2 className='h-4 w-4' />
+        <div className="flex flex-row gap-2 items-center text-[10px]">
+          <MousePointer2 className='h-3 w-3' />
           Actions
         </div>
       </TableHead>
@@ -211,7 +214,7 @@ const Row: React.FC<RowProps> = ({ role, selected, loading, onSelectRole, refres
       </TableCell>
       <TableCell className="font-medium text-left w-[500px]">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-row gap-2 items-center text-xs">
             {role.name}
           </div>
           <div className='hidden md:flex gap-2 md:flex-wrap'>
@@ -229,10 +232,16 @@ const Row: React.FC<RowProps> = ({ role, selected, loading, onSelectRole, refres
         </div>
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(role.createdAt)}
+        {loading ? <Skeleton className="w-32 h-4" /> :
+          <Badge variant={'outline'} className='text-[10px] bg-transparent cursor-default'>
+            {formatDateInIST(role.createdAt)}
+          </Badge>}
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(role.updatedAt)}
+        {loading ? <Skeleton className="w-32 h-4" /> :
+          <Badge variant={'outline'} className='text-[10px] bg-transparent cursor-default'>
+            {formatDateInIST(role.updatedAt)}
+          </Badge>}
       </TableCell>
       <TableCell>
         <div className="flex gap-4">

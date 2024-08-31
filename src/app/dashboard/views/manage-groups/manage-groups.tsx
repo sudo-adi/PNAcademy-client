@@ -94,29 +94,34 @@ const ManageGroups = () => {
         </div>
       </Card>
       <Card className=" h-[calc(100vh-15rem)] flex flex-col">
-        <Table>
-          <TableHeader>
-            <Schema
-              toggleSorting={toggleSorting}
-              sortBy={sortBy}
-              order={order}
-              allSelected={allSelected}
-              onSelectAll={handleSelectAll}
-            />
-          </TableHeader>
-          <TableBody>
-            {groupList.map((group: Group) => (
-              <Row
-                key={group.id}
-                group={group}
-                selected={selectedGroups.has(group.id)}
-                onSelectGroup={handleSelectGroup}
-                refreshGroups={refreshGroups}
-                loading={loading}
-              />
-            ))}
-          </TableBody>
-        </Table>
+
+        <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
+          <div className="absolute inset-0 overflow-auto">
+            <table className="w-full">
+              <thead className="sticky bg-background top-0 z-10">
+                <Schema
+                  toggleSorting={toggleSorting}
+                  sortBy={sortBy}
+                  order={order}
+                  allSelected={allSelected}
+                  onSelectAll={handleSelectAll}
+                />
+              </thead>
+              <tbody>
+                {groupList.map((group: Group) => (
+                  <Row
+                    key={group.id}
+                    group={group}
+                    selected={selectedGroups.has(group.id)}
+                    onSelectGroup={handleSelectGroup}
+                    refreshGroups={refreshGroups}
+                    loading={loading}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </Card>
 
       <div className="flex h-[1rem] items-center justify-between gap-2">
@@ -145,35 +150,34 @@ interface SchemaProps {
 
 const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelected, onSelectAll, }) => (
   <TableRow>
-    <TableHead className="w-[100px] sm:table-cell">
-      <div className="flex w-28 items-center gap-2">
+    <TableHead className="sm:table-cell">
+      <div className="flex items-center gap-2">
         <Checkbox
           checked={allSelected}
           onCheckedChange={(checked) => onSelectAll(checked as boolean)} />
-        Select All
       </div>
     </TableHead>
     <TableHead onClick={() => toggleSorting('name')}>
-      <div className="flex gap-2 items-center cursor-pointer">
-        <Users className="h-4 w-4" />
+      <div className="flex gap-2 items-center cursor-pointer text-[10px] w-36">
+        <Users className="h-3 w-3" />
         Name {sortBy === 'name' && (order === 'ASC' ? '↓' : '↑')}
       </div>
     </TableHead>
     <TableHead onClick={() => toggleSorting('createdAt')} className="hidden md:table-cell">
-      <div className="flex gap-2 items-center cursor-pointer">
-        <Calendar className="h-4 w-4" />
+      <div className="flex gap-2 items-center cursor-pointer text-[10px]">
+        <Calendar className="h-3 w-3" />
         Created At {sortBy === 'createdAt' && (order === 'ASC' ? '↓' : '↑')}
       </div>
     </TableHead>
     <TableHead onClick={() => toggleSorting('updatedAt')} className="hidden md:table-cell">
-      <div className="flex gap-2 items-center cursor-pointer">
-        <Clock className="h-4 w-4" />
+      <div className="flex gap-2 items-center cursor-pointer text-[10px]">
+        <Clock className="h-3 w-3" />
         Updated At {sortBy === 'updatedAt' && (order === 'ASC' ? '↓' : '↑')}
       </div>
     </TableHead>
     <TableHead>
-      <div className="flex items-center cursor-default">
-        <MousePointer2 className='h-4 w-4 mr-2' />
+      <div className="flex items-center cursor-default text-[10px]">
+        <MousePointer2 className='h-3 w-3 mr-2' />
         Actions
       </div>
     </TableHead>
@@ -200,17 +204,17 @@ const Row: React.FC<RowProps> = ({ group, selected, onSelectGroup, refreshGroups
           onCheckedChange={(checked) => onSelectGroup(group.id, checked as boolean)}
         />
       </TableCell>
-      <TableCell className="font-medium text-left">
+      <TableCell className="font-medium text-left text-xs">
         {loading ? (<Skeleton className="w-32 h-4" />) : group.name}
       </TableCell>
-      <TableCell className="hidden md:table-cell">
+      <TableCell className="hidden md:table-cell text-xs">
         {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(group.createdAt)}
       </TableCell>
-      <TableCell className="hidden md:table-cell">
+      <TableCell className="hidden md:table-cell text-xs">
         {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(group.updatedAt)}
       </TableCell>
       <TableCell>
-        <div className="flex gap-4">
+        <div className="flex gap-4 text-xs">
           {loading ? (<Skeleton className="w-8 h-8" />) : (<ViewGroupDialog group={group} refreshGroups={refreshGroups} />)}
           {loading ? (<Skeleton className="w-8 h-8" />) : (<EditGroupDialog group={group} refreshGroups={refreshGroups} />)}
           {loading ? (<Skeleton className="w-8 h-8" />) : (<DeleteGroupDialog group={group} refreshGroups={refreshGroups} />)}

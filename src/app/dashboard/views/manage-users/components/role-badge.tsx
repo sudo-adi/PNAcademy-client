@@ -15,7 +15,7 @@ interface RoleBadgeProps {
 const RoleBadge: React.FC<RoleBadgeProps> = ({ text, icon, onClick }) => {
 
   const iconWithClass = React.cloneElement(icon, {
-    className: `${icon.props.className || ''} h-4 w-4`
+    className: `${icon.props.className || ''} h-3 w-3`
   });
 
 
@@ -28,7 +28,7 @@ const RoleBadge: React.FC<RoleBadgeProps> = ({ text, icon, onClick }) => {
               <>
                 <DialogTrigger asChild>
                   <button >
-                    <Badge className='flex gap-2'>
+                    <Badge className='flex gap-2 text-[10px]'>
                       {iconWithClass}
                       {text}
                     </Badge>

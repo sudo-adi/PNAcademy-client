@@ -109,34 +109,36 @@ const AllTabContent = () => {
   };
   return (
     <>
-      <Card className='my-2 h-[calc(100vh-18rem)] w-full flex flex-col'>
-        <div className="overflow-auto flex-grow">
-          <Table>
-            <TableHeader className="sticky top-0 bg-background z-10">
-              <Schema
-                toggleSorting={toggleSorting}
-                sortBy={sortBy}
-                order={order}
-                onSelectAll={handleSelectAll}
-                allSelected={allSelected}
-              />
-            </TableHeader>
-            <TableBody>
-              {allAssessments.map(assessment => (
-                <Row
-                  key={assessment.id}
-                  assessment={assessment}
-                  selected={selectedAssessments.has(assessment.id)}
-                  onSelectAssessment={handleSelectAssessment}
-                  refreshAssessments={refreshAssessments}
-                  loading={assessmentLoading}
+      <Card className='my-2 h-[calc(100vh-17rem)] w-full flex flex-col'>
+        <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
+          <div className="absolute inset-0 overflow-auto">
+            <table className="w-full">
+              <thead className="sticky bg-background top-0 z-10">
+                <Schema
+                  toggleSorting={toggleSorting}
+                  sortBy={sortBy}
+                  order={order}
+                  onSelectAll={handleSelectAll}
+                  allSelected={allSelected}
                 />
-              ))}
-            </TableBody>
-          </Table>
+              </thead>
+              <tbody>
+                {allAssessments.map(assessment => (
+                  <Row
+                    key={assessment.id}
+                    assessment={assessment}
+                    selected={selectedAssessments.has(assessment.id)}
+                    onSelectAssessment={handleSelectAssessment}
+                    refreshAssessments={refreshAssessments}
+                    loading={assessmentLoading}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </Card>
-      <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
+      <div className="flex h-[calc(3rem-6px)] items-center justify-between gap-2">
         <Label className='text-[10px]'>
           Showing <strong>{allAssessments.length}</strong>{" "}Assessments
         </Label>
@@ -164,9 +166,9 @@ const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelect
             onCheckedChange={(checked) => onSelectAll(checked as boolean)} />
         </div>
       </TableHead>
-      <TableHead onClick={() => toggleSorting('name')} className='w-[270px]'>
+      <TableHead onClick={() => toggleSorting('name')} className='w-[210px]'>
         <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
+          <User className="h-3 w-3" />
           Assessment Name {sortBy === 'name' && (order === 'ASC' ? '↓' : '↑')}
         </div>
       </TableHead>

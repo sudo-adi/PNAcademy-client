@@ -35,27 +35,23 @@ const AllTabContent = () => {
           </Dialog>
         </div>
         <div className="flex gap-2">
-          {/* <Button variant="outline">
-            <FileUpIcon className='h-4 w-4 mr-2' />
-            Import as CSV
-          </Button>
-          <Button variant="outline">
-            <FileDownIcon className='h-4 w-4 mr-2' />
-            Export as CSV
-          </Button> */}
         </div>
       </Card>
       <Card className='my-2 h-[calc(100vh-18rem)] flex flex-col'>
-        <Table>
-          <TableHeader >
-            <Schema />
-          </TableHeader>
-          <TableBody>
-            {Array.from({ length: 20 }).map((_, index) => (
-              <Row key={index} />
-            ))}
-          </TableBody>
-        </Table>
+        <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
+          <div className="absolute inset-0 overflow-auto">
+            <table className="w-full">
+              <thead className="sticky bg-background top-0 z-10">
+                <Schema />
+              </thead>
+              <tbody>
+                {Array.from({ length: 20 }).map((_, index) => (
+                  <Row key={index} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </Card >
       <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
         <Label className='text-xs'>
@@ -80,33 +76,32 @@ const AllTabContent = () => {
 const Schema = () => {
   return (
     <TableRow>
-      <TableHead className="hidden w-[100px] sm:table-cell">
-        <div className="flex items-center gap-2 flex-row">
-          <BoxSelectIcon className='h-4 w-4' />
-          Select
+      <TableHead className="hidden sm:table-cell">
+        <div className="flex items-center gap-2 flex-row text-[10px]">
+          <Checkbox />
         </div>
       </TableHead>
-      <TableHead>
-        <div className="flex flex-row gap-2 items-center">
-          <Bell className='h-4 w-4' />
+      <TableHead className='cursor-default'>
+        <div className="flex flex-row gap-2 items-center text-[10px]">
+          <Bell className='h-3 w-3' />
           Notifications
         </div>
       </TableHead>
-      <TableHead className="hidden md:table-cell">
-        <div className="flex flex-row gap-2 items-center">
-          <Calendar className='h-4 w-4' />
+      <TableHead>
+        <div className="flex flex-row gap-2 items-center text-[10px] cursor-pointer">
+          <Calendar className='h-3 w-3' />
           Created At
         </div>
       </TableHead>
-      <TableHead className="md:table-cell">
-        <div className="flex flex-row gap-2 items-center">
-          <Eye className='h-4 w-4' />
+      <TableHead className="md:table-cell cursor-default">
+        <div className="flex flex-row gap-2 items-center text-[10px]">
+          <Eye className='h-3 w-3' />
           View
         </div>
       </TableHead>
-      <TableHead className="md:table-cell">
-        <div className="flex flex-row gap-2 items-center">
-          <Trash2 className='h-4 w-4' />
+      <TableHead className="md:table-cell cursor-default">
+        <div className="flex flex-row gap-2 items-center text-[10px]">
+          <Trash2 className='h-3 w-3' />
           Delete
         </div>
       </TableHead>
@@ -119,28 +114,20 @@ const Schema = () => {
 const Row = () => {
   return (
     <TableRow>
-      <TableCell className="hidden sm:table-cell">
+      <TableCell>
         <Checkbox />
       </TableCell>
       <TableCell className="font-medium text-left w-[500px]">
         <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-2 items-start">
             Admin
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button onClick={() => console.log("me here")}>
-                    <Badge className='flex gap-2 text-xs border italic'>
-                      b9f49f4f-4790-4edd-a833-a426f301c804
-                    </Badge>
-                  </button>
-                </TooltipTrigger>
-              </Tooltip>
-            </TooltipProvider>
+          </div>
+          <div className='text-[10px] text-secondary-foreground font-thin text'>
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas consequuntur animi cupiditate vero! Aut nostrum doloremque autem, officiis aperiam est quasi adipisci nemo aspernatur velit unde dolore maiores alias ab.
           </div>
         </div>
       </TableCell>
-      <TableCell className="hidden md:table-cell">
+      <TableCell className="">
         <Skeleton className='h-5 w-40' />
       </TableCell>
       <TableCell>

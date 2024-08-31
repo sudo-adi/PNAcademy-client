@@ -1,7 +1,6 @@
 "use client"
 import PnaLoader from "@/components/common/custom-loading-animation"
-import { checkAuth, isLoggedIn } from "@/lib/services/auth-service"
-import { Loader2 } from "lucide-react"
+import { checkAuth } from "@/lib/services/auth-service"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
