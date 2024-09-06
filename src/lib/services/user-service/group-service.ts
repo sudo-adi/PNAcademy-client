@@ -10,7 +10,6 @@ export const createGroup = async (data: CreateGroupProps): Promise<CreateGroupRe
   try {
     const response = await axiosInstance.post<CreateGroupResponse>('v1/create-group', data);
     if (response.status === 200 || response.status === 201) {
-      console.info('Group created successfully', response.data);
       return response.data;
     }
     return null;
@@ -41,7 +40,6 @@ export const getGroups = async (data: GetGroupsProps): Promise<GetGroupsResponse
       params: data,
     });
     if (response.status === 200 || response.status === 201) {
-      console.info('Groups retrieved successfully', response.data);
       return response.data;
     }
     return null;
@@ -73,7 +71,6 @@ export const updateGroup = async (data: UpdateGroupProps): Promise<UpdateGroupRe
     const response = await axiosInstance.patch<UpdateGroupResponse>('/v1/group', data);
 
     if (response.status === 200 || response.status === 201) {
-      console.info('Group updated successfully', response.data);
       return response.data;
     }
     return null;
@@ -103,7 +100,6 @@ export const deleteGroups = async ({ groupIds }: DeleteGroupsProps): Promise<Del
     });
 
     if (response.status === 200 || response.status === 201) {
-      console.info('Groups deleted successfully', response.data);
       return response.data;
     }
     return null;
@@ -132,7 +128,6 @@ export const addUsersToGroup = async (data: AddToGroupProps): Promise<AddToGroup
   try {
     const response = await axiosInstance.post<AddToGroupResponse>('/v1/user/add-to-group', data);
     if (response.status === 200 || response.status === 201) {
-      console.info('Users added successfully', response.data);
       return response.data;
     }
     return null;
@@ -162,7 +157,6 @@ export const removeUsersFromGroup = async (data: RemoveFromGroupProps): Promise<
       data
     });
     if (response.status === 200 || response.status === 201) {
-      console.info('Users removed successfully', response.data);
       return response.data;
     }
     return null;
@@ -195,7 +189,6 @@ export const GetUsersByGroupId = async (data: GetUsersByGroupIdProps): Promise<G
     });
 
     if (response.status === 200 || response.status === 201) {
-      console.info('Users fetched successfully', response.data);
       return response.data;
     }
     return null;

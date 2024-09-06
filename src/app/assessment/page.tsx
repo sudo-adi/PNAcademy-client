@@ -2,7 +2,8 @@ import React from 'react'
 
 const Assessment = () => {
   return (
-    <div>Assessment</div>
+    <div className='flex items-center justify-center h-screen w-full'>
+    </div>
   )
 }
 

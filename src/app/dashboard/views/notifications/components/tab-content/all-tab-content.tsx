@@ -1,38 +1,21 @@
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Bell, BellPlus, BoxSelectIcon, Calendar, Eye, Trash2 } from 'lucide-react'
+import { TableCell, TableHead, TableRow } from '@/components/ui/table'
+import { Bell, Calendar, Eye, Trash2 } from 'lucide-react'
 import React from 'react'
 import DeleteNotificationDialog from '../dialog-box/delete-notification-dialog'
 import ViewNotificationDialog from '../dialog-box/view-notification-dialog'
+import CreateNotificationDialog from '../../../manage-notifications/components/create-notification-dialog'
 
 const AllTabContent = () => {
   return (
     <>
       <Card className='flex flex-row w-full p-2 justify-between border-dashed'>
         <div className="flex gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="default">
-                <BellPlus className='h-4 w-4 mr-2' />
-                Create
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Edit profile</DialogTitle>
-                <DialogDescription>
-                  Make changes to your profile here. Click save when you're done.
-                </DialogDescription>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
+          <CreateNotificationDialog />
         </div>
         <div className="flex gap-2">
         </div>
@@ -45,14 +28,12 @@ const AllTabContent = () => {
                 <Schema />
               </thead>
               <tbody>
-                {Array.from({ length: 20 }).map((_, index) => (
-                  <Row key={index} />
-                ))}
+
               </tbody>
             </table>
           </div>
         </div>
-      </Card >
+      </Card>
       <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
         <Label className='text-xs'>
           Showing <strong>1-10</strong> of <strong>32</strong>{" "}

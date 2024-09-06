@@ -102,7 +102,6 @@ export const updateAssessment = async (data: UpdateAssessmentProps): Promise<Upd
     const response = await axiosInstance.patch<UpdateAssessmentResponse>('/v1/assessment/update', data);
 
     if (response.status === 200 || response.status === 201) {
-      console.info('Assessment updated successfully', response.data);
       return response.data;
     }
     return null;

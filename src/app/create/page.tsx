@@ -35,7 +35,6 @@ const Create = () => {
     setGoBackLoading(true);
     router.push('/dashboard');
   }
-
   return (
     <div className="flex flex-col gap-4 h-screen w-full items-center justify-center">
       <Card className="w-[30rem]">

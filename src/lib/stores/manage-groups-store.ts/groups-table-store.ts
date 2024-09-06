@@ -31,8 +31,7 @@ const useGroupsTableStore = create<State & Actions>()(
       setOrder: (order) => set({ order }),
     }),
     {
-      name: 'useGroupTableStore', // Key for local storage
-      // Default storage is used (localStorage in the browser)
+      name: 'useGroupTableStore', 
     }
   )
 );

@@ -87,6 +87,9 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
         setDuration(assessment.duration);
         setIsActive(assessment.is_active);
       }
+      else {
+        console.error('Failed to initialize sidebar');
+      }
     }
     initializeSideBar();
   }, [assessment]);

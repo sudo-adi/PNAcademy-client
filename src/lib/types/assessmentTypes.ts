@@ -229,8 +229,7 @@ export interface GetAssessmentByIdProps {
   id: string;
 }
 
-// interface for getAssessment response
-
+// Interface for getAssessment response
 export interface GetAssessmentByIdResponse {
   message: string;
   data: GetAssessmentByIdData;
@@ -247,8 +246,10 @@ export interface GetAssessmentByIdData {
   created_by: string;
   createdAt: string;
   updatedAt: string;
-  questions: Question[];
+  sections: (Question[] | null)[];
 }
+
+
 
 export interface Question {
   id: string;

@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Archive, ArrowUpLeftSquare, Search } from 'lucide-react';
 import React, { useState } from 'react'
 import AllTabContent from './components/tab-content/all-tab-content';
 import OnGoingTabContent from './components/tab-content/ongoing-tab-content';
@@ -12,7 +11,6 @@ import PreviousTabContent from './components/tab-content/previous-tab-content';
 
 const Assessments = () => {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-
   return (
     <>
       <div className='flex flex-col gap-2'>

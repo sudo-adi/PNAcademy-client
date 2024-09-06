@@ -92,7 +92,6 @@ export const useAssessment = () => {
         const { data: { assesments } } = response;
         setAssessments(assesments);
         setFetchAssessmentsRes(response);
-
         console.info('Assessments fetched:', response.data.assesments);
       }
     } catch (err) {
