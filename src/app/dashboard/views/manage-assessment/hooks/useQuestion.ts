@@ -38,9 +38,10 @@ export const useQuestions = () => {
     try {
       const response = await createQuestion(data);
       setAddQuestionResponse(response);
+      return response;
     } catch (err) {
       setQuestionError(err as ApiError);
-      console.log("error caught")
+      console.log("error caught", err);
     } finally {
       setQuestionLoading(false);
     }

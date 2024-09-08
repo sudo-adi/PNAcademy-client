@@ -87,9 +87,6 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
         setDuration(assessment.duration);
         setIsActive(assessment.is_active);
       }
-      else {
-        console.error('Failed to initialize sidebar');
-      }
     }
     initializeSideBar();
   }, [assessment]);
@@ -157,7 +154,7 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
                 </CardContent>
               </Card>
             </div>
-            <AssignedGroupsCard assessmentId={assessment!.id} />
+            <AssignedGroupsCard assessmentId={assessmentId} />
           </div>
           <div className="items-center">
             <SubHeader />

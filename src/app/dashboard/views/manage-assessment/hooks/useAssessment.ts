@@ -32,8 +32,8 @@ import {
 import { ApiError } from '@/lib/api/apiError';
 
 export const useAssessment = () => {
-  const [assessments, setAssessments] = useState<Assessment[] | null>(null);
-  const [assessment, setAssessment] = useState<GetAssessmentByIdData | null>(null);
+  const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [assessment, setAssessment] = useState<GetAssessmentByIdData>();
   const [assignedAssessments, setAssignedAssessments] = useState<GetAssignedAssessmentsResponse | null>(null);
   const [assessmentError, setAssessmentError] = useState<ApiError | null>(null);
   const [assessmentLoading, setAssessmentLoading] = useState<boolean>(false);

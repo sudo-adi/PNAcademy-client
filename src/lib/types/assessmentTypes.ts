@@ -246,7 +246,7 @@ export interface GetAssessmentByIdData {
   created_by: string;
   createdAt: string;
   updatedAt: string;
-  sections: (Question[] | null)[];
+  sections: Question[][];
 }
 
 
