@@ -5,7 +5,7 @@ import { getNewAccessToken, isTokenExpired } from "../utils/jwtUtils";
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-  timeout: 10000, // Adjust timeout as needed
+  timeout: 120000, // Set timeout to 2 minutes (120,000 milliseconds)
 });
 
 

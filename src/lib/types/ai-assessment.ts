@@ -11,9 +11,34 @@ export interface GenerateQuestionsResponse {
   };
 }
 
+export interface AiOption {
+  description: string;
+  isCorrect: boolean;
+}
+
+export interface AiQuestion {
+  description: string;
+  Options: AiOption[];
+}
+
+export interface AiQuestionsResponse {
+  message: string;
+  data: {
+    questions: AiQuestion[];
+  };
+}
+
+
 export interface GenerateQuestionsProps {
   topic: string;
   numberOfQuestions: number;
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
+
+export interface AiSection {
+  prompt: string;
+  sectionMarks: number;
+  questions: AiQuestion[];
+
+}

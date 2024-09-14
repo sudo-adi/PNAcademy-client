@@ -13,7 +13,6 @@ export const generateQuestions = async (
     );
 
     if (response.status === 200 || response.status === 201) {
-      console.info('Questions generated successfully', response.data);
       return response.data;
     }
     return null;

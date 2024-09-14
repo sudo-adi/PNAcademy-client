@@ -1,11 +1,12 @@
+"use client";
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import React, { useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { PlusSquare } from 'lucide-react';
+import { Loader2, PlusSquare } from 'lucide-react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -15,6 +16,7 @@ import { useAssessment } from '../../hooks/useAssessment';
 import { ApiError } from '@/lib/api/apiError';
 import StartsAtDateTimePicker from '../starts-at';
 import EndsAtDateTimePicker from '../ends-at';
+import { useRouter } from 'next/navigation';
 
 const assessmentSchema = z.object({
   name: z.string().min(1, { message: 'Assessment name is required' }),
@@ -23,6 +25,7 @@ const assessmentSchema = z.object({
 
 type AssessmentFormData = z.infer<typeof assessmentSchema>;
 const CreateAssessmentDialog = () => {
+  const router = useRouter();
   const {
     assessmentName,
     assessmentDescription,
@@ -47,6 +50,7 @@ const CreateAssessmentDialog = () => {
   });
   const onSubmit = async (data: AssessmentFormData) => {
     try {
+      setLoading(true);
       const data = {
         name: assessmentName,
         description: assessmentDescription,
@@ -56,8 +60,7 @@ const CreateAssessmentDialog = () => {
         duration: duration,
         created_by: createdBy,
       }
-      await addAssessment(data);
-      console.log(createAssessmentRes);
+      const response = await addAssessment(data);
     } catch (err) {
       if (err as ApiError) {
         console.error(err);
@@ -68,6 +71,12 @@ const CreateAssessmentDialog = () => {
     }
     reset();
   };
+
+  useEffect(() => {
+    if (createAssessmentRes != undefined && createAssessmentRes != null) {
+      router.push(`/create/${createAssessmentRes.id}`);
+    }
+  }, [createAssessmentRes]);
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -76,7 +85,7 @@ const CreateAssessmentDialog = () => {
           Create
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[800px]">
+      <DialogContent className="overflow-hidden overflow-y-scroll scrollbar-none w-[800px] max-h-[calc(100vh-5rem)]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
             <DialogTitle>Create a New Assessment</DialogTitle>
@@ -124,9 +133,13 @@ const CreateAssessmentDialog = () => {
                 </DialogClose>
                 <Button variant="outline" onClick={() => reset()}>Clear Selection</Button>
               </div>
-              <Button type="submit" variant="default">
+              <Button
+                disabled={loading}
+                type="submit"
+                variant="default">
                 <PlusSquare className='h-4 w-4 mr-2' />
-                Create Assessment
+                {loading ?
+                  <Loader2 className='h-4 w-4 animate-spin' /> : 'Create Assessment'}
               </Button>
             </div>
           </DialogFooter>

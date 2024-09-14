@@ -48,8 +48,9 @@ export const useAssessment = () => {
   const addAssessment = async (data: CreateAssessmentProps) => {
     setAssessmentLoading(true);
     try {
-      const response = await createAssessment(data);
+      const response: AssessmentResponse | null = await createAssessment(data);
       setCreateAssessmentRes(response);
+      return response;
     } catch (err) {
       if (err instanceof ApiError) {
         setAssessmentError(err);

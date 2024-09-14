@@ -5,24 +5,23 @@ import { generateQuestions } from '@/lib/services/ai-assessment/create';
 
 export const useAICreate = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<ApiError | null>(null);
   const [questionsResponse, setQuestionsResponse] = useState<GenerateQuestionsResponse | null>(null);
 
   // Function to generate AI questions
   const createQuestions = async (data: GenerateQuestionsProps) => {
     setLoading(true);
-    setError(null);
     try {
       const response: GenerateQuestionsResponse | null = await generateQuestions(data);
       if (response) {
-        console.info('Questions generated:', response);
         setQuestionsResponse(response);
+        return response;
       }
+      return;
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
+        throw err;
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw new ApiError(500, 'An error occurred while generating questions', err);
       }
     } finally {
       setLoading(false);
@@ -31,7 +30,6 @@ export const useAICreate = () => {
 
   return {
     loading,
-    error,
     questionsResponse,
     createQuestions,
   };

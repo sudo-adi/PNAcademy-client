@@ -11,15 +11,20 @@ import ScheduledTabContent from './components/tab-content/scheduled-tab-content'
 import PreviousTabContent from './components/tab-content/previous-tab-content'
 import CreateAssessmentDialog from './components/dialog-box/create-assessment-dialog'
 import DraftsTabContent from './components/tab-content/drafts-tab-content'
+import { useRouter } from 'next/navigation'
 
 const ManageAssessments = () => {
+  const router = useRouter();
   const { activeTabIndex, setActiveTabIndex } = useTabStore();
   return (
     <div className='flex flex-col gap-2'>
       <Card className='flex flex-row w-full p-2 justify-between items-center border-dashed gap-2'>
         <div className="flex flex-row gap-2">
           <CreateAssessmentDialog />
-          <Button variant="link" className='hover:no-underline border-primary border'>
+          <Button
+            onClick={() => router.push('/ai-create')}
+            variant="link" className='hover:no-underline border-primary border'
+          >
             <Sparkles className='h-4 w-4 mr-2' />
             Create With Ai
           </Button>
