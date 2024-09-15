@@ -10,24 +10,44 @@ import SideBar from './sidebar'
 
 interface HeaderProps {
   assessmentId: string;
+  currentQuestionMarks: number;
+  currentSectionIndex: number;
+  setCurrentQuestionMarks: (marks: number) => void;
 }
 
-
-const Header = ({ assessmentId }: HeaderProps) => {
-
+const Header = ({ assessmentId, currentQuestionMarks, setCurrentQuestionMarks, currentSectionIndex }: HeaderProps) => {
   const [assessmentName, setAssessmentName] = React.useState<string>('Assessment');
-
   return (
-    <header className="flex h-16 items-center gap-4 border-b bg-muted/40 px-4 lg:min-h-[60px] lg:px-6">
-      <button className="text-[10px] border p-2 text-xs rounded-[8px] hover:bg-secondary flex items-center justify-center">
-        <ArrowLeft className="h-3 w-3" />
-      </button>
-      <div className="w-full flex flex-row items-center gap-2">
-        <FilePen className="w-4 h-4" />
+    <header className="flex h-16 items-center justify-between gap-4 border-b bg-muted/40 px-4 lg:min-h-[60px] lg:px-6">
+      <div className="flex gap-2">
+        <button className="text-[10px] border p-2 text-xs rounded-[8px] hover:bg-secondary flex items-center justify-center">
+          <ArrowLeft className="h-3 w-3" />
+        </button>
+        <div className="flex flex-row items-center gap-2">
+          <FilePen className="w-4 h-4" />
+          <input
+            value={assessmentName}
+            className='bg-transparent border-none focus:outline-none'
+            onChange={(e) => { setAssessmentName(e.target.value) }}
+          />
+        </div>
+      </div>
+      <div className="sm:mr-52 md:mr-56">
+        Section {currentSectionIndex + 1}
+      </div>
+      <div className="flex flex-row items-center border-dashed border-primary rounded-xl border gap-2">
         <input
-          value={assessmentName}
-          className='bg-transparent border-none focus:outline-none'
-          onChange={(e) => { setAssessmentName(e.target.value) }}
+          className="bg-transparent border-none text-[24px] max-w-14 text-center outline-none"
+          value={currentQuestionMarks}
+          onChange={(e) => {
+            let value = parseInt(e.target.value);
+            if (isNaN(value)) {
+              value = 0;
+            } else {
+              value = Math.max(0, Math.min(100, value)); // Clamp value between 0 and 100
+            }
+            setCurrentQuestionMarks(value);
+          }}
         />
       </div>
       <Sheet>

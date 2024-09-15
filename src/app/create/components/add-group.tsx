@@ -1,23 +1,34 @@
-"use client"
-import { useGroups } from '@/app/dashboard/views/manage-groups/hooks/useGroups';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { addGroupToAssessment, removeGroupFromAssessment } from '@/lib/services/assessment/assessment-service';
-import { Group } from '@/lib/types/groupTypes';
-import { Plus, SearchIcon, Users, Check } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from "react";
+import { useGroups } from "@/app/dashboard/views/manage-groups/hooks/useGroups";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { addGroupToAssessment, removeGroupFromAssessment } from "@/lib/services/assessment/assessment-service";
+import useCreateAssessmentDetailsStore from "@/lib/stores/manage-assessment-store/assessment-details";
+import { Group } from "@/lib/types/groupTypes";
+import { Check, Plus, Users } from "lucide-react";
+import { DialogClose } from "@radix-ui/react-dialog";
 
-const AddGroup: React.FC<{ assessmentId: string, isDialogOpen: boolean }> = ({ assessmentId, isDialogOpen }) => {
+interface GroupBadgeProps {
+  assessmentId: string;
+}
+
+const AddGroup: React.FC<GroupBadgeProps> = ({ assessmentId }) => {
   const [groupList, setGroupList] = useState<Group[]>([]);
-  const [searchList, setSearchList] = useState<Group[]>([]);
-  const [assignedGroups, setAssignedGroups] = useState<string[]>([]);
   const [order, setOrder] = useState<"ASC" | "DESC">("ASC");
-  const { groups, loading, fetchedGroupsRes, fetchGroups } = useGroups();
+  const { groups, loading, fetchGroups, fetchAssignedGroups, assignedGroups: ass } = useGroups();
+  const { assignedGroups, setAssignedGroups, } = useCreateAssessmentDetailsStore();
 
   useEffect(() => {
     const fetchGroupsList = async () => {
@@ -27,96 +38,93 @@ const AddGroup: React.FC<{ assessmentId: string, isDialogOpen: boolean }> = ({ a
         sortBy: 'name',
         order: order,
       });
-      setGroupList(fetchedGroupsRes?.data.groups || []);
-      setAssignedGroups([]);
+      setGroupList(groups);
     };
+
     fetchGroupsList();
   }, [order]);
-
-
-  useEffect(() => {
-    setGroupList(groups);
-  }, [groups]);
 
   const handleAssignGroup = async (groupId: string) => {
     try {
       await addGroupToAssessment({ assessmentId, groupId });
-      setAssignedGroups((prev) => [...prev, groupId]);
+      const prev = assignedGroups;
+      setAssignedGroups([...prev, groupId]);
     } catch (error) {
       console.error("Failed to assign group to assessment:", error);
     }
   };
 
+  useEffect(() => {
+    console.log(ass);
+  }, [ass]);
+
   const handleUnassignGroup = async (groupId: string) => {
     try {
       await removeGroupFromAssessment({ assessmentId, groupId });
-      setAssignedGroups((prev) => prev.filter(id => id !== groupId));
+      const prev = assignedGroups;
+      setAssignedGroups(prev.filter((id) => id !== groupId));
     } catch (error) {
       console.error("Failed to unassign group from assessment:", error);
     }
   };
 
+
+  useEffect(() => {
+    console.log(assignedGroups);
+    fetchAssignedGroups({ id: assessmentId });
+  }, [])
+
   return (
-    <>
-      <Dialog open={isDialogOpen}>
-        <DialogContent className="w-[400px] max-w-none">
-          <DialogHeader>
-            <DialogTitle className="flex flex-row">
-              <Users className="h-4 w-4 mr-2" />
-              Add groups
-            </DialogTitle>
-            <DialogDescription>
-              Add Groups to assign the assessment...
-            </DialogDescription>
-            <div className="flex flex-row gap-2 py-4">
-              <Input
-                id="Search"
-                type="email"
-                placeholder="Search..."
-                required
-              />
-              <Button id="Search">
-                <SearchIcon className="h-4 w-4 mr-2" />
-                Search
-              </Button>
-            </div>
-            <Card className="h-[400px] overflow-y-auto p-0">
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <Schema
-                      toggleSorting={() => setOrder(order === "ASC" ? "DESC" : "ASC")}
-                      sortBy="name"
-                      order={order}
+    <Dialog>
+      <DialogTrigger asChild>
+        <Badge>
+          <Plus className='h-4 w-4 mr-2' />
+          Add
+        </Badge>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Select Groups</DialogTitle>
+          <DialogDescription>
+            Select groups to assign to this assessment.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex">
+          <Card className="h-[400px] overflow-y-auto p-0 w-full">
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <Schema
+                    toggleSorting={() => setOrder(order === "ASC" ? "DESC" : "ASC")}
+                    sortBy="name"
+                    order={order}
+                  />
+                </TableHeader>
+                <TableBody>
+                  {groupList.map((group: Group) => (
+                    <Row
+                      key={group.id}
+                      group={group}
+                      loading={loading}
+                      assigned={assignedGroups.includes(group.id)}
+                      onAssign={handleAssignGroup}
+                      onUnassign={handleUnassignGroup}
                     />
-                  </TableHeader>
-                  <TableBody>
-                    {groupList.map((group: Group) => (
-                      <Row
-                        key={group.id}
-                        group={group}
-                        loading={loading}
-                        assigned={assignedGroups.includes(group.id)}
-                        onAssign={handleAssignGroup}
-                        onUnassign={handleUnassignGroup}
-                      />
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </DialogHeader>
-          <DialogFooter>
-            <div className="flex w-full justify-between gap-2">
-              <Button variant="default">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Groups
-              </Button>
-            </div>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+        <DialogFooter>
+          <DialogClose type="submit">
+            <Button>
+              Save changes
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

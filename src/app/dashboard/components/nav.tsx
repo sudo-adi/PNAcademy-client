@@ -2,6 +2,7 @@
 "use client";
 import React from 'react';
 import {
+  Bell,
   BellPlus,
   FileCog,
   FilePieChart,
@@ -30,6 +31,7 @@ const Nav: React.FC = () => {
     { text: 'Manage Users & Roles', icon: <UserCog /> },
     { text: 'Manage Groups', icon: <Users /> },
     { text: 'Manage Notifications', icon: <BellPlus /> },
+    { text: 'Notifications', icon: <Bell /> },
     { text: 'Settings', icon: <Settings /> }
   ];
 

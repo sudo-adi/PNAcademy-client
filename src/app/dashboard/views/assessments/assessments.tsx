@@ -13,30 +13,32 @@ const Assessments = () => {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   return (
     <>
-      <div className='flex flex-col gap-2'>
-        <Card className='flex flex-row w-full p-2 justify-between items-center border-dashed gap-2'>
+      <div className='flex flex-col gap-2 overflow-y-hidden'>
+        <Card className='flex flex-col lg:flex-row w-full  justify-between items-center border-dashed gap-4 p-4 lg:p-2 overflow-hidden'>
           <div className="flex flex-row gap-2">
             <div className='text-3xl'>
               Hey Aditya, Good Morning!
             </div>
           </div>
-          <div className="flex w-full max-w-sm items-center space-x-2">
+          <div className="flex w-full h-full lg:w-auto items-center space-x-2">
             <Input type="email" placeholder="Join with assessment Id..." />
-            <Button type="submit" className='flex items-center justify-center  gap-1'>
+            <Button type="submit" className='flex items-center justify-center gap-1 active:shadow-2xl active:shadow-white'>
               Join
             </Button>
           </div>
         </Card>
-        <Tabs defaultValue={activeTabIndex.toString()} className="flex flex-col w-full items-center">
-          <div className="flex items-center justify-between flex-row w-full ">
-            <TabsList className="grid grid-cols-4">
+        <Tabs defaultValue={activeTabIndex.toString()} className="flex flex-col items-center">
+          <div className="flex items-center lg:justify-between flex-col-reverse lg:flex-row px-2 lg:px-0 lg:w-full w-full gap-2">
+            <TabsList className="grid grid-cols-4 w-full lg:w-auto">
               <TabsTrigger value="0" onClick={() => setActiveTabIndex(0)}>All</TabsTrigger>
               <TabsTrigger value="1" onClick={() => setActiveTabIndex(1)}>OnGoing</TabsTrigger>
               <TabsTrigger value="2" onClick={() => setActiveTabIndex(2)}>Scheduled</TabsTrigger>
               <TabsTrigger value="3" onClick={() => setActiveTabIndex(3)}>Previous</TabsTrigger>
             </TabsList>
-            <div className="flex flex-row gap-2">
-              <Input type="email" placeholder="Join with assessment Id..." />
+            <div className="flex flex-row w-full  lg:w-auto gap-2">
+              <Input type="email"
+                className='min-w-[18rem] w-full'
+                placeholder="Search Assessment By Id or Name..." />
               <Button type="submit" className='flex items-center justify-center  gap-1'>
                 Search
               </Button>

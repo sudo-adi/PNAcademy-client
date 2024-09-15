@@ -2,15 +2,15 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Bell, BellPlus, FileCog, FilePen, FilePieChart, PieChart, ScrollText, User, UserCog, Users, } from 'lucide-react';
+import { Bell, BellPlus, FileCog, FilePen, FilePieChart, PieChart, ScrollText, User, UserCog, Users } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useRoles } from '../../hooks/useRoles';
 import { RolePermissions } from '@/lib/types/roleTypes';
-const CreateRoleDialog = () => {
 
+const CreateRoleDialog = () => {
   const [roleName, setRoleName] = React.useState<string>('');
   const [permissions, setPermissions] = React.useState<RolePermissions>({
     canManageAssessment: false,
@@ -26,8 +26,9 @@ const CreateRoleDialog = () => {
   });
   const { addedRoleRes, addRole } = useRoles();
   const [loading, setLoading] = useState<boolean>(false);
-  const handleCreateRole = async () => {
+  const [createRoleDisable, setCreteRoleDisable] = useState<boolean>(false)
 
+  const handleCreateRole = async () => {
     try {
       await addRole({ name: roleName, permissions });
     } catch (error) {
@@ -42,224 +43,218 @@ const CreateRoleDialog = () => {
     }));
   }
 
+  useEffect(() => {
+    if (roleName.length < 3) {
+      setCreteRoleDisable(true)
+    } else {
+      setCreteRoleDisable(false)
+    }
+  }, [roleName]);
+
+  const handleClearSelections = () => {
+    setPermissions({
+      canManageAssessment: false,
+      canManageUser: false,
+      canManageRole: false,
+      canManageNotification: false,
+      canManageLocalGroup: false,
+      canManageReports: false,
+      canAttemptAssessment: false,
+      canViewReport: false,
+      canManageMyAccount: false,
+      canViewNotification: false,
+    })
+  }
+
+  const managingPermissions = [
+    {
+      label: 'Manage Assessments',
+      icon: FileCog,
+      permission: 'canManageAssessment',
+      description: 'Allows the user to create, update, and delete assessments, as well as manage assessment-related settings.'
+    },
+    {
+      label: 'Manage Users',
+      icon: UserCog,
+      permission: 'canManageUser',
+      description: 'Grants the user the ability to add, remove, and modify user accounts and their related settings.'
+    },
+    {
+      label: 'Manage Roles',
+      icon: FileCog,
+      permission: 'canManageRole',
+      description: 'Enables the user to create, edit, or delete user roles and assign different permissions to them.'
+    },
+    {
+      label: 'Manage Notifications',
+      icon: BellPlus,
+      permission: 'canManageNotification',
+      description: 'Allows the user to create and manage notifications for all users within the system.'
+    },
+    {
+      label: 'Manage Reports',
+      icon: PieChart,
+      permission: 'canManageReports',
+      description: 'Provides the user access to generate, modify, and manage reports related to user activities, assessments, and performance.'
+    },
+    {
+      label: 'Manage Groups',
+      icon: Users,
+      permission: 'canManageLocalGroup',
+      description: 'Grants the ability to create and manage groups or teams within the system, including adding or removing group members.'
+    }
+  ];
+
+  const accessibilityPermissions = [
+    {
+      label: 'Attempt Assessments',
+      icon: FilePen,
+      permission: 'canAttemptAssessment',
+      description: 'Allows users to take and submit assessments.'
+    },
+    {
+      label: 'View Reports',
+      icon: FilePieChart,
+      permission: 'canViewReport',
+      description: 'Allows users to view generated reports and analytics.'
+    },
+    {
+      label: 'View Notifications',
+      icon: Bell,
+      permission: 'canViewNotification',
+      description: 'Allows users to view and manage notifications.'
+    },
+    {
+      label: 'Manage Account',
+      icon: User,
+      permission: 'canManageMyAccount',
+      description: 'Allows users to manage their personal account settings.'
+    }
+  ];
+
+
   return (
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="default">
-            <ScrollText className='h-4 w-4 mr-2' />
-            Create
+          <Button variant="default" className="flex items-center gap-2">
+            <ScrollText className='h-4 w-4' />
+            Create Role
           </Button>
         </DialogTrigger>
-        <DialogContent className="w-[800px]">
+        <DialogContent className="w-full min-w-[100px] max-w-[600px] min-h-[400px] max-h-[800px] overflow-hidden overflow-y-scroll scrollbar-none">
           <DialogHeader>
-            <DialogTitle>Create a New Role</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">Create a New Role</DialogTitle>
             <DialogDescription>
               Assign permissions to the new role.
             </DialogDescription>
-            <div className="flex flex-col gap-2 py-4">
+            <div className="py-4">
               <Label htmlFor='name' className='ml-1'>Role Name</Label>
               <Input
                 id="name"
                 type="text"
-                placeholder="manager..."
+                placeholder="e.g. student..."
                 onChange={(e) => setRoleName(e.target.value)}
                 required
+                className="mt-2"
               />
             </div>
-            <Card className="xl:col-span-2 h-[400px] overflow-y-auto bg-transparent">
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Managing Permissions</TableHead>
-                      <TableHead className="hidden xl:table-column">
-                      </TableHead>
-                      <TableHead className="text-right">Toggle</TableHead>
-                    </TableRow>
-                  </TableHeader>                  <TableBody>
-                    <TableRow>
-                      <div className="flex flex-row items-center justify-start font-medium py-2">
-                        <FileCog className='h-4 w-4 mr-2' />
-                        Manage Assessments
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                      </div>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canManageAssessment}
-                          onCheckedChange={(value) => handlePermissionChange('canManageAssessment', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <div className="flex flex-row items-center justify-start font-medium py-2">
-                        <UserCog className='h-4 w-4 mr-2' />
-                        Manage Users
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                      </div>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canManageUser}
-                          onCheckedChange={(value) => handlePermissionChange('canManageUser', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <div className="flex flex-row items-center justify-start font-medium py-2">
-                        <FileCog className='h-4 w-4 mr-2' />
-                        Manage Roles
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                      </div>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canManageRole}
-                          onCheckedChange={(value) => handlePermissionChange('canManageRole', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <div className="flex flex-row items-center justify-start font-medium py-2">
-                        <BellPlus className='h-4 w-4 mr-2' />
-                        Manage Notifications
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                      </div>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canManageNotification}
-                          onCheckedChange={(value) => handlePermissionChange('canManageNotification', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <div className="flex flex-row items-center justify-start font-medium py-2">
-                        <PieChart className='h-4 w-4 mr-2' />
-                        Manage Reports
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                      </div>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canManageReports}
-                          onCheckedChange={(value) => handlePermissionChange('canManageReports', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <div className="flex flex-row items-center justify-start font-medium py-2">
-                        <Users className='h-4 w-4 mr-2' />
-                        Manage Groups
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                      </div>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canManageLocalGroup}
-                          onCheckedChange={(value) => handlePermissionChange('canManageLocalGroup', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                  <TableHeader className='border-t'>
-                    <TableRow>
-                      <TableHead>Accessability Permissions</TableHead>
-                      <TableHead className="hidden xl:table-column">
-                      </TableHead>
-                      <TableHead className="text-right">Toggle</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <div className="flex flex-row items-center justify-start font-medium py-2">
-                        <FilePen className='h-4 w-4 mr-2' />
-                        Attempt Assessments
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                      </div>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canAttemptAssessment}
-                          onCheckedChange={(value) => handlePermissionChange('canAttemptAssessment', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <div className="flex flex-row items-center justify-start font-medium py-2">
-                        <FilePieChart className='h-4 w-4 mr-2' />
-                        View Reports
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                      </div>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canViewReport}
-                          onCheckedChange={(value) => handlePermissionChange('canViewReport', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <div className="flex flex-row items-center justify-start font-medium py-2">
-                        <Bell className='h-4 w-4 mr-2' />
-                        View Notifications
-                      </div>
-                      <div className="hidden text-sm text-muted-foreground md:inline">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                      </div>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canViewNotification}
-                          onCheckedChange={(value) => handlePermissionChange('canViewNotification', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <div className="flex flex-row items-center justify-start font-medium py-2">
-                          <User className='h-4 w-4 mr-2' />
-                          Manage Account
-                        </div>
-                        <div className="hidden text-sm text-muted-foreground md:inline">
-                          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sit, deserunt?
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Switch
-                          checked={permissions.canManageMyAccount}
-                          onCheckedChange={(value) => handlePermissionChange('canManageMyAccount', value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
           </DialogHeader>
-          <DialogFooter>
-            <div className="flex w-full justify-between gap-2">
-              <div className="flex gap-2">
+          <Card className="min-h-[200px] max-h-[400px]  min-w-[100px] max-w-[600px] overflow-y-auto bg-transparent border border-muted scrollbar-none">
+            <CardContent className='scrollbar-none'>
+              <Table className='scrollbar-none'>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Managing Permissions</TableHead>
+                    <TableHead className="text-right">Toggle</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {managingPermissions.map(({ label, icon: Icon, permission, description }) => (
+                    <TableRow key={permission}>
+                      <TableCell>
+                        <div className="flex items-start justify-center flex-col">
+                          <div className="flex flex-row gap-2">
+                            <Icon className='h-4 w-4' />
+                            <span className="font-medium">{label}</span>
+                          </div>
+                          <div className="flex  text-muted-foreground">
+                            {description}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Switch
+                          checked={permissions[permission as keyof RolePermissions]}
+                          onCheckedChange={(value) => handlePermissionChange(permission as keyof RolePermissions, value)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+
+
+                {/* Accessibility Permissions */}
+                <TableHeader className='border-t'>
+                  <TableRow>
+                    <TableHead>Accessibility Permissions</TableHead>
+                    <TableHead className="text-right">Toggle</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {accessibilityPermissions.map(({ label, icon: Icon, permission, description }) => (
+                    <TableRow key={permission}>
+                      <TableCell>
+                        <div className="flex items-start justify-center flex-col">
+                          <div className="flex flex-row gap-2">
+                            <Icon className='h-4 w-4' />
+                            <span className="font-medium">{label}</span>
+                          </div>
+                          <div className="flex text-muted-foreground">
+                            {description}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Switch
+                          checked={permissions[permission as keyof RolePermissions]}
+                          onCheckedChange={(value) => handlePermissionChange(permission as keyof RolePermissions, value)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+          <DialogFooter className="sm:justify-end">
+            <div className="w-full flex flex-col sm:flex-row justify-between gap-4">
+              <div className="flex flex-col sm:flex-row gap-2 sm:w-auto w-full">
                 <DialogClose asChild>
-                  <Button variant="outline">Cancel</Button>
+                  <Button variant="outline" className="w-full sm:w-auto">Cancel</Button>
                 </DialogClose>
-                <Button variant="outline">Clear Selection</Button>
+                <Button
+                  variant="outline"
+                  onClick={() => handleClearSelections()}
+                  className="w-full sm:w-auto"
+                >
+                  Clear Selection
+                </Button>
               </div>
-              <Button variant="default" onClick={handleCreateRole}>Create Role</Button>
+              <Button
+                disabled={createRoleDisable}
+                variant="default"
+                onClick={handleCreateRole}
+                className="w-full sm:w-auto"
+              >
+                Create Role
+              </Button>
             </div>
           </DialogFooter>
         </DialogContent>
-      </Dialog >
+      </Dialog>
     </>
-  )
+  );
 }
 
 export default CreateRoleDialog;

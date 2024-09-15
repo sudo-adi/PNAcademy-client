@@ -40,6 +40,7 @@ const CreateAssessmentDialog = () => {
     setIsActive } = useCreateAssessmentDetailsStore();
   const { createAssessmentRes, addAssessment } = useAssessment();
   const [loading, setLoading] = useState<boolean>(false);
+  const [disableCreateAssessment, setDisableCreateAssessment] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -71,6 +72,15 @@ const CreateAssessmentDialog = () => {
     }
     reset();
   };
+
+  useEffect(() => {
+    if (assessmentName.length < 3 || assessmentDescription.length < 3) {
+      setDisableCreateAssessment(true);
+    }
+    else {
+      setDisableCreateAssessment(false);
+    }
+  });
 
   useEffect(() => {
     if (createAssessmentRes != undefined && createAssessmentRes != null) {
@@ -126,15 +136,15 @@ const CreateAssessmentDialog = () => {
             </Card>
           </DialogHeader>
           <DialogFooter>
-            <div className="flex w-full my-4 justify-between gap-2">
-              <div className="flex gap-2">
+            <div className="flex w-full my-4 flex-col md:flex-row justify-between gap-2">
+              <div className="flex md:flex-row flex-col gap-2">
                 <DialogClose asChild>
                   <Button variant="outline" onClick={() => reset()}>Cancel</Button>
                 </DialogClose>
                 <Button variant="outline" onClick={() => reset()}>Clear Selection</Button>
               </div>
               <Button
-                disabled={loading}
+                disabled={loading || disableCreateAssessment}
                 type="submit"
                 variant="default">
                 <PlusSquare className='h-4 w-4 mr-2' />

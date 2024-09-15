@@ -6,7 +6,7 @@ import { CircleDot, Clock, GitCommitVertical } from 'lucide-react';
 
 const PreviousTabContent = () => {
   return (
-    <Card className="border-dashed h-[calc(100vh-15rem)] w-full p-4 overflow-auto">
+    <Card className="border-dashed h-[calc(100vh-21rem)] md:h-[calc(100vh-16rem)] w-full p-4 overflow-y-auto scrollbar-none bg-transparent">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="flex flex-col h-[20rem]">
           <CardHeader className="p-0">

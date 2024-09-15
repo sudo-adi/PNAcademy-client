@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -14,7 +14,8 @@ import useTabStore from '@/lib/stores/manage-users-store/tab-store'
 
 
 const ManageUsers = () => {
-  const { activeTabIndex, setActiveTabIndex } = useTabStore()
+  const { activeTabIndex, setActiveTabIndex } = useTabStore();
+  useEffect(() => { activeTabIndex ? activeTabIndex : setActiveTabIndex(0) }, [setActiveTabIndex])
   return (
     <>
       <Tabs defaultValue={activeTabIndex.toString()} className="w-full ">

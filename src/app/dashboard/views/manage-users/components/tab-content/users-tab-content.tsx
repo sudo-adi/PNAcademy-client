@@ -18,6 +18,7 @@ import ViewUserDialog from '../dialog-box/view-user-dialog';
 import EditUserDialog from '../dialog-box/edit-user-diallog';
 import DeleteUserDialog from '../dialog-box/delete-user-dialog';
 import useUserTableStore from '@/lib/stores/manage-users-store/user-table-store';
+import useTabStore from '@/lib/stores/manage-users-store/tab-store';
 
 const UsersTabContent: React.FC = () => {
   const { loading, error, users, fetchedUsersRes, fetchUsers, removeUsers } = useUsers();
@@ -25,10 +26,12 @@ const UsersTabContent: React.FC = () => {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const userList = (users as SingleUser[]) ?? [];
   const allSelected = userList.length > 0 && selectedUsers.size === userList.length;
+  const { activeTabIndex, setActiveTabIndex } = useTabStore();
 
   useEffect(() => {
     fetchUsers({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy, order });
   }, [sortBy, order]);
+
 
   const toggleSorting = (field: keyof SingleUser) => {
     if (sortBy === field) {

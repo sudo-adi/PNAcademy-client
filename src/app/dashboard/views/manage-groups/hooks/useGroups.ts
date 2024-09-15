@@ -14,6 +14,9 @@ import {
   GetUsersByGroupIdResponse,
   Group,
   AddToGroupProps,
+  AssignedGroup,
+  GetAssignedGroupsResponse,
+  GetAssignedGroupsProps,
 } from '@/lib/types/groupTypes';
 import {
   createGroup,
@@ -23,6 +26,7 @@ import {
   addUsersToGroup,
   removeUsersFromGroup,
   GetUsersByGroupId,
+  getAssignedGroups,
 } from '@/lib/services/user-service/group-service';
 import { ApiError } from '@/lib/api/apiError';
 
@@ -37,7 +41,7 @@ export const useGroups = () => {
   const [groupUsersRes, setGroupUsersRes] = useState<GetUsersByGroupIdResponse | null>(null);
   const [addedUsersRes, setAddedUsersRes] = useState<AddToGroupResponse | null>(null);
   const [removedUsersRes] = useState<RemoveFromGroupResponse | null>(null);
-
+  const [assignedGroups, setAssignedGroups] = useState<AssignedGroup[]>([]);
   // Function to create a group
   const addGroup = async (data: CreateGroupProps) => {
     setLoading(true);
@@ -144,27 +148,6 @@ export const useGroups = () => {
     }
   };
 
-  // // Function to remove users from a group
-  // const removeUsersFromGroup = async (data: RemoveFromGroupProps) => {
-  //   setLoading(true);
-  //   setError(null);
-  //   try {
-  //     const response: RemoveFromGroupResponse | null = await removeUsersFromGroup(data);
-  //     if (response) {
-  //       console.info('Users removed from group:', response);
-  //       setRemovedUsersRes(response);
-  //     }
-  //   } catch (err) {
-  //     if (err instanceof ApiError) {
-  //       setError(err);
-  //     } else {
-  //       setError(new ApiError(500, 'An unexpected error occurred', err));
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   // Function to get users by group ID
   const fetchGroupUsers = async (params: GetUsersByGroupIdProps) => {
     setLoading(true);
@@ -185,7 +168,34 @@ export const useGroups = () => {
     }
   };
 
+  // Function to fetch assigned groups
+  const fetchAssignedGroups = async ({ id }: GetAssignedGroupsProps) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response: GetAssignedGroupsResponse | null = await getAssignedGroups({ id });
+      if (response) {
+        setAssignedGroups(response.data);
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err);
+      } else {
+        setError(new ApiError(500, 'An unexpected error occurred', err));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
+
+
+
   return {
+    assignedGroups,
+    fetchAssignedGroups,
     groups,
     loading,
     error,

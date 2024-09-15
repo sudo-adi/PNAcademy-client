@@ -124,3 +124,17 @@ export interface GetUsersByGroupIdResponse {
 
 
 
+
+
+export interface GetAssignedGroupsProps {
+  id: string;
+}
+
+export interface AssignedGroup {
+  id: string;
+}
+
+export interface GetAssignedGroupsResponse {
+  status: 'success';
+  data: AssignedGroup[];
+}

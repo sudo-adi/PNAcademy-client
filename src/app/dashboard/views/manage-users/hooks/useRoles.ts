@@ -19,6 +19,7 @@ export const useRoles = () => {
   const [patchedRoleRes, setPatchedRoleRes] = useState<UpdateRoleResponse>();
   const [removedRolesRes, setRemovedRolesRes] = useState<DeleteRoleResponse>();
 
+
   // Function to create a role
   const addRole = async (data: CreateRoleProps) => {
     setLoading(true);

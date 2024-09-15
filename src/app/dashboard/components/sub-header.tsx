@@ -1,6 +1,4 @@
 "use client"
-import { Button } from '@/components/ui/button'
-import { Bell } from 'lucide-react'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { useTheme } from "next-themes"
@@ -24,10 +22,6 @@ const SubHeader = () => {
           <img src={logo} className="h-5" />
           <span className="">PNAcademy</span>
         </Link>
-        <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
-          <Bell className="h-4 w-4" />
-          <span className="sr-only">Toggle notifications</span>
-        </Button>
       </div>
     </>
   )

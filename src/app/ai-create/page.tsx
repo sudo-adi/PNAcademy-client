@@ -235,7 +235,7 @@ const AiCreate = () => {
             <button
               disabled={generating}
               onClick={() => router.push('/dashboard')}
-              className='text-[10px] border p-2 rounded-xl hover:bg-secondary'>
+              className='text-[12px] border p-2 rounded-xl hover:bg-secondary'>
               <ArrowLeft className='h-4 w-4' />
             </button>
             <h1 className="text-white hidden md:flex flex-row items-center gap-2">
@@ -277,11 +277,11 @@ const AiCreate = () => {
                     }}
                     placeholder="Total Questions"
                     type="number"
-                    className="w-full min-w-[4rem] text-[10px] h-9 rounded-sm"
+                    className="w-full min-w-[4rem] text-[12px] h-9 rounded-sm"
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button className='w-full text-[10px] h-9'
+                      <Button className='w-full text-[12px] h-9'
                         disabled={generating || disableInputUi}
                         variant="outline">
                         {difficultyLevel || '--  Select Difficulty  --'}
@@ -306,7 +306,7 @@ const AiCreate = () => {
                     disabled={generating || disableInputUi}
                     placeholder="Mark/Question"
                     type="number"
-                    className="w-full min-w-[4rem] text-[10px] h-9"
+                    className="w-full min-w-[4rem] text-[12px] h-9"
                     onChange={(e) => {
                       const value = parseInt(e.target.value);
                       setSectionMarks(isNaN(value) ? 0 : value);
@@ -315,7 +315,7 @@ const AiCreate = () => {
                   <Button
                     disabled={generating || disableGenerateButton}
                     onClick={handleGenerateQuestions}
-                    className='w-full text-[10px] h-9'>
+                    className='w-full text-[12px] h-9'>
                     {generating ?
                       <>
                         Generating
@@ -385,7 +385,7 @@ const AiCreate = () => {
                           ) : (
                             <>
                               <PlusIcon className="h-4 w-4" />
-                              <span className="text-[10px]">Add Question</span>
+                              <span className="text-[12px]">Add Question</span>
                             </>
                           )}
                         </div>

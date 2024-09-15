@@ -369,25 +369,19 @@ export default function Create({ params }: { params: { assessmentId: string } })
   }
 
   return (
-    <div className="flex max-h-screen flex-row overflow-y-hidden">
+    <div className="flex max-h-screen flex-row overflow-hidden">
       <div className="flex flex-col w-full">
-        <Header assessmentId={assessmentId} />
+        <Header assessmentId={assessmentId} currentQuestionMarks={currentQuestionMarks} setCurrentQuestionMarks={setCurrentQuestionMarks} currentSectionIndex={currentSectionIndex} />
         <main className="flex flex-1 flex-col lg:gap-2 p-4 overflow-y-scroll scrollbar-none">
           <div className="flex flex-col gap-2 w-full max-h-[calc(100vh-6rem)]">
             <Card className="border-none">
               <div className="flex flex-col gap-2 w-full p-1">
                 <div className="flex flex-row justify-between items-center">
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 p-2">
                     <Badge className="text-[10px] cursor-default">
                       {currentQuestionIndex + 1}
                     </Badge>
-                    <Badge className="text-[10px] cursor-pointer" variant={"outline"}>
-                      <input
-                        className="bg-transparent border-none text-[10px] w-4 text-center outline-none"
-                        value={currentQuestionMarks}
-                        onChange={(e) => setCurrentQuestionMarks(parseInt(e.target.value))}
-                      />
-                    </Badge>
+
                   </div>
                   <RemoveButton
                     loading={removeQuestionLoading}
@@ -408,7 +402,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
               <Separator className="w-[98%]" />
             </div>
             <Card
-              className="flex flex-col  items-center justify-start gap-2 border border-none rounded-lg h-[30rem] min-h-[12rem] max-h-[60rem] w-full p-1 overflow-y-auto scrollbar-none">
+              className="flex flex-col  items-center justify-start gap-2 border border-none rounded-lg h-[calc(100vh-10rem)] min-h-[12rem] max-h-[60rem] w-full p-1 overflow-y-auto scrollbar-none">
               {currentOptionsContent?.map((option, index) => (
                 <div className="flex flex-col gap-2 w-full p-1" key={index}>
                   <div className="flex flex-row justify-between items-center">
@@ -458,7 +452,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
             </Card>
             <Separator />
             <div className="flex flex-row w-full gap-2">
-              <Card className="flex flex-col w-1/4 border border-dashed h-[5rem]">
+              {/* <Card className="flex flex-col w-1/4 border border-dashed h-[5rem]">
                 <div className="flex flex-wrap overflow-scroll scrollbar-none">
                   <Badge className="text-[8px] cursor-default m-1">
                     Python
@@ -467,8 +461,8 @@ export default function Create({ params }: { params: { assessmentId: string } })
                     </button>
                   </Badge>
                 </div>
-              </Card>
-              <div className="flex flex-col w-3/4 justify-center gap-1 items-center">
+              </Card> */}
+              <div className="flex flex-col w-full justify-center gap-1 items-center">
                 <Card className="flex flex-row items-center w-full p-2 gap-2 border border-dashed bg-transparent justify-between">
                   <div className="flex gap-2 flex-row items-center scrollbar-none">
                     <div className="flex flex-row items-center w-full gap-2 overflow-x-scroll scrollbar-none">
@@ -484,7 +478,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
                       ))}
                     </div>
                     <AddQuestionButton
-                      disabled={allButtonsDisabled}
+                      disabled={allButtonsDisabled || currentSectionData!.length === 0}
                       onClick={() => handleAddQuestion()}
                       loading={addQuestionLoading} />
                   </div>
@@ -496,7 +490,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
                 </Card>
                 <div className="flex flex-row gap-2 w-full">
                   <Card className="flex flex-row w-full p-2 gap-2 border-dashed bg-transparent">
-                    <div className="flex flex-row items-center w-full gap-2 overflow-x-scroll">
+                    <div className="flex flex-row items-center w-full gap-2 overflow-x-scroll scrollbar-none">
                       {assessmentData.map((section, index) => (
                         <SectionButton
                           disabled={allButtonsDisabled}
@@ -539,7 +533,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
           </div>
         </main>
       </div >
-      <div className="hidden h-full border-r bg-muted/40 md:block md:w-[350px] lg:min-w-[400px] overflow-y-scroll">
+      <div className="hidden h-full border-r bg-muted/40 md:block md:w-[350px] lg:min-w-[400px]">
         <SideBar assessmentId={params.assessmentId} />
       </div>
     </div >

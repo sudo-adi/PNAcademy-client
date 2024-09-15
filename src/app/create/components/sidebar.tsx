@@ -59,7 +59,6 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const { assessment, fetchAssessmentById, patchAssessment } = useAssessment();
-
   useEffect(() => {
     const fetchAndSetAssessment = async () => {
       try {
@@ -110,20 +109,19 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
           console.error('Failed to update assessment:', err);
         }
       };
-
       updateAndSetAssessment();
     }
   };
 
   return (
-    <div className="flex h-[100vh] flex-col gap-2 border-l w-full overflow-y-scroll">
+    <div className="flex h-[100vh] flex-col gap-2 border-l w-full overflow-hidden ">
       {loading ?
         (<div className="flex h-screen w-full items-center justify-center">
-          <Loader2 className="w-12 h-12 animate-spin " />
+          <Loader2 className="w-12 h-12 animate-spin" />
         </div>)
         :
         (<>
-          <div className="flex h-[calc(100vh)] flex-col gap-4 p-4 w-full text-xs overflow-y-scroll">
+          <div className="flex h-[calc(100vh)] flex-col gap-4 p-4 w-full text-xs overflow-y-scroll scrollbar-none">
             <FormInput
               label="Assessment Name:"
               placeholder="Enter assessment name"

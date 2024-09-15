@@ -10,6 +10,7 @@ import ManageNotifications from '../views/manage-notifications/manage-notificati
 import useStore from '@/lib/stores/nav-store/store'
 import ManageReports from '../views/manage-reports/manage-reports'
 import Settings from '../views/settings/settings'
+import Notifications from '../views/notifications/notifications'
 
 const views = [
   <OverView key={0} />,
@@ -20,7 +21,8 @@ const views = [
   <ManageUsers key={5} />,
   <ManageGroups key={6} />,
   <ManageNotifications key={7} />,
-  <Settings key={8} />
+  <Notifications key={8} />,
+  <Settings key={9} />
 ]
 
 const Body = () => {

@@ -201,7 +201,6 @@ interface RowProps {
   loading: boolean;
 }
 
-
 // Single table row
 const Row: React.FC<RowProps> = ({ role, selected, loading, onSelectRole, refreshRoles }) => {
   return (

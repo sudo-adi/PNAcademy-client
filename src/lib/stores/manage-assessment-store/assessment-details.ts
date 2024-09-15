@@ -11,6 +11,7 @@ interface State {
   duration: number;
   is_active: boolean;
   createdBy: string;
+  assignedGroups: string[];
 }
 
 interface Actions {
@@ -21,6 +22,7 @@ interface Actions {
   setDuration: (duration: number) => void;
   setIsActive: (isActive: boolean) => void;
   setCreatedBy: (createdBy: string) => void;
+  setAssignedGroups: (groups: string[]) => void;
 }
 
 const data = getDecodedTokenData();
@@ -33,13 +35,15 @@ const useCreateAssessmentDetailsStore = create<State & Actions>((set) => ({
   duration: 1000 * 60 * 60,
   is_active: false,
   createdBy: userId || "",
+  assignedGroups: [],
   setAssessmentName: (name) => set({ assessmentName: name }),
   setAssessmentDescription: (description) => set({ assessmentDescription: description }),
   setStartAt: (startAt) => set({ startAt }),
   setEndAt: (endAt) => set({ endAt }),
   setDuration: (duration) => set({ duration }),
   setIsActive: (is_active) => set({ is_active }),
-  setCreatedBy: (createdBy: string) => set({ createdBy })
+  setCreatedBy: (createdBy: string) => set({ createdBy }),
+  setAssignedGroups: (groups) => set({ assignedGroups: groups }),
 }));
 
 export default useCreateAssessmentDetailsStore;
