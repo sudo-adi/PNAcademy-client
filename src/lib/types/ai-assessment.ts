@@ -11,6 +11,11 @@ export interface GenerateQuestionsResponse {
   };
 }
 
+export interface GenerateQuestionsProps {
+  topic: string;
+  numberOfQuestions: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+}
 export interface AiOption {
   description: string;
   isCorrect: boolean;
@@ -28,16 +33,9 @@ export interface AiQuestionsResponse {
   };
 }
 
-
-export interface GenerateQuestionsProps {
-  topic: string;
-  numberOfQuestions: number;
-  difficulty: 'easy' | 'medium' | 'hard';
-}
-
-
 export interface AiSection {
   prompt: string;
+  difficultyLevel: "easy" | "medium" | "hard" | "";
   sectionMarks: number;
   questions: AiQuestion[];
 

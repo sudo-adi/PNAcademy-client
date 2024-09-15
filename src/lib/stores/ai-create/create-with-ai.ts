@@ -3,6 +3,7 @@ import { AiSection } from '@/lib/types/ai-assessment';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+// Define the state shape
 interface State {
   currentNumberOfQuestions: number;
   currentDifficultyLevel: string;
@@ -12,6 +13,7 @@ interface State {
   currentQuestionIndex: number;
 }
 
+// Define actions to mutate the state
 interface Actions {
   setCurrentNumberOfQuestions: (number: number) => void;
   setCurrentDifficultyLevel: (level: string) => void;
@@ -21,6 +23,7 @@ interface Actions {
   setCurrentQuestionIndex: (index: number) => void;
 }
 
+// Create the store with persistence
 const useAiCreateStore = create<State & Actions>()(
   persist(
     (set) => ({
@@ -31,6 +34,7 @@ const useAiCreateStore = create<State & Actions>()(
       currentSectionIndex: 0,
       currentQuestionIndex: 0,
 
+      // Actions
       setCurrentNumberOfQuestions: (number) => set({ currentNumberOfQuestions: number }),
       setCurrentDifficultyLevel: (level) => set({ currentDifficultyLevel: level }),
       setCurrentMarksPerQuestion: (marks) => set({ currentMarksPerQuestion: marks }),
@@ -39,12 +43,7 @@ const useAiCreateStore = create<State & Actions>()(
       setCurrentQuestionIndex: (index) => set({ currentQuestionIndex: index }),
     }),
     {
-      name: 'ai-create-storage', // Name of the storage (localStorage key)
-      partialize: (state) => ({
-        currentNumberOfQuestions: state.currentNumberOfQuestions,
-        currentDifficultyLevel: state.currentDifficultyLevel,
-        currentMarksPerQuestion: state.currentMarksPerQuestion,
-      }), // Only persist these parts of the state
+      name: 'aicreate',
     }
   )
 );

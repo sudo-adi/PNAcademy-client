@@ -28,9 +28,27 @@ export const useAICreate = () => {
     }
   };
 
+  const createSingleQuestion = async (data: GenerateQuestionsProps) => {
+    try {
+      const response: GenerateQuestionsResponse | null = await generateQuestions(data);
+      if (response) {
+        return response;
+      }
+      return;
+    } catch (err) {
+      if (err instanceof ApiError) {
+        throw err;
+      } else {
+        throw new ApiError(500, 'An error occurred while generating questions', err);
+      }
+    } finally {
+    }
+  };
+
   return {
     loading,
     questionsResponse,
     createQuestions,
+    createSingleQuestion,
   };
 };
