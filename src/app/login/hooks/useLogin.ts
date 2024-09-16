@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from 'zod';
 import { checkAuth, login } from "@/lib/services/auth-service";
+import { AxiosError } from "axios";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address").min(1, "Email is required"),
@@ -23,17 +24,19 @@ export function useLogin() {
     setError(null);
 
     try {
-      loginSchema.parse({ email, password });
+      loginSchema.parse({ email, password }); // Validate the login data
       const success = await login(email, password);
+
       if (success) {
         router.push('/dashboard');
       }
+
       return success;
     } catch (err) {
-      setError("Invalid username or password");
-      return false;
+      setError("Login failed. Please check your credentials and try again.");
+      throw err;  // Rethrow the error for further handling
     } finally {
-      setLoading(false);
+      setLoading(false); // Always set loading to false after the operation
     }
   };
 

@@ -27,8 +27,8 @@ interface GroupBadgeProps {
 const AddGroup: React.FC<GroupBadgeProps> = ({ assessmentId }) => {
   const [groupList, setGroupList] = useState<Group[]>([]);
   const [order, setOrder] = useState<"ASC" | "DESC">("ASC");
-  const { groups, loading, fetchGroups, fetchAssignedGroups, assignedGroups: ass } = useGroups();
-  const { assignedGroups, setAssignedGroups, } = useCreateAssessmentDetailsStore();
+  const { groups, loading, assignedGroups: alreadyAssignedGroups, fetchGroups, fetchAssignedGroups } = useGroups();
+  const { assignedGroups, setAssignedGroups } = useCreateAssessmentDetailsStore();
 
   useEffect(() => {
     const fetchGroupsList = async () => {
@@ -48,15 +48,15 @@ const AddGroup: React.FC<GroupBadgeProps> = ({ assessmentId }) => {
     try {
       await addGroupToAssessment({ assessmentId, groupId });
       const prev = assignedGroups;
+      fetchAssignedGroups({ id: assessmentId });
       setAssignedGroups([...prev, groupId]);
     } catch (error) {
       console.error("Failed to assign group to assessment:", error);
     }
   };
-
   useEffect(() => {
-    console.log(ass);
-  }, [ass]);
+    console.log(assignedGroups);
+  }, [alreadyAssignedGroups]);
 
   const handleUnassignGroup = async (groupId: string) => {
     try {
@@ -68,19 +68,15 @@ const AddGroup: React.FC<GroupBadgeProps> = ({ assessmentId }) => {
     }
   };
 
-
-  useEffect(() => {
-    console.log(assignedGroups);
-    fetchAssignedGroups({ id: assessmentId });
-  }, [])
-
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Badge>
-          <Plus className='h-4 w-4 mr-2' />
-          Add
-        </Badge>
+      <DialogTrigger>
+        <>
+          <Badge>
+            <Plus className='h-4 w-4 mr-2' />
+            Add
+          </Badge>
+        </>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

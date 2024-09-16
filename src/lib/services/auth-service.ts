@@ -25,7 +25,7 @@ export const login = async (username: string, password: string): Promise<boolean
     return true;
   } catch (error) {
     console.error('Login failed:', error);
-    return false;
+    throw error;
   }
 };
 
@@ -33,7 +33,6 @@ export const login = async (username: string, password: string): Promise<boolean
 export const logout = (): void => {
   clearTokens();
   console.log("logout")
-  // Optionally, you can redirect the user to the login page or another page
 };
 
 // Function to check if user is logged in
