@@ -11,9 +11,7 @@ const loginSchema = z.object({
 // Function to handle login
 export const login = async (username: string, password: string): Promise<boolean> => {
   try {
-    // Validate input
     loginSchema.parse({ username, password });
-    // Your authentication logic to fetch tokens from the server
     const { data } = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/user/login`, {
       "email": username,
       "password": password,
@@ -35,9 +33,8 @@ export const logout = (): void => {
   console.log("logout")
 };
 
-// Function to check if user is logged in
 export const isLoggedIn = (): boolean => {
-  const token: string | undefined = getAccessToken();
+  const token: string | null = getAccessToken();
   if (token) {
     return !isTokenExpired(token);
   } else {
@@ -52,7 +49,6 @@ export const checkAuth = async (setLoading: (loading: boolean) => void, router: 
     setLoading(true);
     console.log('user is logged in');
     router.push('/dashboard');
-    clearAccessTokens();
     setLoading(false);
   }
   else if (refreshToken) {

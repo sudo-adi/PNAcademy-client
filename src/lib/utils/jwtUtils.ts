@@ -34,8 +34,6 @@ export const getDecodedTokenData = (): any => {
   }
 };
 
-
-//  method to check if the token is expired or not
 export const isTokenExpired = (token: string): boolean => {
   try {
     const payloadBase64 = token.split('.')[1];
