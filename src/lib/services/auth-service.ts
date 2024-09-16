@@ -36,7 +36,7 @@ export const logout = (): void => {
 export const isLoggedIn = (): boolean => {
   const token: string | null = getAccessToken();
   if (token) {
-    return isTokenExpired(token);
+    return !isTokenExpired(token);
   } else {
     return false;
   }
@@ -53,16 +53,15 @@ export const checkAuth = async (setLoading: (loading: boolean) => void, router: 
   }
   else if (refreshToken) {
     try {
-      console.log('refresh token found', refreshToken);
+      setLoading(true);
       const { data } = await axios.post<{ accessToken: string; refreshToken: string }>(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/user/access-token`, { "refreshToken": refreshToken.toString() });
       saveTokens(data.accessToken, refreshToken);
-      console.log('access token generated again');
-      console.log(data.accessToken);
       router.push('/dashboard');
     } catch (error) {
       clearTokens();
       router.push('/login');
     } finally {
+      setLoading(false);
     }
   } else {
     console.log('no refresh token found hence redirecting to login page');
