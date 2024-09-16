@@ -14,7 +14,7 @@ export const login = async (username: string, password: string): Promise<boolean
     // Validate input
     loginSchema.parse({ username, password });
     // Your authentication logic to fetch tokens from the server
-    const { data } = await axios.post('http://localhost:4000/v1/user/login', {
+    const { data } = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/user/login`, {
       "email": username,
       "password": password,
       "deviceType": "web"
@@ -58,7 +58,7 @@ export const checkAuth = async (setLoading: (loading: boolean) => void, router: 
   else if (refreshToken) {
     try {
       console.log('refresh token found', refreshToken);
-      const { data } = await axios.post<{ accessToken: string; refreshToken: string }>('http://localhost:4000/v1/user/access-token', { "refreshToken": refreshToken.toString() });
+      const { data } = await axios.post<{ accessToken: string; refreshToken: string }>(`${process.env.NEXT_PUBLIC_BASE_URL}/v1/user/access-token`, { "refreshToken": refreshToken.toString() });
       saveTokens(data.accessToken, refreshToken);
       console.log('access token generated again');
       console.log(data.accessToken);
