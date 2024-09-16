@@ -144,7 +144,7 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ refreshRoles }) => {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" className='bg-transparent'>
+          <Button disabled={true} variant="outline" className='bg-transparent'>
             <Edit className='h-4 w-4' />
           </Button>
         </DialogTrigger>

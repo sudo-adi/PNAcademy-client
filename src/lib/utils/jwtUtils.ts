@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getRefreshToken, saveTokens, clearTokens, getAccessToken } from './tokenManager'
+import { JwtPayloadType } from '../types/jwtTypes';
 
 // method to get and save the new accessToken Along with the exisiting refreshToken
 export const getNewAccessToken = async (): Promise<string | undefined> => {
@@ -24,16 +25,19 @@ export const getNewAccessToken = async (): Promise<string | undefined> => {
 
 
 // method to decode jwt token
-export const getDecodedTokenData = (): any => {
+export const getDecodedTokenData = (): JwtPayloadType | null => {
   try {
-    const token = getAccessToken();
-    const payloadBase64 = token!.split('.')[1];
-    return JSON.parse(atob(payloadBase64));
+    const token = getAccessToken(); // Fetch access token
+    if (!token) throw new Error('No token found');
+    const payloadBase64 = token.split('.')[1];
+    const decodedPayload = atob(payloadBase64);
+    const parsedPayload = JSON.parse(decodedPayload) as JwtPayloadType;
+    return parsedPayload;
   } catch (error) {
+    console.error('Error decoding token:', error);
     return null;
   }
 };
-
 export const isTokenExpired = (token: string): boolean => {
   try {
     const payloadBase64 = token.split('.')[1];

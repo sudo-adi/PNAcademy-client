@@ -1,11 +1,14 @@
 import { Card } from '@/components/ui/card'
-import { ArchiveIcon, CircleDot, CircleIcon, FilePen, FileText } from 'lucide-react'
+import { ArchiveIcon, CircleDot, CircleIcon, FilePen, FileText, UsersIcon } from 'lucide-react'
 import React from 'react'
 
 const OverView = () => {
+
+  
+
   return (
-    <div className='flex flex-col h-full gap-4'>
-      <div className="flex gap-4 overflow-x-hidden">
+    <div className='flex flex-col h-full gap-4 max-h-[calc(100vh-7rem)] overflow-y-scroll scrollbar-none'>
+      <div className="flex gap-4">
         <Card className='flex flex-col p-4 w-full h-[10rem] cursor-pointer'>
           <div className="flex items-center justify-between">
             <h1 className='text-sm font-bold text-muted-foreground'>Total<br /> Assessments</h1>
@@ -30,7 +33,7 @@ const OverView = () => {
           </div>
         </Card>
       </div>
-      <div className="flex gap-4 overflow-x-hidden">
+      <div className="flex gap-4">
         <Card className='flex flex-col p-4 w-full h-[10rem]  cursor-pointer'>
           <h1 className='text-sm font-bold text-muted-foreground'>Scheduled<br /> Assessments</h1>
           <div className="flex flex-row items-end justify-between h-full">
@@ -57,6 +60,23 @@ const OverView = () => {
               29
             </h1>
           </div>
+        </Card>
+      </div>
+      <div className="flex w-full min-h-[20rem] border-2 border-dashed items-center justify-center md:text-4xl text-xl rounded-3xl">
+        Manage Reports OverView
+      </div>
+      <div className="flex gap-4">
+        <Card className='flex flex-col p-4 w-[20rem] h-[10rem]  cursor-pointer'>
+          <h1 className='text-sm font-bold text-muted-foreground'>Total<br /> Users</h1>
+          <div className="flex flex-row items-end justify-between h-full">
+            <UsersIcon className='h-6 w-6' />
+            <h1 className='text-6xl font-bold '>
+              234
+            </h1>
+          </div>
+        </Card>
+        <Card className='flex flex-col items-center justify-center p-4 w-full h-[10rem] md:text-2xl text-xl text-center cursor-pointer'>
+          Avaiable roles, users and groups overview
         </Card>
       </div>
     </div>
