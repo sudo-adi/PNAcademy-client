@@ -17,7 +17,7 @@ const Assessments = () => {
         <Card className='flex flex-col lg:flex-row w-full  justify-between items-center border-dashed gap-4 p-4 lg:p-2 overflow-hidden'>
           <div className="flex flex-row gap-2">
             <div className='text-3xl'>
-              Hey Aditya, Good Morning!
+              
             </div>
           </div>
           <div className="flex w-full h-full lg:w-auto items-center space-x-2">

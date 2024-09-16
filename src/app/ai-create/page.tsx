@@ -78,7 +78,6 @@ const AiCreate = () => {
     try {
       const section = [...currentSections];
       const currentSection = section[currentSectionIndex];
-      const question = currentSection.questions[index];
       const response = await createSingleQuestion({
         topic: currentSection.prompt,
         numberOfQuestions: 1,
@@ -103,13 +102,11 @@ const AiCreate = () => {
     }
   }
 
-
   const reGenerateSingleQuestion = async (index: number) => {
     setRegeneratingQuestionIndex(index);
     try {
       const section = [...currentSections];
       const currentSection = section[currentSectionIndex];
-      const question = currentSection.questions[index];
       const response = await createSingleQuestion({
         topic: currentSection.prompt,
         numberOfQuestions: 1,
@@ -133,10 +130,6 @@ const AiCreate = () => {
       setRegeneratingQuestionIndex(null); // Reset after completion
     }
   }
-
-
-
-
 
   const deleteQuestion = (index: number) => {
     const section = [...currentSections];
@@ -358,15 +351,14 @@ const AiCreate = () => {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 overflow-scroll w-full overflow-x-hidden overflow-y-scroll scrollbar-none h-[calc(100vh-21rem)] md:h-[calc(100vh-15rem)]">
                       {currentSections[currentSectionIndex]?.questions?.map((question, index) => {
-                        if (!question || !question.description || !question.Options) return null;
                         return (
                           <QuestionCard
                             key={index}
                             regenerating={regeneratingQuestionIndex === index} // Only show spinner for the question being regenerated
                             index={index}
                             question={question.description}
-                            options={question.Options.map((option) => option.description)}
-                            correctOption={question.Options.find((option) => option.isCorrect)?.description || 'No correct option found'}
+                            options={question.options.map((option) => option.description)}
+                            correctOption={question.options.find((option) => option.isCorrect)?.description || 'No correct option found'}
                             questionNumber={index + 1}
                             regenerateQuestion={reGenerateSingleQuestion}
                             deleteQuestion={deleteQuestion}

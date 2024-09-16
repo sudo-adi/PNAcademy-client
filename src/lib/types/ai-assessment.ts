@@ -3,7 +3,7 @@ export interface GenerateQuestionsResponse {
   data: {
     questions: Array<{
       description: string;
-      Options: Array<{
+      options: Array<{
         description: string;
         isCorrect: boolean;
       }>;
@@ -23,7 +23,7 @@ export interface AiOption {
 
 export interface AiQuestion {
   description: string;
-  Options: AiOption[];
+  options: AiOption[];
 }
 
 export interface AiQuestionsResponse {

@@ -36,7 +36,7 @@ export const logout = (): void => {
 export const isLoggedIn = (): boolean => {
   const token: string | null = getAccessToken();
   if (token) {
-    return !isTokenExpired(token);
+    return isTokenExpired(token);
   } else {
     return false;
   }

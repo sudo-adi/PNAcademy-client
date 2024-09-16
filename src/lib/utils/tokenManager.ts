@@ -5,9 +5,6 @@ const cookies = new Cookies();
 const ACCESS_TOKEN_NAME = 'accessToken';
 const REFRESH_TOKEN_NAME = 'refreshToken';
 
-const fifteenMinutes = 15 * 60 * 60; // 15 minutes in seconds
-const thirtyDays = 30 * 24 * 60 * 60; // 30 days in seconds
-
 export const saveTokens = (accessToken: string, refreshToken: string): void => {
   cookies.set(ACCESS_TOKEN_NAME, accessToken, {
     path: '/',
