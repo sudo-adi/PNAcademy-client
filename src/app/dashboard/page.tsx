@@ -18,14 +18,20 @@ const Dashboard = () => {
     checkAuth(setLoading, router);
   }, [])
 
+
+
   return (
     <>
+
       {loading ?
         (<div className="flex items-center justify-center h-screen">
           <PnaLoader />
         </div>) :
-        (
-          < div className="grid h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]" >
+        (<>
+          <div className="flex h-screen w-screen md:hidden items-center justify-center">
+            View This App on Desktop Only
+          </div>
+          <div className="hidden md:grid h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]" >
             <div className="hidden border-r bg-muted/40 md:block">
               <Nav />
             </div>
@@ -36,6 +42,7 @@ const Dashboard = () => {
               </main>
             </div>
           </div >
+        </>
         )
       }
     </>
