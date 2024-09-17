@@ -61,6 +61,7 @@ const CreateAssessmentDialog = () => {
         duration: duration,
         created_by: createdBy,
       }
+      console.log(data);
       const response = await addAssessment(data);
     } catch (err) {
       if (err as ApiError) {
@@ -69,6 +70,8 @@ const CreateAssessmentDialog = () => {
       else {
         console.error(err);
       }
+    } finally {
+      setLoading(false);
     }
     reset();
   };

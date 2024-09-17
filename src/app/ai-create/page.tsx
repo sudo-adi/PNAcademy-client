@@ -331,7 +331,7 @@ const AiCreate = () => {
                 <div className="flex h-full w-full flex-col items-center justify-end">
                   Add a new sections by clicking down below the plus [+] icon
                 </div>
-                <div className="flex mt-1 border-[#e6e6e6] h-full w-[2px] border-l border-dashed ">
+                <div className="flex mt-1 border-black dark:border-[#e6e6e6] h-full w-[2px] border-l border-dashed ">
                 </div>
                 <ArrowDown className='h-8 w-8 mb-1' />
               </div>
@@ -341,7 +341,7 @@ const AiCreate = () => {
                   {currentSections.length === 0 || !currentSections[currentSectionIndex]?.questions?.length ? (
                     <div className="flex flex-col border-2 border-dashed rounded-xl flex-grow items-center justify-center overflow-y-scroll scrollbar-none  h-[calc(100vh-21rem)] md:h-[calc(100vh-15rem)] w-full">
                       <ArrowUp className='h-8 w-8 mt-1' />
-                      <div className="flex mt-1 border-[#e6e6e6] h-full w-[2px] border-l border-dashed ">
+                      <div className="flex mt-1 border-black dark:border-[#e6e6e6]  h-full w-[2px] border-l border-dashed ">
                       </div>
                       <div className="flex h-full w-full flex-col items-center justify-start">
                         Generate Some Questions

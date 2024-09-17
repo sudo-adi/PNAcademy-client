@@ -33,6 +33,7 @@ const Header = () => {
       <Sheet>
         <SheetTrigger asChild>
           <Button
+            disabled={true}
             variant="outline"
             size="icon"
             className="shrink-0 md:hidden"

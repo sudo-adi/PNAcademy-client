@@ -18,6 +18,7 @@ import useStore from '@/lib/stores/nav-store/store';
 import { logout } from '@/lib/services/auth-service';
 import NavButton from './nav-button';
 import { getDecodedTokenData } from '@/lib/utils/jwtUtils';
+import { clearTokens } from '@/lib/utils/tokenManager';
 
 const Nav: React.FC = () => {
   const { activeNavIndex, setActiveNavIndex } = useStore();
@@ -33,6 +34,7 @@ const Nav: React.FC = () => {
       console.error('No decoded token data found');
     }
   }, []);
+
 
   // Navigation items with corresponding required permissions
   const navItems = [

@@ -27,11 +27,10 @@ export const login = async (username: string, password: string): Promise<boolean
   }
 };
 
-// Function to handle logout
-export const logout = (): void => {
+export const logout = () => {
   clearTokens();
-  console.log("logout")
-};
+  window.location.href = "/login"
+}
 
 export const isLoggedIn = (): boolean => {
   const token: string | null = getAccessToken();

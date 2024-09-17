@@ -6,10 +6,13 @@ import { useEffect, useState } from "react"
 import { checkAuth } from "@/lib/services/auth-service"
 import { useRouter } from "next/navigation"
 import PnaLoader from "@/components/common/custom-loading-animation"
+import { useTheme } from "next-themes"
+import { set } from "date-fns"
 
 const Dashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     checkAuth(setLoading, router);
