@@ -17,6 +17,7 @@ import { ToastAction } from '@/components/ui/toast'
 import QuestionCard from './components/questioncard'
 import PnaLoader from '@/components/common/custom-loading-animation'
 import { set } from 'date-fns'
+import CreateNewAssessmentWithAiDialogBox from './components/create-new-assessment-with-ai-dialog-box'
 
 
 const AiCreate = () => {
@@ -56,6 +57,7 @@ const AiCreate = () => {
       });
     }
     setGenerating(false);
+    console.log("here are sections", currentSections);
   }
 
   const handleSectionChange = (index: number) => {
@@ -136,6 +138,9 @@ const AiCreate = () => {
     section[currentSectionIndex].questions = section[currentSectionIndex].questions.filter((_, i) => i !== index);
     setCurrentSections(section);
   }
+
+
+
 
 
 
@@ -243,9 +248,7 @@ const AiCreate = () => {
               Section {currentSectionIndex + 1} of {currentSections.length}
             </Badge>
           </div>
-          <Button size="sm" className='text-xs'>
-            Create +
-          </Button>
+          <CreateNewAssessmentWithAiDialogBox />
         </div>
         <div className="flex flex-col w-full py-4 px-5 gap-2">
           <div className="flex flex-col md:flex-row items-start h-[11rem] md:h-[5rem] gap-2 w-full rounded-2xl">

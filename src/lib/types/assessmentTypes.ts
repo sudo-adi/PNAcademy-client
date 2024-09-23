@@ -10,17 +10,9 @@ export interface CreateAssessmentProps {
 }
 
 // interface for createAssessment response
-export interface AssessmentResponse {
-  id: string;
-  name: string;
-  description: string;
-  is_active: boolean;
-  start_at: string;
-  end_at: string;
-  duration: number;
-  created_by: string;
-  updatedAt: string;
-  createdAt: string;
+export interface CreateAssessmentResponse {
+  data: AssessmentResponse;
+  message: string;
 }
 
 export interface GetAssessmentByIdProps {

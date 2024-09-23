@@ -1,14 +1,15 @@
 import { AxiosError } from 'axios';
 import axiosInstance from '../../api/axiosInstance';
 import { ApiError } from '../../api/apiError';
-import { AddGroupToAssessmentProps, AddGroupToAssessmentResponse, AssessmentResponse, CreateAssessmentProps, DeleteAssessmentProps, DeleteAssessmentResponse, GetAssessmentByIdProps, GetAssessmentByIdResponse, GetAssessmentsProps, GetAssessmentsResponse, GetAssignedAssessmentsProps, GetAssignedAssessmentsResponse, RemoveGroupFromAssessmentProps, RemoveGroupFromAssessmentResponse, UpdateAssessmentProps, UpdateAssessmentResponse } from '@/lib/types/assessmentTypes';
+import { AddGroupToAssessmentProps, AddGroupToAssessmentResponse, AssessmentResponse, CreateAssessmentProps, CreateAssessmentResponse, DeleteAssessmentProps, DeleteAssessmentResponse, GetAssessmentByIdProps, GetAssessmentByIdResponse, GetAssessmentsProps, GetAssessmentsResponse, GetAssignedAssessmentsProps, GetAssignedAssessmentsResponse, RemoveGroupFromAssessmentProps, RemoveGroupFromAssessmentResponse, UpdateAssessmentProps, UpdateAssessmentResponse } from '@/lib/types/assessmentTypes';
 
 
 
 // Function to create an assessment
-export const createAssessment = async (data: CreateAssessmentProps): Promise<AssessmentResponse | null> => {
+export const createAssessment = async (data: CreateAssessmentProps): Promise<CreateAssessmentResponse | null> => {
   try {
-    const response = await axiosInstance.post<AssessmentResponse>('/v1/assessment/create', data);
+    console.log("new app", data);
+    const response = await axiosInstance.post<CreateAssessmentResponse>('/v1/assessment/create', data);
     if (response.status === 200 || response.status === 201) {
       return response.data;
     }
@@ -71,7 +72,6 @@ export const getAssessments = async (data: GetAssessmentsProps): Promise<GetAsse
     });
 
     if (response.status === 200 || response.status === 201) {
-      console.info('Assessments retrieved successfully', response.data);
       return response.data;
     }
     return null;
@@ -257,3 +257,35 @@ export const removeGroupFromAssessment = async (data: RemoveGroupFromAssessmentP
 };
 
 
+
+
+// Function to get total marks of an assessment using assessment id
+// export const getTotalMarksUsingAssessmentId = async (assessmentId: string): Promise<number | null> => {
+//   try {
+//     const response = await axiosInstance.get<>(
+//       `/v1/assessment/v1/assessment/totalmarks?page=1&pageSize=1&sortBy=id&order=ASC&assessmentId=${assessmentId}`
+//     );
+
+//     if (response.status === 200 || 201) {
+//       console.info('Total marks retrieved successfully', response.data);
+//       return response.data.totalMarks;
+//     }
+//     return null;
+//   } catch (error) {
+//     if (error instanceof AxiosError) {
+//       const { status, data } = error.response || {};
+//       switch (status) {
+//         case 400:
+//           throw new ApiError(status, 'Bad Request: Invalid parameters', data);
+//         case 401:
+//           throw new ApiError(status, 'Unauthorized: JWT token is missing or invalid', data);
+//         case 500:
+//           throw new ApiError(status, 'Internal Server Error', data);
+//         default:
+//           throw new ApiError(status!, 'An unexpected error occurred', data);
+//       }
+//     } else {
+//       throw new ApiError(500, 'An unexpected error occurred', error);
+//     }
+//   }
+// };

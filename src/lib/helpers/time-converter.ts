@@ -7,3 +7,9 @@ export const formatDateInIST = (dateString: string) => {
     hour12: true
   }).toLocaleUpperCase();
 };
+
+
+export const millisecondsToMinutes = (milliseconds: number) => {
+  return Math.floor(milliseconds / 60000);
+}
+

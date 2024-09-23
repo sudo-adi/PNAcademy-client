@@ -1,34 +1,34 @@
 import { Input } from '@/components/ui/input';
-import useCreateAssessmentDetailsStore from '@/lib/stores/manage-assessment-store/assessment-details';
+import { GetAssessmentByIdData, UpdateAssessmentProps } from '@/lib/types/assessmentTypes';
 import React, { useState, useEffect } from 'react';
 
-
 interface SideBarAssessmentDurationProps {
-  duration: number;
+  assessment: GetAssessmentByIdData;
+  patchAssessment: (data: UpdateAssessmentProps) => Promise<void>;
 }
 
-const SideBarAssessmentDuration = () => {
-  const [duration, setDuration] = useState<number>();
+const SideBarAssessmentDuration: React.FC<SideBarAssessmentDurationProps> = ({ assessment, patchAssessment }) => {
   const [hours, setHours] = useState<number>(0);
   const [minutes, setMinutes] = useState<number>(0);
 
   // Effect to update the duration in milliseconds whenever hours or minutes change
   useEffect(() => {
     const durationInMilliseconds = (hours * 60 * 60 * 1000) + (minutes * 60 * 1000);
-    setDuration(durationInMilliseconds);
-    console.log(duration);
-  }, [hours, minutes, setDuration]);
+    patchAssessment({ ...assessment, duration: durationInMilliseconds });
+  }, [hours, minutes, assessment]); // Add missing dependencies
+
+  // Effect to initialize hours and minutes from assessment.duration
+  useEffect(() => {
+    setHours(Math.floor(assessment.duration / (60 * 60 * 1000)));
+    setMinutes(Math.floor((assessment.duration % (60 * 60 * 1000)) / (60 * 1000)));
+  }, [assessment.duration]); // Ensure it only runs when assessment.duration changes
 
   return (
     <>
-      <p className='p-2'>
-        Duration:
-      </p>
+      <p className='p-2'>Duration:</p>
       <div className='flex flex-row items-start justify-start w-full gap-2'>
         <div className="flex flex-col items-center justify-start w-full">
-          <p className='w-full px-2 text-[12px]'>
-            HH
-          </p>
+          <p className='w-full px-2 text-[12px]'>HH</p>
           <Input
             className='w-full'
             placeholder='HH'
@@ -39,14 +39,9 @@ const SideBarAssessmentDuration = () => {
             onChange={(e) => setHours(parseInt(e.target.value) || 0)}
           />
         </div>
-        <div>
 
-        </div>
         <div className="flex flex-col items-center justify-start w-full">
-
-          <p className='w-full px-2 text-[12px]'>
-            MM
-          </p>
+          <p className='w-full px-2 text-[12px]'>MM</p>
           <Input
             className='w-full'
             placeholder='MM'
@@ -60,6 +55,6 @@ const SideBarAssessmentDuration = () => {
       </div>
     </>
   );
-}
+};
 
 export default SideBarAssessmentDuration;

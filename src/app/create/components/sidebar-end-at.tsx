@@ -7,7 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { GetAssessmentByIdData, UpdateAssessmentProps } from "@/lib/types/assessmentTypes";
 
 interface SideBarEndsAtDateTimePicker {
@@ -22,7 +22,7 @@ const SideBarEndsAtDateTimePicker: React.FC<SideBarEndsAtDateTimePicker> = ({ as
   const [minute, setMinute] = React.useState<string>("");
   const [period, setPeriod] = React.useState<string>("AM");
 
-  React.useEffect(() => {
+  useEffect(() => {
     const now = assessment ? new Date(assessment.end_at) : new Date();
     const currentHour = now.getHours();
     const currentPeriod = currentHour >= 12 ? "PM" : "AM";

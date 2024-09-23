@@ -139,25 +139,37 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
               value={assessmentDescription}
             />
             <div className="flex w-full">
-              <Card className='w-full'>
-                <CardContent className='p-2'>
-                  <SideBarStartAtDateTimePicker
-                    assessment={assessment!}
-                    patchAssessment={patchAssessment}
-                  />
-                  <div className='my-2' />
-                  <SideBarEndsAtDateTimePicker assessment={assessment!}
-                    patchAssessment={patchAssessment}
-                  />
-                  <div className='my-2' />
-                  <SideBarAssessmentDuration />
+              <Card className="w-full">
+                <CardContent className="p-2">
+                  {/* Pass assessment or null */}
+                  {assessment && (
+                    <>
+                      <SideBarStartAtDateTimePicker
+                        assessment={assessment}
+                        patchAssessment={patchAssessment}
+                      />
+                      <div className="my-2" />
+                      <SideBarEndsAtDateTimePicker
+                        assessment={assessment}
+                        patchAssessment={patchAssessment}
+                      />
+                      <div className="my-2" />
+                      <SideBarAssessmentDuration
+                        assessment={assessment}
+                        patchAssessment={patchAssessment}
+                      />
+                    </>
+                  )}
+
                 </CardContent>
               </Card>
             </div>
             <AssignedGroupsCard assessmentId={assessmentId} />
           </div>
           <div className="items-center">
-            <SubHeader />
+            {assessment && (
+              <SubHeader patchAssessment={patchAssessment} assessment={assessment} />
+            )}
           </div>
         </>)}
     </div>

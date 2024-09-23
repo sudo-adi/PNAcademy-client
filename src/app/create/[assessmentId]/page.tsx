@@ -31,21 +31,15 @@ export default function Create({ params }: { params: { assessmentId: string } })
 
   const {
     addQuestion,
-    addQuestionResponse,
     patchQuestion,
-    patchQuestionResponse,
     removeQuestion,
-    removeQuestionResponse,
   } = useQuestions();
 
 
   const {
     addOption,
-    addOptionResponse,
     patchOption,
-    patchOptionResponse,
     removeOptionById,
-    removeOptionByIdResponse,
   } = useOptions();
 
   const {
@@ -94,7 +88,6 @@ export default function Create({ params }: { params: { assessmentId: string } })
   const [addSectionLoading, setAddSectionLoading] = useState(false);
   const [removeSectionLoading, setRemoveSectionLoading] = useState(false);
   const [allButtonsDisabled, setAllButtonsDisabled] = useState(false);
-
 
   useEffect(() => {
     const fetchAssessment = async () => {
@@ -294,6 +287,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
     } finally {
       setAddQuestionLoading(false);
       setAllButtonsDisabled(false);
+      handleQuestionChange(currentSectionData!.length);
     }
   }
 
@@ -390,6 +384,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
                   />
                 </div>
                 <Textarea
+                  disabled={currentSectionData!.length === 0}
                   className="w-full max-h-[10rem]"
                   placeholder="Enter your Question..."
                   onChange={handleQuestionDescriptionChange}
@@ -429,7 +424,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
                     </button>
                   </div>
                   <Textarea
-                    className="w-full max-h-[10rem]"
+                    className={`w-full max-h-[10rem] ${currentSectionData!.length === 0 ? "cursor-not-allowed" : ""}`}
                     placeholder="Enter option description..."
                     value={currentOptionsContent[index].description}
                     onChange={(e) => {
@@ -444,8 +439,9 @@ export default function Create({ params }: { params: { assessmentId: string } })
                 </div>
               ))}
               <button
+                disabled={assessmentData!.length === 0}
                 onClick={addNewOption}
-                className="text-[10px] border p-3 text-xs rounded-[8px] hover:bg-secondary flex items-center justify-center">
+                className={`text-[10px] border p-3 text-xs rounded-[8px] hover:bg-secondary  items-center justify-center ${assessmentData.length === 0 ? "hidden" : "flex"}`}>
                 <Plus className="h-3 w-3 mr-2" />
                 Add Option
               </button>
@@ -463,7 +459,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
                 </div>
               </Card> */}
               <div className="flex flex-col w-full justify-center gap-1 items-center">
-                <Card className="flex flex-row items-center w-full p-2 gap-2 border border-dashed bg-transparent justify-between">
+                {assessmentData.length > 0 && (<Card className="flex flex-row items-center w-full p-2 gap-2 border border-dashed bg-transparent justify-between">
                   <div className="flex gap-2 flex-row items-center scrollbar-none">
                     <div className="flex flex-row items-center w-full gap-2 overflow-x-scroll scrollbar-none">
                       {currentSectionData!.map((question, index) => (
@@ -485,9 +481,9 @@ export default function Create({ params }: { params: { assessmentId: string } })
                   <RemoveButton
                     loading={removeQuestionLoading}
                     onClick={handleRemoveQuestion}
-                    disabled={currentSectionData!.length === 1 || removeQuestionLoading || allButtonsDisabled}
+                    disabled={currentSectionData.length <= 1 || removeQuestionLoading || allButtonsDisabled}
                   />
-                </Card>
+                </Card>)}
                 <div className="flex flex-row gap-2 w-full">
                   <Card className="flex flex-row w-full p-2 gap-2 border-dashed bg-transparent">
                     <div className="flex flex-row items-center w-full gap-2 overflow-x-scroll scrollbar-none">
@@ -509,7 +505,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
                     <RemoveButton
                       loading={removeSectionLoading}
                       onClick={handleRemoveSection}
-                      disabled={assessmentData.length === 1 || removeSectionLoading || allButtonsDisabled}
+                      disabled={assessmentData.length <= 1 || removeSectionLoading || allButtonsDisabled}
                     />
                   </Card>
                 </div>

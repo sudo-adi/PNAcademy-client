@@ -8,7 +8,6 @@ export const createOption = async (data: CreateOptionProps): Promise<CreateOptio
   try {
     const response = await axiosInstance.post<CreateOptionResponse>('/v1/assessment/option', data);
     if (response.status === 200 || response.status === 201) {
-      console.info('Option created successfully', response.data);
       return response.data;
     }
     return null;
@@ -35,7 +34,6 @@ export const updateOption = async (data: UpdateOptionProps): Promise<UpdateOptio
   try {
     const response = await axiosInstance.patch<UpdateOptionResponse>('/v1/assessment/option', data);
     if (response.status === 200 || response.status === 201) {
-      console.info('Option updated successfully', response.data);
       return response.data;
     }
     return null;
@@ -66,7 +64,6 @@ export const deleteOption = async ({ id }: DeleteOptionProps): Promise<DeleteOpt
     });
 
     if (response.status === 200 || response.status === 201) {
-      console.info('Option deleted successfully', response.data);
       return response.data;
     }
     return null;

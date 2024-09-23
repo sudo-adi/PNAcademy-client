@@ -47,7 +47,7 @@ const Nav: React.FC = () => {
     { text: 'Manage Groups', icon: <Users />, permission: 'canManageLocalGroup', disabled: false },
     { text: 'Manage Notifications', icon: <BellPlus />, permission: 'canManageNotification', disabled: true },
     { text: 'Notifications', icon: <Bell />, permission: 'canViewNotification', disabled: true },
-    { text: 'Settings', icon: <Settings />, permission: 'canManageMyAccount', disabled: true },
+    { text: 'Settings', icon: <Settings />, permission: 'canManageMyAccount', disabled: false },
   ];
 
   return (

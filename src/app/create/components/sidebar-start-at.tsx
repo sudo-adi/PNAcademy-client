@@ -36,7 +36,6 @@ const SideBarStartAtDateTimePicker: React.FC<SideBarStartAtDateTimePickerProps> 
   }, []);
 
 
-
   const handleDateSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
       setDate(selectedDate);
@@ -44,7 +43,6 @@ const SideBarStartAtDateTimePicker: React.FC<SideBarStartAtDateTimePickerProps> 
     }
   };
 
-  // Handle time selection and update state with validation
   const updateDateTime = (
     selectedDate: Date,
     selectedHour: string,
@@ -82,7 +80,6 @@ const SideBarStartAtDateTimePicker: React.FC<SideBarStartAtDateTimePickerProps> 
     }
   };
 
-  // Handle time change and update the corresponding state
   const handleTimeChange = (type: "hour" | "minute" | "period", value: string) => {
     if (type === "hour") {
       setHour(value);
@@ -92,17 +89,9 @@ const SideBarStartAtDateTimePicker: React.FC<SideBarStartAtDateTimePickerProps> 
       setPeriod(value);
     }
     updateDateTime(date, type === "hour" ? value : hour, type === "minute" ? value : minute, type === "period" ? value : period);
-    console.log(startAt);
   };
-
-
   useEffect(() => {
-
   });
-
-
-
-
 
   return (
     <>

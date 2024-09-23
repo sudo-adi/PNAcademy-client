@@ -1,7 +1,7 @@
 import { ApiError } from '@/lib/api/apiError';
 import axiosInstance from '@/lib/api/axiosInstance';
 import { retry } from '@/lib/api/retryApiCalls';
-import { BulkUserProps, DeleteUsersProps, DeleteUsersResponse, GetUsersResponse, ImportUsersProps, ImportUsersResponse, RegisterUserProps, RegisterUserResponse, UpdateUserProps, UpdateUserResponse } from '@/lib/types/userTypes';
+import { BulkUserProps, DeleteUsersProps, DeleteUsersResponse, GetUserInfoResponse, GetUsersResponse, ImportUsersProps, ImportUsersResponse, RegisterUserProps, RegisterUserResponse, UpdateUserProps, UpdateUserResponse } from '@/lib/types/userTypes';
 import { AxiosError } from 'axios';
 
 // Function to Register a User
@@ -39,8 +39,8 @@ export const getUsers = async (data: BulkUserProps): Promise<GetUsersResponse | 
       const response = await axiosInstance.get<GetUsersResponse>('/v1/user/bulk', {
         params: data
       });
+
       if (response.status === 200 || response.status === 201) {
-        console.info('Bulk user information retrieved successfully', response.data);
         return response.data;
       }
       return null;
@@ -61,6 +61,7 @@ export const getUsers = async (data: BulkUserProps): Promise<GetUsersResponse | 
     }
   });
 };
+
 
 // Function to update a user
 export const updateUser = async (data: UpdateUserProps): Promise<UpdateUserResponse | null> => {
@@ -97,6 +98,35 @@ export const deleteUsers = async (data: DeleteUsersProps): Promise<DeleteUsersRe
       const response = await axiosInstance.delete<DeleteUsersResponse>('/v1/user/delete', { data });
       if (response.status === 200 || response.status === 201) {
         console.info('Users deleted successfully', response.data);
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const { status, data } = error.response || {};
+        switch (status) {
+          case 401:
+            throw new ApiError(status, 'Unauthorized: Access is denied due to invalid credentials', data);
+          case 500:
+            throw new ApiError(status, 'Internal Server Error', data);
+          default:
+            throw new ApiError(status!, 'An unexpected error occurred', data);
+        }
+      } else {
+        throw new ApiError(500, 'An unexpected error occurred', error);
+      }
+    }
+  });
+};
+
+
+
+// Function to get user info
+export const getUserInfo = async (): Promise<GetUserInfoResponse | null> => {
+  return retry(async () => {
+    try {
+      const response = await axiosInstance.get<GetUserInfoResponse>('/v1/user/info');
+      if (response.status === 200) {
         return response.data;
       }
       return null;

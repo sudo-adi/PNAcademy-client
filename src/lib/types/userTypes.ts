@@ -104,3 +104,17 @@ export interface ImportUsersResponse {
   message: string;
 }
 
+
+export interface GetUserInfoResponse {
+  message: string;
+  data: {
+    id: string;
+    role_id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+}

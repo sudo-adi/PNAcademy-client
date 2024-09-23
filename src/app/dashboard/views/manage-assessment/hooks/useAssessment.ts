@@ -15,6 +15,7 @@ import {
   Assessment,
   AssessmentResponse,
   CreateAssessmentProps,
+  CreateAssessmentResponse,
   DeleteAssessmentProps,
   DeleteAssessmentResponse,
   GetAssessmentByIdData,
@@ -48,8 +49,10 @@ export const useAssessment = () => {
   const addAssessment = async (data: CreateAssessmentProps) => {
     setAssessmentLoading(true);
     try {
-      const response: AssessmentResponse | null = await createAssessment(data);
-      setCreateAssessmentRes(response);
+      const response: CreateAssessmentResponse | null = await createAssessment(data);
+      if (response) {
+        setCreateAssessmentRes(response.data);
+      }
       return response;
     } catch (err) {
       if (err instanceof ApiError) {
@@ -110,6 +113,7 @@ export const useAssessment = () => {
     setAssessmentLoading(true);
     try {
       const response: UpdateAssessmentResponse | null = await updateAssessment(data);
+      console.log('patchedAssessmentRes', response);
       setPatchedAssessmentRes(response);
     } catch (err) {
       if (err instanceof ApiError) {

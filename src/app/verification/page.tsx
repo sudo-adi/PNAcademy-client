@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Verification = () => {
+const page = () => {
   return (
-    <main></main>
+    <div>page</div>
   )
 }
 
-export default Verification
+export default page

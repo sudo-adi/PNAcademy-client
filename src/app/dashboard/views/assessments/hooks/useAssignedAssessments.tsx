@@ -30,6 +30,27 @@ export const useAssignedAssessments = () => {
     }
   };
 
+
+  // const fetchTotalMarksUsingAssessmentId = async (assessmentId: string) => {
+  //   setLoading(true);
+  //   setError(null);
+  //   try {
+  //     const response: GetAssignedAssessmentsResponse | null = await getAssignedAssessments(params);
+  //     if (response) {
+  //       setAssessments(response.data.assessments);
+  //       setFetchedAssignedAssessmentsRes(response);
+  //     }
+  //   } catch (err) {
+  //     if (err instanceof ApiError) {
+  //       setError(err);
+  //     } else {
+  //       setError(new ApiError(500, 'An unexpected error occurred', err));
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
+
   return {
     assessments,
     loading,
@@ -37,4 +58,6 @@ export const useAssignedAssessments = () => {
     fetchedAssignedAssessmentsRes,
     fetchAssignedAssessments,
   };
+
+
 };

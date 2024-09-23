@@ -13,7 +13,6 @@ export const getNewAccessToken = async (): Promise<string | undefined> => {
       refreshToken: refreshToken
     });
     const { accessToken } = response.data;
-    saveTokens(accessToken, refreshToken);
     return accessToken;
 
   } catch (error) {

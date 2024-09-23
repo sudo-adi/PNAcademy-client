@@ -7,7 +7,6 @@ const AssessmentDuration = () => {
   const [hours, setHours] = useState<number>(0);
   const [minutes, setMinutes] = useState<number>(0);
 
-  // Effect to update the duration in milliseconds whenever hours or minutes change
   useEffect(() => {
     const durationInMilliseconds = (hours * 60 * 60 * 1000) + (minutes * 60 * 1000);
     setDuration(durationInMilliseconds);

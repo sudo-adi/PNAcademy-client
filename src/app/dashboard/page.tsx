@@ -12,13 +12,10 @@ import { set } from "date-fns"
 const Dashboard = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     checkAuth(setLoading, router);
-  }, [])
-
-
+  }, []);
 
   return (
     <>
