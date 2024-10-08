@@ -5,67 +5,23 @@ import { Input } from '@/components/ui/input';
 import React, { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
-import { Bell, BellPlus, FileCog, FilePen, FilePieChart, PieChart, ScrollText, User, UserCog, Users } from 'lucide-react';
+import { Bell, BellPlus, FileCog, FilePen, FilePieChart, Loader2, PieChart, ScrollText, User, UserCog, Users } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useRoles } from '../../hooks/useRoles';
 import { RolePermissions } from '@/lib/types/roleTypes';
+import { ApiError } from '@/lib/api/apiError';
+import { Badge } from '@/components/ui/badge';
+import { formatDateInIST } from '@/lib/helpers/time-converter';
+import { Separator } from '@/components/ui/separator';
 
-const CreateRoleDialog = () => {
-  const [roleName, setRoleName] = React.useState<string>('');
-  const [permissions, setPermissions] = React.useState<RolePermissions>({
-    canManageAssessment: false,
-    canManageUser: false,
-    canManageRole: false,
-    canManageNotification: false,
-    canManageLocalGroup: false,
-    canManageReports: false,
-    canAttemptAssessment: false,
-    canViewReport: false,
-    canManageMyAccount: false,
-    canViewNotification: false,
-  });
-  const { addedRoleRes, addRole } = useRoles();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [createRoleDisable, setCreteRoleDisable] = useState<boolean>(false)
 
-  const handleCreateRole = async () => {
-    try {
-      await addRole({ name: roleName, permissions });
-    } catch (error) {
-      console.log(error);
-    }
-  }
+interface CreateRoleDialogProps {
+  refreshRoles: () => void;
+}
 
-  const handlePermissionChange = (permission: keyof RolePermissions, value: boolean) => {
-    setPermissions((prevPermissions) => ({
-      ...prevPermissions,
-      [permission]: value,
-    }));
-  }
+const CreateRoleDialog: React.FC<CreateRoleDialogProps> = ({ refreshRoles }) => {
 
-  useEffect(() => {
-    if (roleName.length < 3) {
-      setCreteRoleDisable(true)
-    } else {
-      setCreteRoleDisable(false)
-    }
-  }, [roleName]);
-
-  const handleClearSelections = () => {
-    setPermissions({
-      canManageAssessment: false,
-      canManageUser: false,
-      canManageRole: false,
-      canManageNotification: false,
-      canManageLocalGroup: false,
-      canManageReports: false,
-      canAttemptAssessment: false,
-      canViewReport: false,
-      canManageMyAccount: false,
-      canViewNotification: false,
-    })
-  }
-
+  // constants here
   const managingPermissions = [
     {
       label: 'Manage Assessments',
@@ -132,6 +88,100 @@ const CreateRoleDialog = () => {
     }
   ];
 
+  // all hooks here
+  const { addRole } = useRoles();
+
+  // global state here
+
+  // local state here
+  const [roleName, setRoleName] = useState<string>('');
+  const [createdRole, setCreatedRole] = useState<any>();
+  const [permissions, setPermissions] = useState<RolePermissions>({
+    canManageAssessment: false,
+    canManageUser: false,
+    canManageRole: false,
+    canManageNotification: false,
+    canManageLocalGroup: false,
+    canManageReports: false,
+    canAttemptAssessment: false,
+    canViewReport: false,
+    canManageMyAccount: false,
+    canViewNotification: false,
+  });
+
+  // loading states
+  const [creatingRole, setCreatingRole] = useState<boolean>(false);
+
+  // error states
+  const [createRoleError, setCreateRoleError] = useState<Error | ApiError>();
+
+  // dialog states
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+
+  // disable states
+  const [createRoleDisable, setCreteRoleDisable] = useState<boolean>(false);
+
+  // handlers here
+  const handleCreateRole = async () => {
+    try {
+      setStatusDialogOpen(true);
+      setCreatingRole(true);
+      await addRole({ name: roleName, permissions });
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setCreateRoleError(err);
+      } else {
+        setCreateRoleError(err as Error);
+      }
+    } finally {
+      setCreatingRole(false);
+      setRoleName('');
+      setPermissions({
+        canManageAssessment: false,
+        canManageUser: false,
+        canManageRole: false,
+        canManageNotification: false,
+        canManageLocalGroup: false,
+        canManageReports: false,
+        canAttemptAssessment: false,
+        canViewReport: false,
+        canManageMyAccount: false,
+        canViewNotification: false,
+      });
+      refreshRoles();
+    }
+  }
+
+  const handlePermissionChange = (permission: keyof RolePermissions, value: boolean) => {
+    setPermissions((prevPermissions) => ({
+      ...prevPermissions,
+      [permission]: value,
+    }));
+  }
+
+  const handleClearSelections = () => {
+    setPermissions({
+      canManageAssessment: false,
+      canManageUser: false,
+      canManageRole: false,
+      canManageNotification: false,
+      canManageLocalGroup: false,
+      canManageReports: false,
+      canAttemptAssessment: false,
+      canViewReport: false,
+      canManageMyAccount: false,
+      canViewNotification: false,
+    })
+  }
+
+  // useEffects here
+  useEffect(() => {
+    if (roleName.length < 3) {
+      setCreteRoleDisable(true)
+    } else {
+      setCreteRoleDisable(false)
+    }
+  }, [roleName]);
 
   return (
     <>
@@ -153,6 +203,7 @@ const CreateRoleDialog = () => {
               <Input
                 id="name"
                 type="text"
+                value={roleName}
                 placeholder="e.g. student..."
                 onChange={(e) => setRoleName(e.target.value)}
                 required
@@ -192,8 +243,6 @@ const CreateRoleDialog = () => {
                     </TableRow>
                   ))}
                 </TableBody>
-
-
                 {/* Accessibility Permissions */}
                 <TableHeader className='border-t'>
                   <TableRow>
@@ -250,6 +299,34 @@ const CreateRoleDialog = () => {
                 Create Role
               </Button>
             </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{createRoleError ? 'Error' : 'Success'} </DialogTitle>
+          </DialogHeader>
+          <DialogDescription className='flex flex-row justify-between w-full'>
+            <div>
+              {creatingRole ?
+                <Loader2 className='h-4 w-4 animate-spin' />
+                : createRoleError ? createRoleError.message
+                  : 'Role Created Successfully'}
+            </div>
+
+            <Badge>
+              {createdRole?.createdAt ? formatDateInIST(createdRole.createdAt) : ""}
+            </Badge>
+
+          </DialogDescription>
+          <Card className='flex flex-col gap-2 w-full p-4'>
+            Role Created
+          </Card>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="default">Close</Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>

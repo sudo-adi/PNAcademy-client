@@ -1,23 +1,23 @@
 import { ApiError } from "@/lib/api/apiError";
 import axiosInstance from "@/lib/api/axiosInstance";
-import { AttemptQuestionProps, AttemptQuestionResponse, EndAssessmentProps, EndAssessmentResponse, EndSectionProps, EndSectionResponse, StartAssessmentAttemptProps, StartAssessmentAttemptResponse, StartAssessmentSectionProps, StartAssessmentSectionResponse } from "@/lib/types/attemptionTypes";
+import { AttemptQuestionProps, AttemptQuestionResponse, EndAssessmentProps, EndAssessmentResponse, EndSectionProps, EndSectionResponse, GetAssessmentTimeDetailsProps, GetAssessmentTimeDetailsResponse, StartAssessmentAttemptProps, StartAssessmentAttemptResponse, StartAssessmentSectionProps, StartAssessmentSectionResponse } from "@/lib/types/attemptionTypes";
 import { AxiosError } from "axios";
 
 
 export const startAssessmentAttempt = async (
   data: StartAssessmentAttemptProps
-): Promise<StartAssessmentAttemptResponse | null> => {
+): Promise<StartAssessmentAttemptResponse> => {
   try {
     const response = await axiosInstance.put<StartAssessmentAttemptResponse>(
       '/v1/assessment/attempt/start',
       data
     );
 
-    if (response.status === 200) {
-      console.info('Assessment attempt started successfully', response.data);
+    if (response.status === 200 || response.status === 201) {
       return response.data;
+    } else {
+      throw new ApiError(response.status, 'An unexpected error occurred', response.data);
     }
-    return null;
   } catch (error) {
     if (error instanceof AxiosError) {
       const { status, data } = error.response || {};
@@ -39,21 +39,20 @@ export const startAssessmentAttempt = async (
   }
 };
 
-
 export const startAssessmentSection = async (
   data: StartAssessmentSectionProps
-): Promise<StartAssessmentSectionResponse | null> => {
+): Promise<StartAssessmentSectionResponse> => {
   try {
     const response = await axiosInstance.put<StartAssessmentSectionResponse>(
       '/v1/assessment/attempt/section/start',
       data
     );
 
-    if (response.status === 200) {
-      console.info('Section started successfully', response.data);
+    if (response.status === 200 || response.status === 201) {
       return response.data;
+    } else {
+      throw new ApiError(response.status, 'An unexpected error occurred', response.data);
     }
-    return null;
   } catch (error) {
     if (error instanceof AxiosError) {
       const { status, data } = error.response || {};
@@ -79,18 +78,17 @@ export const startAssessmentSection = async (
 // Function to attempt a specific question in an assessment
 export const attemptQuestion = async (
   data: AttemptQuestionProps
-): Promise<AttemptQuestionResponse | null> => {
+): Promise<AttemptQuestionResponse> => {
   try {
     const response = await axiosInstance.post<AttemptQuestionResponse>(
       '/v1/assessment/attempt/question',
       data
     );
-
-    if (response.status === 200) {
-      console.info('Question attempted successfully', response.data);
+    if (response.status === 200 || response.status === 201) {
       return response.data;
+    } else {
+      throw new ApiError(response.status, 'An unexpected error occurred', response.data);
     }
-    return null;
   } catch (error) {
     if (error instanceof AxiosError) {
       const { status, data } = error.response || {};
@@ -115,18 +113,18 @@ export const attemptQuestion = async (
 
 export const endSection = async (
   data: EndSectionProps
-): Promise<EndSectionResponse | null> => {
+): Promise<EndSectionResponse> => {
   try {
     const response = await axiosInstance.put<EndSectionResponse>(
       '/v1/assessment/attempt/section/end',
       data
     );
 
-    if (response.status === 200) {
-      console.info('Section ended successfully', response.data);
+    if (response.status === 200 || response.status === 201) {
       return response.data;
+    } else {
+      throw new ApiError(response.status, 'An unexpected error occurred', response.data);
     }
-    return null;
   } catch (error) {
     if (error instanceof AxiosError) {
       const { status, data } = error.response || {};
@@ -152,7 +150,7 @@ export const endSection = async (
 // Function to end an ongoing assessment attempt
 export const endAssessmentAttempt = async (
   data: EndAssessmentProps
-): Promise<EndAssessmentResponse | null> => {
+): Promise<EndAssessmentResponse> => {
   try {
     // Send PUT request to end the assessment
     const response = await axiosInstance.put<EndAssessmentResponse>(
@@ -161,11 +159,11 @@ export const endAssessmentAttempt = async (
     );
 
     // Check if the response is successful
-    if (response.status === 200) {
-      console.info('Assessment ended successfully', response.data);
+    if (response.status === 200 || response.status === 201) {
       return response.data;
+    } else {
+      throw new ApiError(response.status, 'An unexpected error occurred', response.data);
     }
-    return null;
   } catch (error) {
     // Handle errors returned by the server
     if (error instanceof AxiosError) {
@@ -199,4 +197,45 @@ export const endAssessmentAttempt = async (
     }
   }
 };
+
+// Function to get time details from the server
+export const getAssessmentTimeDetails = async ({
+  id,
+}: GetAssessmentTimeDetailsProps): Promise<GetAssessmentTimeDetailsResponse> => {
+  try {
+    const response = await axiosInstance.get<GetAssessmentTimeDetailsResponse>(
+      '/v1/assessment/attempt/assessmentdetails/time',
+      {
+        params: { id },
+      }
+    );
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    } else {
+      throw new ApiError(response.status, 'An unexpected error occurred', response.data);
+    }
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const { response } = error;
+      if (response) {
+        const { status, data } = response;
+        switch (status) {
+          case 400:
+            throw new ApiError(status, 'Bad Request: Invalid data provided', data);
+          case 404:
+            throw new ApiError(status, 'Not Found: Assessment details not found', data);
+          case 500:
+            throw new ApiError(status, 'Internal Server Error', data);
+          default:
+            throw new ApiError(status, 'An unexpected error occurred', data);
+        }
+      } else {
+        throw new ApiError(500, 'Network error or unexpected error', error.message);
+      }
+    } else {
+      throw new ApiError(500, 'An unexpected error occurred', error);
+    }
+  }
+};
+
 

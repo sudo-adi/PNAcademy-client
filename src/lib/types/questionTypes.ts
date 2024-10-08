@@ -1,3 +1,5 @@
+import { Question } from "./assessmentTypes";
+
 // Create Question types
 export interface CreateQuestionProps {
   assessment_id: string;
@@ -6,17 +8,19 @@ export interface CreateQuestionProps {
   section: number;
 }
 
+export interface Queestion {
+  id: string;
+  assessment_id: string;
+  description: string;
+  marks: number;
+  section: number;
+  updatedAt: string;
+  createdAt: string;
+}
+
 export interface CreateQuestionResponse {
   message: string;
-  data: {
-    id: string;
-    assessment_id: string;
-    description: string;
-    marks: number;
-    section: number;
-    updatedAt: string;
-    createdAt: string;
-  };
+  data: Question;
 }
 
 // Get Question by ID types
@@ -26,15 +30,7 @@ export interface GetQuestionByIdProps {
 
 export interface GetQuestionResponse {
   message: string;
-  data: {
-    id: string;
-    assessment_id: string;
-    description: string;
-    marks: number;
-    section: number;
-    updatedAt: string;
-    createdAt: string;
-  };
+  data: Question;
 }
 
 // Update Question types
@@ -46,15 +42,7 @@ export interface UpdateQuestionProps {
 
 export interface UpdateQuestionResponse {
   message: string;
-  data: {
-    id: string;
-    assessment_id: string;
-    description: string;
-    marks: number;
-    section: number;
-    createdAt: string;
-    updatedAt: string;
-  };
+  data: Question;
 }
 
 // Delete Question types

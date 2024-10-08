@@ -76,30 +76,12 @@ export interface GetRolesResponse {
 export interface UpdateRoleProps {
   roleId: string;
   name?: string;
-  canManageAssessment?: boolean;
-  canManageUser?: boolean;
-  canManageRole?: boolean;
-  canManageNotification?: boolean;
-  canManageLocalGroup?: boolean;
-  canManageReports?: boolean;
-  canAttemptAssessment?: boolean;
-  canViewReport?: boolean;
-  canManageMyAccount?: boolean;
-  canViewNotification?: boolean;
+  permissions: RolePermissions;
 }
-
 export interface UpdateRoleResponse {
-  message: string;
-  data: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    role_id: string;
-    updatedAt: string;
-    createdAt: string;
-  };
+  roleId: string; // UUID for the role
+  name: string;   // Name of the role
+  permissions: RolePermissions; // Permissions associated with the role
 }
 
 export interface DeleteRolesProps {
@@ -108,11 +90,6 @@ export interface DeleteRolesProps {
 
 export interface DeleteRoleResponse {
   message: string;
-}
-
-
-interface RoleId {
-  roleId: string;
 }
 
 export interface DeleteRoleDialogProps {

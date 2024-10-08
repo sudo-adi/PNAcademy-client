@@ -9,7 +9,8 @@ import { toast } from '@/components/ui/use-toast'
 import { ToastAction } from '@/components/ui/toast'
 
 const DeleteUserDialog: React.FC<DeleteUsersDialogProps> = ({ refreshUsers, user }) => {
-  const { error, removeUsers } = useUsers();
+  const { removeUsers
+  } = useUsers();
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 

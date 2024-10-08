@@ -6,7 +6,7 @@ import { Label } from '@radix-ui/react-label'
 import { Textarea } from '@/components/ui/textarea'
 import { useAssessment } from '@/app/dashboard/views/manage-assessment/hooks/useAssessment'
 import { Loader2 } from 'lucide-react'
-import { UpdateAssessmentProps } from '@/lib/types/assessmentTypes'
+import { Assessment, UpdateAssessmentProps } from '@/lib/types/assessmentTypes'
 import { Card, CardContent } from '@/components/ui/card'
 import SideBarStartAtDateTimePicker from './sidebar-start-at'
 import SideBarEndsAtDateTimePicker from './sidebar-end-at'
@@ -30,8 +30,6 @@ const FormInput: React.FC<FormInputProps> = ({ label, placeholder, onChange, val
   </div>
 )
 
-
-
 interface FormTextareaProps {
   label: string;
   placeholder: string;
@@ -53,6 +51,14 @@ interface SideBarProps {
   assessmentId: string
 }
 const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
+
+  // all hooks here
+  const { fetchAssessmentById, patchAssessment } = useAssessment();
+
+  // global states here
+
+  // local states here
+  const [assessment, setAssessment] = useState<Assessment>();
   const [assessmentName, setAssessmentName] = useState('');
   const [assessmentDescription, setAssessmentDescription] = useState<string>('');
   const [startsAt, setStartsAt] = useState<string>('');
@@ -60,14 +66,44 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
   const [duration, setDuration] = useState<number>(0);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const { assessment, fetchAssessmentById, patchAssessment } = useAssessment();
+
+  // functions here
+
+
+
+  // handlers here
+  const handleBlur = () => {
+    if (assessment) {
+      const data: UpdateAssessmentProps = {
+        id: assessment.id,
+        name: assessmentName,
+        description: assessmentDescription,
+        is_active: isActive,
+        start_at: startsAt,
+        end_at: endsAt,
+        duration: duration,
+      };
+
+      const updateAndSetAssessment = async () => {
+        try {
+          await patchAssessment(data);
+        } catch (err) {
+
+        }
+      };
+      updateAndSetAssessment();
+    }
+  };
+
+  // useEffects here
   useEffect(() => {
     const fetchAndSetAssessment = async () => {
       try {
         setLoading(true);
-        await fetchAssessmentById({ id: assessmentId });
+        const response = await fetchAssessmentById({ id: assessmentId });
+        setAssessment(response);
       } catch (error) {
-        console.error('Failed to fetch assessment data:', error);
+
       } finally {
         setLoading(false);
       }
@@ -92,28 +128,6 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
     initializeSideBar();
   }, [assessment]);
 
-  const handleBlur = () => {
-    if (assessment) {
-      const data: UpdateAssessmentProps = {
-        id: assessment.id,
-        name: assessmentName,
-        description: assessmentDescription,
-        is_active: isActive,
-        start_at: startsAt,
-        end_at: endsAt,
-        duration: duration,
-      };
-
-      const updateAndSetAssessment = async () => {
-        try {
-          await patchAssessment(data);
-        } catch (err) {
-          console.error('Failed to update assessment:', err);
-        }
-      };
-      updateAndSetAssessment();
-    }
-  };
 
   return (
     <div className="flex h-[100vh] flex-col gap-2 border-l w-full overflow-hidden ">

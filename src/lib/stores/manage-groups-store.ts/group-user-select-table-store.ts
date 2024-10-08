@@ -5,14 +5,23 @@ import { persist } from 'zustand/middleware';
 interface State {
   activePageIndex: number;
   displayNumberOfRows: number;
-  sortBy: "id" | "first_name" | "last_name" | "email" | "phone" | "role_id" | "createdAt" | "updatedAt";
+  sortBy:
+  | "id"
+  | "role_id"
+  | "first_name"
+  | "last_name"
+  | "email"
+  | "phone"
+  | "role_id"
+  | "createdAt"
+  | "updatedAt";
   order: "ASC" | "DESC";
 }
 
 interface Actions {
   setActivePageIndex: (index: number) => void;
   setDisplayNumberOfRows: (Rows: number) => void;
-  setSortBy: (sortBy: "id" | "first_name" | "last_name" | "email" | "phone" | "role_id" | "createdAt" | "updatedAt") => void;
+  setSortBy: (sortBy: "id" | "role_id" | "first_name" | "last_name" | "email" | "phone" | "role_id" | "createdAt" | "updatedAt") => void;
   setOrder: (order: "ASC" | "DESC") => void;
 }
 

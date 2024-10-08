@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FileDownIcon, Mail, User, Clock, Calendar, MousePointer2, Phone } from 'lucide-react';
 import { useUsers } from '../../hooks/useUsers';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SingleUser } from '@/lib/types/userTypes';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { TableCell, TableHead, TableRow } from '@/components/ui/table';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -18,22 +18,55 @@ import ViewUserDialog from '../dialog-box/view-user-dialog';
 import EditUserDialog from '../dialog-box/edit-user-diallog';
 import DeleteUserDialog from '../dialog-box/delete-user-dialog';
 import useUserTableStore from '@/lib/stores/manage-users-store/user-table-store';
-import useTabStore from '@/lib/stores/manage-users-store/tab-store';
+import { ApiError } from '@/lib/api/apiError';
 
 const UsersTabContent: React.FC = () => {
-  const { loading, error, users, fetchedUsersRes, fetchUsers, removeUsers } = useUsers();
-  const { activePageIndex, displayNumberOfRows, sortBy, order, setOrder, setSortBy } = useUserTableStore();
-  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
-  const userList = (users as SingleUser[]) ?? [];
-  const allSelected = userList.length > 0 && selectedUsers.size === userList.length;
-  const { activeTabIndex, setActiveTabIndex } = useTabStore();
 
-  useEffect(() => {
-    fetchUsers({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy, order });
+  // all hooks here
+  const { fetchUsers, removeUsers } = useUsers();
+
+  // global states here
+  const { activePageIndex, displayNumberOfRows, sortBy, order, setOrder, setSortBy } = useUserTableStore();
+
+  // local states here
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [users, setUsers] = useState<SingleUser[]>([]);
+  const [error, setError] = useState<ApiError | Error>()
+
+  const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
+
+  // local vars here
+  const allSelected = users.length > 0 && selectedUsers.size === users.length;
+
+  // local functions here
+  const fetchUsersData = useCallback(async () => {
+    const payload = {
+      page: activePageIndex,
+      pageSize: displayNumberOfRows,
+      sortBy,
+      order
+    }
+    try {
+      setLoadingUsers(true)
+      const response = await fetchUsers(payload);
+      setUsers(response.users);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err);
+      } else {
+        setError(err as Error);
+      }
+    } finally {
+      setLoadingUsers(false)
+    }
   }, [sortBy, order]);
 
+  const refreshUsers = () => {
+    fetchUsersData();
+  };
 
-  const toggleSorting = (field: keyof SingleUser) => {
+  // handlers here
+  const handleToggleSorting = (field: keyof SingleUser) => {
     if (sortBy === field) {
       setOrder(order === 'ASC' ? 'DESC' : 'ASC');
     } else {
@@ -42,13 +75,9 @@ const UsersTabContent: React.FC = () => {
     }
   };
 
-  const refreshUsers = () => {
-    fetchUsers({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy, order });
-  };
-
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedUsers(new Set(userList.map(user => user.id)));
+      setSelectedUsers(new Set(users.map(user => user.id)));
     } else {
       setSelectedUsers(new Set());
     }
@@ -66,10 +95,14 @@ const UsersTabContent: React.FC = () => {
 
   const handleDeleteSelected = async () => {
     await removeUsers({ userIds: Array.from(selectedUsers) });
-    console.log(Array.from(selectedUsers));
     setSelectedUsers(new Set());
     refreshUsers();
   };
+
+  // useEffects here
+  useEffect(() => {
+    fetchUsersData();
+  }, [fetchUsersData]);
 
   return (
     <>
@@ -97,7 +130,7 @@ const UsersTabContent: React.FC = () => {
             <table className="w-full">
               <thead className="sticky bg-background top-0 z-10">
                 <Schema
-                  toggleSorting={toggleSorting}
+                  toggleSorting={handleToggleSorting}
                   sortBy={sortBy}
                   order={order}
                   allSelected={allSelected}
@@ -105,14 +138,14 @@ const UsersTabContent: React.FC = () => {
                 />
               </thead>
               <tbody>
-                {userList.map((user: SingleUser) => (
+                {users.map((user: SingleUser) => (
                   <Row
                     key={user.id}
                     user={user}
                     selected={selectedUsers.has(user.id)}
                     onSelectUser={handleSelectUser}
                     refreshUsers={refreshUsers}
-                    loading={loading}
+                    loading={loadingUsers}
                   />
                 ))}
               </tbody>
@@ -123,7 +156,7 @@ const UsersTabContent: React.FC = () => {
 
       <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
         <Label className="text-xs">
-          Showing <strong>1-10</strong> of <strong>{fetchedUsersRes?.data.totalPages}</strong> Users
+          {/* Showing <strong>1-10</strong> of <strong>{fetchedUsersRes?.data.totalPages}</strong> Users */}
         </Label>
         <div className="flex gap-2">
           <Button variant="outline">Previous</Button>

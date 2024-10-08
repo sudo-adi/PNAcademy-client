@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   createAssessment,
   getAssessmentById,
@@ -11,200 +10,139 @@ import {
 } from '@/lib/services/assessment/assessment-service';
 import {
   AddGroupToAssessmentProps,
-  AddGroupToAssessmentResponse,
   Assessment,
-  AssessmentResponse,
   CreateAssessmentProps,
-  CreateAssessmentResponse,
   DeleteAssessmentProps,
-  DeleteAssessmentResponse,
   GetAssessmentByIdData,
   GetAssessmentByIdProps,
-  GetAssessmentByIdResponse,
   GetAssessmentsProps,
   GetAssessmentsResponse,
+  GetAssignedAssessmentsData,
   GetAssignedAssessmentsProps,
-  GetAssignedAssessmentsResponse,
   RemoveGroupFromAssessmentProps,
-  RemoveGroupFromAssessmentResponse,
   UpdateAssessmentProps,
-  UpdateAssessmentResponse,
 } from '@/lib/types/assessmentTypes';
 import { ApiError } from '@/lib/api/apiError';
 
+// Hook to manage assessments
 export const useAssessment = () => {
-  const [assessments, setAssessments] = useState<Assessment[]>([]);
-  const [assessment, setAssessment] = useState<GetAssessmentByIdData>();
-  const [assignedAssessments, setAssignedAssessments] = useState<GetAssignedAssessmentsResponse | null>(null);
-  const [assessmentError, setAssessmentError] = useState<ApiError | null>(null);
-  const [assessmentLoading, setAssessmentLoading] = useState<boolean>(false);
-  const [fetchAssessmentsRes, setFetchAssessmentsRes] = useState<GetAssessmentsResponse | null>(null);
-  const [fetchAssessmentByIdRes, setFetchAssessmentByIdRes] = useState<GetAssessmentByIdResponse | null>(null);
-  const [createAssessmentRes, setCreateAssessmentRes] = useState<AssessmentResponse | null>(null);
-  const [removeAssessmentRes, setRemoveAssessmentRes] = useState<DeleteAssessmentResponse | null>(null);
-  const [addAssessmentToGroupRes, setAddAssessmentToGroupRes] = useState<AddGroupToAssessmentResponse | null>(null);
-  const [removeAssessmentFromGroupRes, setRemoveAssessmentFromGroupRes] = useState<RemoveGroupFromAssessmentResponse | null>(null);
-  const [patchedAssessmentRes, setPatchedAssessmentRes] = useState<UpdateAssessmentResponse | null>(null);
-
-  const addAssessment = async (data: CreateAssessmentProps) => {
-    setAssessmentLoading(true);
+  // Method to create an assessment
+  const addAssessment = async (data: CreateAssessmentProps): Promise<Assessment> => {
     try {
-      const response: CreateAssessmentResponse | null = await createAssessment(data);
-      if (response) {
-        setCreateAssessmentRes(response.data);
-      }
-      return response;
+      const response = await createAssessment(data);
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        setAssessmentError(err);
+        throw err; // Rethrow the ApiError for handling at a higher level
       } else {
-        console.log(err);
+        throw new Error('An unexpected error occurred');
       }
-    } finally {
-      setAssessmentLoading(false);
     }
   };
 
-  const fetchAssessmentById = async (data: GetAssessmentByIdProps) => {
-    setAssessmentLoading(true);
+  // Method to fetch an assessment by ID
+  const fetchAssessmentById = async (data: GetAssessmentByIdProps): Promise<GetAssessmentByIdData> => {
     try {
-      const response: GetAssessmentByIdResponse | null = await getAssessmentById(data);
-      if (response && response.data) {
-        setAssessment(response.data);
-        setFetchAssessmentByIdRes(response);
-        return response;
-      } else {
-        throw new Error('Failed to fetch assessment data');
+      const response = await getAssessmentById(data);
+      if (response.data) {
+        return response.data;
       }
+      throw new Error('Failed to fetch assessment data');
     } catch (err) {
       if (err instanceof ApiError) {
-        setAssessmentError(err);
+        throw err;
       } else {
-        console.log(err);
+        throw new Error('An unexpected error occurred');
       }
-    } finally {
-      setAssessmentLoading(false);
     }
   };
 
-
-  const fetchAssessments = async (data: GetAssessmentsProps) => {
-    setAssessmentLoading(true);
+  // Method to fetch all assessments
+  const fetchAssessments = async (data: GetAssessmentsProps): Promise<GetAssessmentsResponse['data']> => {
     try {
-      const response: GetAssessmentsResponse | null = await getAssessments(data);
-      if (response) {
-        const { data: { assesments } } = response;
-        setAssessments(assesments);
-        setFetchAssessmentsRes(response);
-        console.info('Assessments fetched:', response.data.assesments);
-      }
+      const response = await getAssessments(data);
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        setAssessmentError(err);
+        throw err;
       } else {
-        console.log(err);
+        throw new Error('An unexpected error occurred');
       }
-    } finally {
-      setAssessmentLoading(false);
     }
   };
 
-  const patchAssessment = async (data: UpdateAssessmentProps) => {
-    setAssessmentLoading(true);
+  // Method to update an assessment
+  const patchAssessment = async (data: UpdateAssessmentProps): Promise<Assessment> => {
     try {
-      const response: UpdateAssessmentResponse | null = await updateAssessment(data);
-      console.log('patchedAssessmentRes', response);
-      setPatchedAssessmentRes(response);
+      const response = await updateAssessment(data);
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        setAssessmentError(err);
+        throw err;
       } else {
-        console.log(err);
+        throw new Error('An unexpected error occurred');
       }
-    } finally {
-      setAssessmentLoading(false);
     }
   };
 
-  const removeAssessment = async (data: DeleteAssessmentProps) => {
-    setAssessmentLoading(true);
+  // Method to delete an assessment
+  const removeAssessment = async (data: DeleteAssessmentProps): Promise<boolean> => {
     try {
       const response = await deleteAssessment(data);
-      setRemoveAssessmentRes(response);
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        setAssessmentError(err);
+        throw err;
       } else {
-        console.log(err);
+        throw new Error('An unexpected error occurred');
       }
-    } finally {
-      setAssessmentLoading(false);
     }
   };
 
-  const assignAssessmentToGroup = async (data: AddGroupToAssessmentProps) => {
-    setAssessmentLoading(true);
+  // Method to assign an assessment to a group
+  const assignAssessmentToGroup = async (data: AddGroupToAssessmentProps): Promise<string> => {
     try {
       const response = await addGroupToAssessment(data);
-      setAddAssessmentToGroupRes(response);
+      return response.status;
     } catch (err) {
       if (err instanceof ApiError) {
-        setAssessmentError(err);
+        throw err;
       } else {
-        console.log(err);
+        throw new Error('An unexpected error occurred');
       }
-    } finally {
-      setAssessmentLoading(false);
     }
   };
 
-  const fetchAssignedAssessments = async (data: GetAssignedAssessmentsProps) => {
-    setAssessmentLoading(true);
+  // Method to fetch assigned assessments
+  const fetchAssignedAssessments = async (data: GetAssignedAssessmentsProps): Promise<GetAssignedAssessmentsData> => {
     try {
       const response = await getAssignedAssessments(data);
-      setAssignedAssessments(response);
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        setAssessmentError(err);
+        throw err;
       } else {
-        console.log(err);
+        throw new Error('An unexpected error occurred');
       }
-    } finally {
-      setAssessmentLoading(false);
     }
   };
 
-  const removeAssessmentFromGroup = async (data: RemoveGroupFromAssessmentProps) => {
-    setAssessmentLoading(true);
+  // Method to remove an assessment from a group
+  const removeAssessmentFromGroup = async (data: RemoveGroupFromAssessmentProps): Promise<string> => {
     try {
       const response = await removeGroupFromAssessment(data);
-      setRemoveAssessmentFromGroupRes(response);
+      return response.message;
     } catch (err) {
       if (err instanceof ApiError) {
-        setAssessmentError(err);
+        throw err;
       } else {
-        console.log(err);
+        throw new Error('An unexpected error occurred');
       }
-
-    } finally {
-      setAssessmentLoading(false);
     }
   };
 
   return {
-    assessment,
-    assignedAssessments,
-    assessmentError,
-    assessmentLoading,
-    createAssessmentRes,
-    removeAssessmentRes,
-    addAssessmentToGroupRes,
-    removeAssessmentFromGroupRes,
-    patchedAssessmentRes,
-    fetchAssessmentByIdRes,
-    fetchAssessmentsRes,
     addAssessment,
-    setPatchedAssessmentRes,
     fetchAssessmentById,
     fetchAssessments,
     patchAssessment,

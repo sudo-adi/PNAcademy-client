@@ -8,11 +8,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEffect } from "react";
-import { GetAssessmentByIdData, UpdateAssessmentProps } from "@/lib/types/assessmentTypes";
+import { Assessment, GetAssessmentByIdData, UpdateAssessmentProps } from "@/lib/types/assessmentTypes";
 
 interface SideBarStartAtDateTimePickerProps {
-  assessment: GetAssessmentByIdData;
-  patchAssessment: (data: UpdateAssessmentProps) => Promise<void>;
+  assessment: Assessment;
+  patchAssessment: (data: UpdateAssessmentProps) => Promise<Assessment>;
 }
 
 const SideBarStartAtDateTimePicker: React.FC<SideBarStartAtDateTimePickerProps> = ({ assessment, patchAssessment }) => {

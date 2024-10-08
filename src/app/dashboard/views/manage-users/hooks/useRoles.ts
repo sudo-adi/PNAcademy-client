@@ -1,5 +1,4 @@
 // hooks/useRoles.ts
-import { useState } from 'react';
 import {
   createRole,
   getRoles,
@@ -7,114 +6,89 @@ import {
   deleteRoles
 } from '@/lib/services/user-service/role-service'; // Adjust the import path as needed
 import { ApiError } from '@/lib/api/apiError';
-import { CreateRoleProps, GetRolesProps, UpdateRoleProps, DeleteRolesProps, Role, CreateRoleResponse, UpdateRoleResponse, DeleteRoleResponse, GetRolesResponse } from '@/lib/types/roleTypes';
+import {
+  CreateRoleProps,
+  GetRolesProps,
+  UpdateRoleProps,
+  DeleteRolesProps,
+  Role,
+  CreateRoleResponse,
+  UpdateRoleResponse,
+  DeleteRoleResponse,
+  GetRolesResponse
+} from '@/lib/types/roleTypes';
 
 export const useRoles = () => {
-  // State for managing loading and error states
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<ApiError | null>(null);
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [addedRoleRes, setAddedRoleRes] = useState<CreateRoleResponse>();
-  const [fetchedRoleRes, setFetchedRoleRes] = useState<GetRolesResponse>();
-  const [patchedRoleRes, setPatchedRoleRes] = useState<UpdateRoleResponse>();
-  const [removedRolesRes, setRemovedRolesRes] = useState<DeleteRoleResponse>();
-
 
   // Function to create a role
-  const addRole = async (data: CreateRoleProps) => {
-    setLoading(true);
-    setError(null);
+  const addRole = async (data: CreateRoleProps): Promise<CreateRoleResponse['data']> => {
     try {
-      const response: CreateRoleResponse | null = await createRole(data);
-      if (response) {
-        console.info('Role created:', response);
-        setAddedRoleRes(response);
-      }
+      const response: CreateRoleResponse = await createRole(data);
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
+        throw err;
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw new Error('An unexpected error occurred');
       }
     } finally {
-      setLoading(false);
+
     }
   };
 
   // Function to get roles
-  const fetchRoles = async (data: GetRolesProps) => {
-    setLoading(true);
-    setError(null);
+  const fetchRoles = async (data: GetRolesProps): Promise<Role[]> => {
+
     try {
-      const response: GetRolesResponse | null = await getRoles(data);
-      if (response) {
-        setRoles(response.data.roles);
-        setFetchedRoleRes(response);
-      }
+      const response: GetRolesResponse = await getRoles(data);
+      return response.data.roles;
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
+        throw err;
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw new Error('An unexpected error occurred');
       }
     } finally {
-      setLoading(false);
+
     }
   };
 
   // Function to update a role
-  const patchRole = async (data: UpdateRoleProps) => {
-    setLoading(true);
-    setError(null);
+  const patchRole = async (data: UpdateRoleProps): Promise<UpdateRoleResponse> => {
     try {
-      const response: UpdateRoleResponse | null = await updateRole(data);
-      if (response) {
-        console.info('Role updated:', response);
-        setPatchedRoleRes(response)
-      }
+      const response: UpdateRoleResponse = await updateRole(data);
+      return response;
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
+        throw err;
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw new Error('An unexpected error occurred');
       }
     } finally {
-      setLoading(false);
+
     }
   };
 
   // Function to delete roles
-  const removeRoles = async (data: DeleteRolesProps) => {
-    setLoading(true);
-    setError(null);
+  const removeRoles = async (data: DeleteRolesProps): Promise<string> => {
     try {
-      const response: DeleteRoleResponse | null = await deleteRoles(data);
-      if (response) {
-        console.info('Roles deleted:', response);
-        setRemovedRolesRes(response)
-      }
+      const response: DeleteRoleResponse = await deleteRoles(data);
+      return response.message;
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
+        throw err;
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw new Error('An unexpected error occurred');
       }
     } finally {
-      setLoading(false);
+
     }
   };
 
   return {
-    roles,
-    loading,
-    error,
     addRole,
     fetchRoles,
     patchRole,
     removeRoles,
-    addedRoleRes,
-    removedRolesRes,
-    fetchedRoleRes,
-    patchedRoleRes
   };
 };

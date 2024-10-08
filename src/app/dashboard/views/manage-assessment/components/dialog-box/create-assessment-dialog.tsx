@@ -1,8 +1,17 @@
 "use client";
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -17,6 +26,8 @@ import { ApiError } from '@/lib/api/apiError';
 import StartsAtDateTimePicker from '../starts-at';
 import EndsAtDateTimePicker from '../ends-at';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/components/ui/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 
 const assessmentSchema = z.object({
   name: z.string().min(1, { message: 'Assessment name is required' }),
@@ -25,22 +36,9 @@ const assessmentSchema = z.object({
 
 type AssessmentFormData = z.infer<typeof assessmentSchema>;
 const CreateAssessmentDialog = () => {
+
+  // all hooks here
   const router = useRouter();
-  const {
-    assessmentName,
-    assessmentDescription,
-    is_active,
-    createdBy,
-    startAt,
-    endAt,
-    duration,
-    setCreatedBy,
-    setAssessmentName,
-    setAssessmentDescription,
-    setIsActive } = useCreateAssessmentDetailsStore();
-  const { createAssessmentRes, addAssessment } = useAssessment();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [disableCreateAssessment, setDisableCreateAssessment] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
@@ -49,7 +47,37 @@ const CreateAssessmentDialog = () => {
   } = useForm<AssessmentFormData>({
     resolver: zodResolver(assessmentSchema),
   });
-  const onSubmit = async (data: AssessmentFormData) => {
+
+  const { addAssessment } = useAssessment();
+
+  // global states here
+  const {
+    assessmentName,
+    assessmentDescription,
+    is_active,
+    createdBy,
+    startAt,
+    endAt,
+    duration,
+    setAssessmentName,
+    setAssessmentDescription,
+  } = useCreateAssessmentDetailsStore();
+
+  // local states here
+
+  // loading states here
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // error states here
+  const [createAssessmentError, setCreateAssessmentError] = useState<ApiError | Error>();
+
+  // disable states here
+  const [disableCreateAssessment, setDisableCreateAssessment] = useState<boolean>(false);
+
+  // local vars here
+
+  // all functions here
+  const onSubmit = async () => {
     try {
       setLoading(true);
       const data = {
@@ -61,15 +89,32 @@ const CreateAssessmentDialog = () => {
         duration: duration,
         created_by: createdBy,
       }
-      console.log(data);
       const response = await addAssessment(data);
-      console.log("assessment log", response);
+      router.push(`/create/${response.id}`);
     } catch (err) {
-      if (err as ApiError) {
-        console.error(err);
-      }
-      else {
-        console.error(err);
+      if (err instanceof ApiError) {
+        setCreateAssessmentError(err);
+        toast({
+          title: "Error",
+          description: `An error occurred while creating Assessment ${err.message}`,
+          action: (
+            <ToastAction altText="error">
+              ok
+            </ToastAction>
+          ),
+        })
+      } else {
+        setCreateAssessmentError(err as Error);
+        const error = err as Error;
+        toast({
+          title: "Error",
+          description: `An error occurred while creating Assessment ${error.message}`,
+          action: (
+            <ToastAction altText="error">
+              ok
+            </ToastAction>
+          ),
+        })
       }
     } finally {
       setLoading(false);
@@ -77,6 +122,9 @@ const CreateAssessmentDialog = () => {
     reset();
   };
 
+  // all event handlers heres
+
+  // all useEffects here
   useEffect(() => {
     const isAssessmentNameTooShort = assessmentName.length > 3;
     const isAssessmentDescriptionTooShort = assessmentDescription.length >= 10;
@@ -88,12 +136,6 @@ const CreateAssessmentDialog = () => {
   }, [assessmentName, assessmentDescription]);
 
 
-  useEffect(() => {
-    if (createAssessmentRes != undefined && createAssessmentRes != null) {
-      console.log("createAssessmentRes", createAssessmentRes);
-      router.push(`/create/${createAssessmentRes.id}`);
-    }
-  }, [createAssessmentRes]);
   return (
     <Dialog>
       <DialogTrigger asChild>

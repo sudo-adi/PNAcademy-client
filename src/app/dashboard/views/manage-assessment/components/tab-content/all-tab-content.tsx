@@ -1,89 +1,80 @@
-import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { BoxSelectIcon, Calendar, CircleDot, CircleDotDashed, CirclePlay, CircleStop, Clock, Copy, Edit, Eye, FileIcon, Link, MousePointer, Wand, Trash, Trash2, User } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
-import { useAssessment } from '../../hooks/useAssessment'
+import React, { use, useCallback, useEffect, useState } from 'react'
 import useAssessmentsTableStore from '@/lib/stores/manage-assessment-store/assessments-table'
 import { Assessment } from '@/lib/types/assessmentTypes'
-import { formatDateInIST } from '@/lib/helpers/time-converter'
-import { Badge } from '@/components/ui/badge'
-import {
-  Cloud,
-  CreditCard,
-  Keyboard,
-  LifeBuoy,
-  LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
-  Settings,
-  UserPlus,
-  Users,
-} from "lucide-react"
+import { ApiError } from '@/lib/api/apiError'
+import Row from '../table/row'
+import Schema from '../table/schema'
+import { Button } from '@/components/ui/button'
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import useStatusIndicator from '../../hooks/useStatusIndicator'
-import { copyToClipboard } from '@/lib/helpers/copy-to-clipboard'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { toast } from '@/components/ui/use-toast'
-import { ToastAction } from '@/components/ui/toast'
-import { text } from 'stream/consumers'
+
+interface AllTabContentProps {
+  assessments: Assessment[];
+  loadingAssessments: boolean;
+  errorAssessments: ApiError | Error | undefined;
+  toggleSorting: (field: keyof Assessment) => void;
+  refreshAssessments: () => void;
+  totalPages: number;
+}
 
 
 
-const AllTabContent = () => {
-  const {
-    assessment,
-    assignedAssessments,
-    assessmentLoading,
-    createAssessmentRes,
-    fetchAssessmentsRes,
-    removeAssessmentRes,
-    addAssessmentToGroupRes,
-    removeAssessmentFromGroupRes,
-    addAssessment,
-    fetchAssessmentById,
-    fetchAssessments,
-    patchAssessment,
-    removeAssessment,
-    fetchAssignedAssessments,
-    removeAssessmentFromGroup, } = useAssessment();
-  const { activePageIndex, displayNumberOfRows, sortBy, order, setOrder, setSortBy, setActivePageIndex, setDisplayNumberOfRows } = useAssessmentsTableStore();
-  const [selectedAssessments, setSelectedAssessments] = useState<Set<string>>(new Set());
-  const assessmentList: Assessment[] = (fetchAssessmentsRes?.data.assesments as Assessment[]) ?? [];
-  const allAssessments: Assessment[] = assessmentList.filter(assessment => assessment.is_active === true);
-  const allSelected: boolean = assessmentList.length > 0 && selectedAssessments.size === assessmentList.length;
 
+const PaginationHandlers = ({ totalPages }: { totalPages: number }) => {
+  const { activePageIndex, setActivePageIndex } = useAssessmentsTableStore();
 
-  useEffect(() => {
-    fetchAssessments({ page: 1, pageSize: 9999, sortBy, order });
-  }, [sortBy, order]);
+  const handleNavigateToNextPage = useCallback(() => {
+    // Since we're starting from 0 in our store, we need to check against totalPages - 1
+    if (activePageIndex < totalPages - 1) {
+      console.log("Current page:", activePageIndex);
+      const nextPage = activePageIndex + 1;
+      console.log("Navigating to page:", nextPage);
+      setActivePageIndex(nextPage);
+    }
+  }, [activePageIndex, totalPages, setActivePageIndex]);
 
-  const refreshAssessments = () => {
-    fetchAssessments({ page: 1, pageSize: 9999, sortBy, order });
+  const handleNavigateToPreviousPage = useCallback(() => {
+    if (activePageIndex > 0) {
+      console.log("Current page:", activePageIndex);
+      const previousPage = activePageIndex - 1;
+      console.log("Navigating to page:", previousPage);
+      setActivePageIndex(previousPage);
+    }
+  }, [activePageIndex, setActivePageIndex]);
+
+  return {
+    handleNavigateToNextPage,
+    handleNavigateToPreviousPage
   };
+};
 
+
+const AllTabContent: React.FC<AllTabContentProps> = ({ assessments, loadingAssessments, errorAssessments, toggleSorting, refreshAssessments, totalPages }) => {
+  // all hooks here
+  const { handleNavigateToNextPage, handleNavigateToPreviousPage } = PaginationHandlers({ totalPages });
+
+  // global states here
+  const { activePageIndex, sortBy, order, setActivePageIndex } = useAssessmentsTableStore();
+
+  // local states here
+  const [selectedAssessments, setSelectedAssessments] = useState<Set<string>>(new Set());
+
+  // local vars here
+  const allAssessments: Assessment[] = assessments.filter(assessment => assessment.is_active);
+  const loading: boolean = loadingAssessments;
+  const error: ApiError | Error | undefined = errorAssessments;
+  const handleRefreshAssessments = refreshAssessments;
+  const handleToggleSorting = toggleSorting;
+  const allSelected: boolean = allAssessments.length > 0 && selectedAssessments.size === allAssessments.length;
+
+  // all functions here
+
+
+  // all event handlers here
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedAssessments(new Set(assessmentList.map(assessment => assessment.id)));
+      setSelectedAssessments(new Set(allAssessments.map(assessment => assessment.id)));
     } else {
       setSelectedAssessments(new Set());
     }
@@ -99,23 +90,28 @@ const AllTabContent = () => {
     setSelectedAssessments(updatedSelectedUsers);
   };
 
-  const toggleSorting = (field: keyof Assessment) => {
-    if (sortBy === field) {
-      setOrder(order === 'ASC' ? 'DESC' : 'ASC');
-    } else {
-      setSortBy(field);
-      setOrder('ASC');
-    }
-  };
+  // all useEffects here
+  useEffect(() => {
+    setSelectedAssessments(new Set());
+  }, [toggleSorting]);
+
+  useEffect(() => {
+    console.log('error ye hai', error)
+  }, [error]);
+
+  useEffect(() => {
+    console.log('activePageIndex', activePageIndex)
+  }, [activePageIndex]);
+
   return (
     <>
       <Card className='my-2 h-[calc(100vh-17rem)] w-full flex flex-col'>
         <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
-          <div className="absolute inset-0 overflow-auto">
+          <div className="absolute inset-0 overflow-y-scroll">
             <table className="w-full">
               <thead className="sticky bg-background top-0 z-10">
                 <Schema
-                  toggleSorting={toggleSorting}
+                  toggleSorting={handleToggleSorting}
                   sortBy={sortBy}
                   order={order}
                   onSelectAll={handleSelectAll}
@@ -129,8 +125,8 @@ const AllTabContent = () => {
                     assessment={assessment}
                     selected={selectedAssessments.has(assessment.id)}
                     onSelectAssessment={handleSelectAssessment}
-                    refreshAssessments={refreshAssessments}
-                    loading={assessmentLoading}
+                    refreshAssessments={handleRefreshAssessments}
+                    loading={loading}
                   />
                 ))}
               </tbody>
@@ -139,194 +135,23 @@ const AllTabContent = () => {
         </div>
       </Card>
       <div className="flex h-[calc(3rem-6px)] items-center justify-between gap-2">
-        <Label className='text-[10px]'>
-          Showing <strong>{allAssessments.length}</strong>{" "}Assessments
+        <Label>
+          {allAssessments.length} Assessments
         </Label>
+        {/* <div className="flex flex-row gap-2 items-center justify-center text-xs font-bold">
+          <div className="flex p-2 rounded-xl border">
+            {activePageIndex + 1} / {totalPages}
+          </div>
+          <Button variant={"outline"} size="sm" onClick={handleNavigateToPreviousPage}>
+            Previous
+          </Button>
+          <Button size="sm" onClick={handleNavigateToNextPage}>
+            Next Page
+          </Button>
+        </div> */}
       </div>
     </>
   )
 }
-
-
-interface SchemaProps {
-  toggleSorting: (field: keyof Assessment) => void;
-  sortBy: keyof Assessment;
-  order: "ASC" | "DESC";
-  allSelected: boolean;
-  onSelectAll: (checked: boolean) => void;
-}
-const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelected, onSelectAll, }) => {
-
-  return (
-    <TableRow>
-      <TableHead className="hidden sm:table-cell">
-        <div className="flex w-4 items-center gap-2">
-          <Checkbox
-            checked={allSelected}
-            onCheckedChange={(checked) => onSelectAll(checked as boolean)} />
-        </div>
-      </TableHead>
-      <TableHead onClick={() => toggleSorting('name')} className='w-[210px]'>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-3 w-3" />
-          Assessment Name {sortBy === 'name' && (order === 'ASC' ? '↓' : '↑')}
-        </div>
-      </TableHead>
-      <TableHead onClick={() => toggleSorting('start_at')}>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
-          Started at {sortBy === 'start_at' && (order === 'ASC' ? '↓' : '↑')}
-        </div>
-      </TableHead>
-      <TableHead onClick={() => toggleSorting('end_at')}>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
-          Ended at {sortBy === 'end_at' && (order === 'ASC' ? '↓' : '↑')}
-        </div>
-      </TableHead>
-      <TableHead onClick={() => toggleSorting('createdAt')}>
-        <div className="gap-2 text-[10px] items-center cursor-pointer flex">
-          <User className="h-4 w-4" />
-          <div className="inline-block">
-            Created at {sortBy === 'createdAt' && (order === 'ASC' ? '↓' : '↑')}
-          </div>
-        </div>
-      </TableHead>
-      <TableHead onClick={() => toggleSorting('updatedAt')}>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
-          Updated at {sortBy === 'updatedAt' && (order === 'ASC' ? '↓' : '↑')}
-        </div>
-      </TableHead>
-      <TableHead className="md:table-cell">
-        <div className="flex text-[10px] flex-row gap-2 items-center">
-          <CircleDotDashed className='h-4 w-4' />
-          Status
-        </div>
-      </TableHead>
-      <TableHead className="md:table-cell ">
-        <div className="flex text-[10px] flex-row items-center justify-start">
-          <Wand className='mr-2 h-4 w-4' />
-          Actions
-        </div>
-      </TableHead>
-    </TableRow>
-  );
-};
-
-
-interface RowProps {
-  assessment: Assessment;
-  selected: boolean;
-  onSelectAssessment: (assessmentId: string, checked: boolean) => void;
-  refreshAssessments: () => void;
-  loading: boolean;
-}
-const handleCopyAssessmentID = (assessmentId: string) => {
-  copyToClipboard(assessmentId);
-  toast({
-    title: 'Assessment Id Copied to Clipboard',
-    description: "id: " + assessmentId,
-    action: (
-      <ToastAction altText="success">Ok</ToastAction>
-    ),
-  })
-}
-
-// Single table row
-const Row: React.FC<RowProps> = ({ assessment, selected, onSelectAssessment, refreshAssessments, loading }) => {
-  const statusColor = useStatusIndicator(assessment);
-  return (
-    <TableRow>
-      <TableCell className="hidden sm:table-cell">
-        <Checkbox
-          checked={selected}
-          onCheckedChange={(checked) => onSelectAssessment(assessment.id, checked as boolean)}
-        />
-      </TableCell>
-      <TableCell className="font-medium text-left">
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-row gap-2 text-xs items-center">
-            {loading ? (<Skeleton className="w-32 h-4" />) : assessment.name}
-          </div>
-          <div className="flex">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button onClick={() => handleCopyAssessmentID(assessment.id)}>
-                    <Badge variant={'outline'} className='text-[8px] hover:bg-primary hover:text-black transition-all duration-250'>
-                      {assessment.id}
-                    </Badge>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className='text-[10px]'>
-                  <p>Copy Assessment Id to Clipboard</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        </div>
-      </TableCell>
-      <TableCell className="hidden md:table-cell">
-        <Badge variant={'outline'} className='text-[10px] text-center'>
-          {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(assessment.start_at)
-          }
-        </Badge>
-      </TableCell>
-      <TableCell className="hidden md:table-cell">
-        <Badge variant={'outline'} className='text-[10px] text-center'>
-          {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(assessment.end_at)}
-        </Badge>
-      </TableCell>
-      <TableCell className="hidden md:table-cell">
-        <Badge variant={'outline'} className='text-[10px] text-center'>
-          {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(assessment.createdAt)}
-        </Badge>
-      </TableCell>
-      <TableCell className="hidden md:table-cell">
-        <Badge variant={'outline'} className='text-[10px] text-center'>
-          {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(assessment.updatedAt)}
-        </Badge>
-      </TableCell>
-      <TableCell>
-        <Button variant="ghost" className='hover:bg-transparent text-[10px] text-center'>
-          <CircleDot className={`h-4 w-4 ${statusColor}`} />
-        </Button>
-      </TableCell>
-      <TableCell>
-        <div className="flex flex-row gap-2 h-full items-center justify-start text-[10px] text-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className='bg-transparent'>
-                <Wand className='w-4 h-4' />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-16">
-              <DropdownMenuItem>
-                <Eye className="mr-2 h-4 w-4" />
-                <span>View</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Link className="mr-2 h-4 w-4" />
-                <span>Copy Link</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Edit className="mr-2 h-4 w-4" />
-                <span>Edit</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Trash2 className="mr-2 h-4 w-4" />
-                <span>Delete</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </TableCell>
-    </TableRow >
-  );
-};
 
 export default AllTabContent

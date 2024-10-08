@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useUsers } from '../../hooks/useUsers'; // Adjust import as needed
 import { useRoles } from '../../hooks/useRoles'; // Adjust import as needed
 import { SingleUser } from '@/lib/types/userTypes'; // Adjust import as needed
-import useRolesTableStore from '@/lib/stores/manage-users-store/roles-table-store';
+import { Role } from '@/lib/types/roleTypes';
+import { ApiError } from 'next/dist/server/api-utils';
 
 // Define schema using zod
 const schema = z.object({
@@ -32,12 +33,10 @@ interface EditUserDialogProps {
 }
 
 const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) => {
-  const { activePageIndex, displayNumberOfRows } = useRolesTableStore();
-  const { fetchRoles, roles } = useRoles(); // Fetch roles using your custom hook
-  const { editUser, error } = useUsers(); // Use your custom hook for user operations
-  const [loading, setLoading] = useState(false);
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
 
+  // all hooks here
+  const { fetchRoles } = useRoles();
+  const { editUser } = useUsers();
   const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -49,13 +48,28 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
     },
   });
 
-  useEffect(() => {
-    fetchRoles({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy: "name", order: "ASC" });
-  }, []);
+  // global states here
 
+  // local states hereX
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [role, setRole] = useState<string>();
+
+  // loading states
+  const [loadingRoles, setLoadingRoles] = useState(false);
+  const [editingRoles, setEditingRoles] = useState(false);
+
+  // error states
+  const [errorEditingRoles, setErrorEditingRoles] = useState<ApiError | Error>();
+  const [rolesError, setRolesError] = useState<ApiError | Error>();
+
+  // disable states
+  const [disableSave, setDisableSave] = useState(false);
+
+  // functions here
   const onSubmit = async (data: FormData) => {
-    setLoading(true);
     try {
+      setEditingRoles(true)
       await editUser({
         ...data,
         id: user.id, // User ID
@@ -71,11 +85,45 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
       reset();
       refreshUsers();
     } catch (err) {
-      console.error("Failed to update user:", err);
+      if (err instanceof ApiError) {
+        setErrorEditingRoles(err);
+      } else {
+        setErrorEditingRoles(err as Error);
+      }
     } finally {
-      setLoading(false);
+      setEditingRoles(false)
     }
   };
+
+  const fetchRolesData = useCallback(async () => {
+    try {
+      setLoadingRoles(true);
+      const response = await fetchRoles(
+        {
+          page: 1,
+          pageSize: 999,
+          sortBy: "name",
+          order: "ASC"
+        }
+      )
+      setRoles(response);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setRolesError(err);
+      } else {
+        setRolesError(err as Error);
+      }
+    } finally {
+      setLoadingRoles(false);
+    }
+  }, []);
+
+  // handlers here
+
+  // userEffects here
+  useEffect(() => {
+    fetchRolesData();
+  }, [fetchRolesData]);
 
   return (
     <>
@@ -196,7 +244,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
                   </DialogClose>
                 </div>
                 <Button variant="default" type="submit">
-                  {loading ? <Loader2 className="animate-spin" /> : "Save Changes"}
+                  {editingRoles ? <Loader2 className="animate-spin" /> : "Save Changes"}
                 </Button>
               </div>
             </DialogFooter>
@@ -208,9 +256,9 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
       <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{error?.status || 'Success'}</DialogTitle>
+            <DialogTitle>{'Success'}</DialogTitle>
           </DialogHeader>
-          <DialogDescription>{error?.message || 'User updated successfully.'}</DialogDescription>
+          <DialogDescription>{errorEditingRoles?.message || 'User updated successfully.'}</DialogDescription>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="default">Close</Button>

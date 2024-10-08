@@ -12,7 +12,7 @@ import { ToastAction } from '@/components/ui/toast'
 
 
 const DeleteRoleDialog: React.FC<DeleteRoleDialogProps> = ({ refreshRoles, role }) => {
-  const { error, removeRoles } = useRoles();
+  const { removeRoles } = useRoles();
   const [loading, setLoading] = useState(false);
 
   const onSubmit = useCallback(async () => {

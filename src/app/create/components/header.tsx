@@ -7,15 +7,20 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import SideBar from './sidebar'
+import useCreateAssessmentStore from '@/lib/stores/manage-assessment-store/assessment-create'
 
-interface HeaderProps {
-  assessmentId: string;
-  currentQuestionMarks: number;
-  currentSectionIndex: number;
-  setCurrentQuestionMarks: (marks: number) => void;
-}
+const Header = () => {
 
-const Header = ({ assessmentId, currentQuestionMarks, setCurrentQuestionMarks, currentSectionIndex }: HeaderProps) => {
+  // all hooks here
+
+  // global states here
+  const {
+    currentMarks,
+    setCurrentMarks,
+
+    currentSectionIndex,
+  } = useCreateAssessmentStore();
+
   const [assessmentName, setAssessmentName] = React.useState<string>('Assessment');
   return (
     <header className="flex h-16 items-center justify-between gap-4 border-b bg-muted/40 px-4 lg:min-h-[60px] lg:px-6">
@@ -38,7 +43,7 @@ const Header = ({ assessmentId, currentQuestionMarks, setCurrentQuestionMarks, c
       <div className="flex flex-row items-center border-dashed border-primary rounded-xl border gap-2">
         <input
           className="bg-transparent border-none text-[24px] max-w-14 text-center outline-none"
-          value={currentQuestionMarks}
+          value={currentMarks}
           onChange={(e) => {
             let value = parseInt(e.target.value);
             if (isNaN(value)) {
@@ -46,7 +51,7 @@ const Header = ({ assessmentId, currentQuestionMarks, setCurrentQuestionMarks, c
             } else {
               value = Math.max(0, Math.min(100, value)); // Clamp value between 0 and 100
             }
-            setCurrentQuestionMarks(value);
+            setCurrentMarks(value);
           }}
         />
       </div>
@@ -57,7 +62,7 @@ const Header = ({ assessmentId, currentQuestionMarks, setCurrentQuestionMarks, c
           </Button>
         </SheetTrigger>
         <SheetContent className='p-0'>
-          <SideBar assessmentId={assessmentId} />
+          {/* <SideBar assessmentId={assessmentId} /> */}
         </SheetContent>
       </Sheet>
     </header>

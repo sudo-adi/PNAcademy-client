@@ -8,14 +8,18 @@ import { Loader2, Trash2 } from 'lucide-react';
 import { Card, CardTitle } from '@/components/ui/card';
 import { useGroups } from '../../hooks/useGroups';
 
-
 interface DeleteGroupDialogprops {
-  refreshGroups: () => void;
   group: Group;
+  refreshGroups: () => void;
+
 }
 
-const DeleteGroupDialog: React.FC<DeleteGroupDialogprops> = ({ refreshGroups, group }) => {
-  const { error, removeGroups } = useGroups();
+const DeleteGroupDialog: React.FC<DeleteGroupDialogprops> = ({ group, refreshGroups }) => {
+
+  // all hooks here
+  const { removeGroups } = useGroups();
+
+  // global states here
   const [loading, setLoading] = useState(false);
   const onSubmit = useCallback(async () => {
     setLoading(true);
@@ -25,14 +29,13 @@ const DeleteGroupDialog: React.FC<DeleteGroupDialogprops> = ({ refreshGroups, gr
       console.error('Error deleting user:', err);
     } finally {
       setLoading(false);
-      refreshGroups();
       toast({
-        title: `Group ${group.name} deleted successfully`,
+        title: `${group.name} Group deleted successfully`,
         action: (
           <ToastAction altText="Success">Ok</ToastAction>
         ),
       })
-      console.log("here is the group", group);
+      refreshGroups();
     }
   }, [removeGroups, group.id]);
 

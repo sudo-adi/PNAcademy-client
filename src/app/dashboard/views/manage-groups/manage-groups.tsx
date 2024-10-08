@@ -1,7 +1,7 @@
 import { Card } from '@/components/ui/card'
-import React, { useEffect, useState } from 'react'
-import CreateGroupDialog from './components/dialog-box/create-group-dialog'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import React, { useCallback, useEffect, useState } from 'react'
+// import CreateGroupDialog from './components/dialog-box/create-group-dialog'
+import { TableCell, TableHead, TableRow } from '@/components/ui/table'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatDateInIST } from '@/lib/helpers/time-converter'
@@ -11,35 +11,61 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import EditGroupDialog from './components/dialog-box/edit-group-dialog'
 import ViewGroupDialog from './components/dialog-box/view-group-dialog'
-import DeleteGroupDialog from './components/dialog-box/delete-group-dialog'
 import useGroupsTableStore from '@/lib/stores/manage-groups-store.ts/groups-table-store'
 import { useGroups } from './hooks/useGroups'
 import { Input } from '@/components/ui/input'
+import { ApiError } from '@/lib/api/apiError'
+import CreateGroupDialog from './components/dialog-box/create-group-dialog'
+import DeleteGroupDialog from './components/dialog-box/delete-group-dialog'
 
 const ManageGroups = () => {
+
+  // all hooks here
   const {
-    loading,
-    groups,
-    fetchedGroupsRes,
     fetchGroups,
     removeGroups,
   } = useGroups();
+
+  // global states
   const { activePageIndex, displayNumberOfRows, sortBy, order, setSortBy, setOrder } = useGroupsTableStore();
+
+  // local states here
   const [selectedGroups, setSelectedGroups] = useState<Set<string>>(new Set());
-  const groupList = (groups as Group[]) ?? [];
-  const allSelected = groupList.length > 0 && selectedGroups.size === groupList.length;
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [loadingGroups, setLoadingGroups] = useState<boolean>(false);
+  const [error, setError] = useState<ApiError | Error>();
 
+  // local vars
+  const allSelected = groups.length > 0 && selectedGroups.size === groups.length;
 
-  useEffect(() => {
-    fetchGroups({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy, order });
+  // local functions here
+  const fetchGroupsData = useCallback(async () => {
+    try {
+      const response = await fetchGroups({
+        page: activePageIndex,
+        pageSize: displayNumberOfRows,
+        sortBy,
+        order
+      });
+      setGroups(response.groups);
+      setTotalPages(response.totalPages);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err);
+      } else {
+        setError(err as Error);
+      }
+    }
   }, [sortBy, order]);
 
-
   const refreshGroups = () => {
-    fetchGroups({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy, order });
+    fetchGroupsData();
   };
 
-  const toggleSorting = (field: keyof Group) => {
+  // local handelers here
+
+  const handleToggleSorting = (field: keyof Group) => {
     if (sortBy === field) {
       setOrder(order === 'ASC' ? 'DESC' : 'ASC');
     } else {
@@ -48,9 +74,10 @@ const ManageGroups = () => {
     }
   };
 
+
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedGroups(new Set(groupList.map(user => user.id)));
+      setSelectedGroups(new Set(groups.map(user => user.id)));
     } else {
       setSelectedGroups(new Set());
     }
@@ -73,60 +100,66 @@ const ManageGroups = () => {
     refreshGroups();
   };
 
+  // useEffect
+  useEffect(() => {
+    fetchGroupsData();
+  }, [fetchGroupsData]);
+
+
   return (
     <>
-      <Card className="flex flex-row w-full p-2 justify-between border-dashed">
-        <div className="flex gap-2">
-          <CreateGroupDialog refreshGroups={refreshGroups} />
-          {selectedGroups.size > 0 && (
-            <Button variant="destructive" onClick={handleDeleteSelected}>
-              <Trash2 className='h-4 w-4 mr-2' />
-              Delete Groups
+      <div className="flex flex-col h-[calc(100vh-10rem)] w-full gap-2">
+        <div className="flex flex-row w-full justify-between border-dashed">
+          <div className="flex gap-2">
+            <CreateGroupDialog refreshGroups={refreshGroups} />
+            {selectedGroups.size > 0 && (
+              <Button variant="destructive" onClick={handleDeleteSelected}>
+                <Trash2 className='h-4 w-4 mr-2' />
+                Delete Groups
+              </Button>
+            )}
+          </div>
+          <div className="flex w-full max-w-sm items-center space-x-2">
+            <Input type="email" placeholder="Search Group..." />
+            <Button type="submit" className='flex items-center justify-center  gap-1'>
+              <Search className='h-4 w-4' />
+              Search
             </Button>
-          )}
-        </div>
-        <div className="flex w-full max-w-sm items-center space-x-2">
-          <Input type="email" placeholder="Search Group..." />
-          <Button type="submit" className='flex items-center justify-center  gap-1'>
-            <Search className='h-4 w-4' />
-            Search
-          </Button>
-        </div>
-      </Card>
-      <Card className=" h-[calc(100vh-15rem)] flex flex-col">
-
-        <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
-          <div className="absolute inset-0 overflow-auto">
-            <table className="w-full">
-              <thead className="sticky bg-background top-0 z-10">
-                <Schema
-                  toggleSorting={toggleSorting}
-                  sortBy={sortBy}
-                  order={order}
-                  allSelected={allSelected}
-                  onSelectAll={handleSelectAll}
-                />
-              </thead>
-              <tbody>
-                {groupList.map((group: Group) => (
-                  <Row
-                    key={group.id}
-                    group={group}
-                    selected={selectedGroups.has(group.id)}
-                    onSelectGroup={handleSelectGroup}
-                    refreshGroups={refreshGroups}
-                    loading={loading}
-                  />
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
-      </Card>
-
+        <Card className=" h-[calc(100vh-11rem)] flex flex-col">
+          <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
+            <div className="absolute inset-0 overflow-auto">
+              <table className="w-full">
+                <thead className="sticky bg-background top-0 z-10">
+                  <Schema
+                    toggleSorting={handleToggleSorting}
+                    sortBy={sortBy}
+                    order={order}
+                    allSelected={allSelected}
+                    onSelectAll={handleSelectAll}
+                  />
+                </thead>
+                <tbody>
+                  {groups.map((group: Group) => (
+                    <Row
+                      key={group.id}
+                      group={group}
+                      selected={selectedGroups.has(group.id)}
+                      onSelectGroup={handleSelectGroup}
+                      refreshGroups={refreshGroups}
+                      loading={false}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </Card>
+      </div>
       <div className="flex h-[1rem] items-center justify-between gap-2">
         <Label className="text-xs">
-          Showing <strong>1-10</strong> of <strong>{fetchedGroupsRes?.data.totalPages}</strong> Users
+          Showing {groups.length}  of {totalPages} Pages
         </Label>
         <div className="flex gap-2">
           <Button variant="outline">Previous</Button>
@@ -215,7 +248,7 @@ const Row: React.FC<RowProps> = ({ group, selected, onSelectGroup, refreshGroups
       </TableCell>
       <TableCell>
         <div className="flex gap-4 text-xs">
-          {loading ? (<Skeleton className="w-8 h-8" />) : (<ViewGroupDialog group={group} refreshGroups={refreshGroups} />)}
+          {loading ? (<Skeleton className="w-8 h-8" />) : (<ViewGroupDialog group={group} />)}
           {loading ? (<Skeleton className="w-8 h-8" />) : (<EditGroupDialog group={group} refreshGroups={refreshGroups} />)}
           {loading ? (<Skeleton className="w-8 h-8" />) : (<DeleteGroupDialog group={group} refreshGroups={refreshGroups} />)}
         </div>

@@ -17,7 +17,6 @@ import { ToastAction } from '@/components/ui/toast'
 import QuestionCard from './components/questioncard'
 import PnaLoader from '@/components/common/custom-loading-animation'
 import { set } from 'date-fns'
-import CreateNewAssessmentWithAiDialogBox from './components/create-new-assessment-with-ai-dialog-box'
 
 
 const AiCreate = () => {
@@ -248,7 +247,7 @@ const AiCreate = () => {
               Section {currentSectionIndex + 1} of {currentSections.length}
             </Badge>
           </div>
-          <CreateNewAssessmentWithAiDialogBox />
+          {/* here should be the dialog  */}
         </div>
         <div className="flex flex-col w-full py-4 px-5 gap-2">
           <div className="flex flex-col md:flex-row items-start h-[11rem] md:h-[5rem] gap-2 w-full rounded-2xl">

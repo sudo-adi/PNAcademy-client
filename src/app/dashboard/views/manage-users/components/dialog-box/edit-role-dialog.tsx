@@ -8,71 +8,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Bell, BellPlus, Edit, FileCog, FilePen, FilePieChart, PieChart, ScrollText, User, UserCog, Users } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { useRoles } from '../../hooks/useRoles';
-import { RolePermissions } from '@/lib/types/roleTypes';
-import { Role } from '@/lib/types/role';
+import { RolePermissions, UpdateRoleProps, Role } from '@/lib/types/roleTypes';
+import { ApiError } from '@/lib/api/apiError';
 
 
 interface EditRoleDialogProps {
-
   refreshRoles: () => void;
+  role: Role;
 }
 
-const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ refreshRoles }) => {
-  const [roleName, setRoleName] = React.useState<string>('');
-  const [permissions, setPermissions] = React.useState<RolePermissions>({
-    canManageAssessment: false,
-    canManageUser: false,
-    canManageRole: false,
-    canManageNotification: false,
-    canManageLocalGroup: false,
-    canManageReports: false,
-    canAttemptAssessment: false,
-    canViewReport: false,
-    canManageMyAccount: false,
-    canViewNotification: false,
-  });
-  const { addedRoleRes, addRole } = useRoles();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [saveRoleDisable, setSaveRoleDisable] = useState<boolean>(false)
+const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ refreshRoles, role }) => {
 
-  const handleSaveRole = async () => {
-    try {
-      await addRole({ name: roleName, permissions });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handlePermissionChange = (permission: keyof RolePermissions, value: boolean) => {
-    setPermissions((prevPermissions) => ({
-      ...prevPermissions,
-      [permission]: value,
-    }));
-  }
-
-  useEffect(() => {
-    if (roleName === '') {
-      setSaveRoleDisable(true)
-    } else {
-      setSaveRoleDisable(false)
-    }
-  }, [roleName]);
-
-  const handleClearSelections = () => {
-    setPermissions({
-      canManageAssessment: false,
-      canManageUser: false,
-      canManageRole: false,
-      canManageNotification: false,
-      canManageLocalGroup: false,
-      canManageReports: false,
-      canAttemptAssessment: false,
-      canViewReport: false,
-      canManageMyAccount: false,
-      canViewNotification: false,
-    })
-  }
-
+  // constants heres
   const managingPermissions = [
     {
       label: 'Manage Assessments',
@@ -139,18 +86,90 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ refreshRoles }) => {
     }
   ];
 
+  const { patchRole } = useRoles();
+  const [roleName, setRoleName] = useState<string>('');
+  const [permissions, setPermissions] = useState<RolePermissions>({
+    canManageAssessment: false,
+    canManageUser: false,
+    canManageRole: false,
+    canManageNotification: false,
+    canManageLocalGroup: false,
+    canManageReports: false,
+    canAttemptAssessment: false,
+    canViewReport: false,
+    canManageMyAccount: false,
+    canViewNotification: false,
+  });
+
+  // loading states
+  const [updatingRole, setUpdatingRole] = useState<boolean>(false);
+
+  // error states
+  const [updateRoleError, setUpdateRoleError] = useState<Error | ApiError>();
+
+  // disable states
+  const [saveRoleDisable, setSaveRoleDisable] = useState<boolean>(false);
+
+  // handlers here
+  const handleSaveRole = async () => {
+    const payload = {
+      name: roleName,
+      roleId: role.id,
+      permissions: permissions,
+    }
+    try {
+      setUpdatingRole(true);
+      console.log(payload.roleId);
+      const response = await patchRole(payload);
+      refreshRoles(); // Add this to refresh the roles after successful update
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setUpdateRoleError(err);
+      } else {
+        setUpdateRoleError(err as Error);
+      }
+    } finally {
+      setUpdatingRole(false);
+      setUpdateRoleError(undefined);
+    }
+  }
+
+  const handlePermissionChange = (permission: keyof RolePermissions, value: boolean) => {
+    setPermissions((prevPermissions) => ({
+      ...prevPermissions,
+      [permission]: value,
+    }));
+  }
+
+  // Fixed handleClearSelections function
+  const handleClearSelections = () => {
+    const clearedPermissions = Object.keys(permissions).reduce((acc, key) => ({
+      ...acc,
+      [key]: false
+    }), {} as RolePermissions);
+    setPermissions(clearedPermissions);
+  }
+
+  useEffect(() => {
+    setSaveRoleDisable(roleName === '');
+  }, [roleName]);
+
+  useEffect(() => {
+    setPermissions(role);
+    setRoleName(role.name);
+  }, [role]);
 
   return (
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button disabled={true} variant="outline" className='bg-transparent'>
+          <Button variant="outline" className='bg-transparent'>
             <Edit className='h-4 w-4' />
           </Button>
         </DialogTrigger>
         <DialogContent className="w-full min-w-[100px] max-w-[600px] min-h-[400px] max-h-[800px] overflow-hidden overflow-y-scroll scrollbar-none">
           <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Create a New Role</DialogTitle>
+            <DialogTitle className="text-xl font-semibold">Update Role</DialogTitle>
             <DialogDescription>
               Assign permissions to the new role.
             </DialogDescription>
@@ -159,6 +178,7 @@ const EditRoleDialog: React.FC<EditRoleDialogProps> = ({ refreshRoles }) => {
               <Input
                 id="name"
                 type="text"
+                value={roleName}
                 placeholder="e.g. student..."
                 onChange={(e) => setRoleName(e.target.value)}
                 required

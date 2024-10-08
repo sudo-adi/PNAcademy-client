@@ -3,21 +3,52 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import React, { useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import AllTabContent from './components/tab-content/all-tab-content';
 import OnGoingTabContent from './components/tab-content/ongoing-tab-content';
 import ScheduledTabContent from './components/tab-content/scheduled-tab-content';
 import PreviousTabContent from './components/tab-content/previous-tab-content';
+import { useAssignedAssessments } from './hooks/useAssignedAssessments';
+import { Assessment } from '@/lib/types/assessmentTypes';
+import { Label } from '@/components/ui/label';
 
 const Assessments = () => {
+
+  // all hooks here
+  const {
+    fetchAssignedAssessments
+  } = useAssignedAssessments();
+
+  // all state here
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [assessments, setAssessments] = useState<Assessment[]>([]);
+
+  // all functions here
+  const getAssignedAssessments = async () => {
+    try {
+      const assessments = await fetchAssignedAssessments({
+        page: 1,
+        pageSize: 999,
+        sortBy: 'id',
+        order: 'ASC'
+      });
+      setAssessments(assessments);
+    } catch (err) {
+    }
+  }
+
+  // all useEffects here
+  useEffect(() => {
+    getAssignedAssessments();
+  }, []);
+
   return (
     <>
       <div className='flex flex-col gap-2 overflow-y-hidden'>
         <Card className='flex flex-col lg:flex-row w-full  justify-between items-center border-dashed gap-4 p-4 lg:p-2 overflow-hidden'>
           <div className="flex flex-row gap-2">
             <div className='text-3xl'>
-              
+              Hii! Aditya Good Morning
             </div>
           </div>
           <div className="flex w-full h-full lg:w-auto items-center space-x-2">
@@ -46,16 +77,16 @@ const Assessments = () => {
           </div>
           <div className="w-full">
             <TabsContent value="0">
-              <AllTabContent />
+              <AllTabContent assessments={assessments} />
             </TabsContent>
             <TabsContent value="1">
-              <OnGoingTabContent />
+              <OnGoingTabContent assessments={assessments} />
             </TabsContent>
             <TabsContent value="2" >
-              <ScheduledTabContent />
+              <ScheduledTabContent assessments={assessments} />
             </TabsContent>
             <TabsContent value="3" >
-              <PreviousTabContent />
+              <PreviousTabContent assessments={assessments} />
             </TabsContent>
           </div>
         </Tabs >

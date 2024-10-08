@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLogin } from "./hooks/useLogin";
 import DisableRightClick from "./disablerightclick";
-import PnaLoader from "@/components/common/custom-loading-animation";
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
 import { Loader } from "lucide-react";
@@ -44,11 +43,8 @@ const LoginPage = () => {
         ),
       })
     } finally {
-      setLoading(false);
     }
   };
-
-
 
 
   return (
@@ -99,7 +95,9 @@ const LoginPage = () => {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full">
+                  <Button type="submit" className="w-full"
+                    disabled={loading}
+                  >
                     {loading ? <Loader className="h-4 2-4 animate-spin" /> : 'Login'}
                   </Button>
                   {error && <p className="text-red-500 text-center">{error}</p>}

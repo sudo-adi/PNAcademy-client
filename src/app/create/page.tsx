@@ -10,7 +10,7 @@ import { ArrowLeft, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 const Create = () => {
   const [assessmentId, setAssessmentId] = useState<string>('')
-  const { fetchAssessmentById, assessment, assessmentError } = useAssessment();
+  const { fetchAssessmentById } = useAssessment();
   const [loading, setLoading] = useState<boolean>(false);
   const [goBackLoading, setGoBackLoading] = useState<boolean>(false);
   const router = useRouter();
@@ -85,11 +85,11 @@ const Create = () => {
           </div>
         </CardFooter>
       </Card>
-      {
+      {/* {
         assessmentError && <p className="text-red-500">{
           assessmentError.status === 400 ? 'Please Enter a Valid Assessment ID' : assessmentError.status === 404 ? 'Assessment Not Found' : 'Something Went Wrong'
         }</p>
-      }
+      } */}
     </div>
   )
 }

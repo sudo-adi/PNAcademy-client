@@ -1,3 +1,5 @@
+import { SingleUser } from "./userTypes";
+
 // interface for createGroup props
 export interface CreateGroupProps {
   name: string;
@@ -102,28 +104,14 @@ export interface GetUsersByGroupIdProps {
   groupId: string;
 }
 
-export interface User {
-  id: string;
-  role_id: string | null;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  createdAt: string;
-  updatedAt: string;
-  // Add other properties of a user if needed
-}
 
 export interface GetUsersByGroupIdResponse {
   status: string;
   data: {
-    users: User[];
+    users: SingleUser[];
     totalPages: number;
   };
 }
-
-
-
 
 
 export interface GetAssignedGroupsProps {
@@ -132,6 +120,7 @@ export interface GetAssignedGroupsProps {
 
 export interface AssignedGroup {
   id: string;
+  name: string;
 }
 
 export interface GetAssignedGroupsResponse {

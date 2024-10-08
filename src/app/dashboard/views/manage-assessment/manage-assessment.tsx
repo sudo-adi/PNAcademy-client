@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import useTabStore from '@/lib/stores/manage-assessment-store/tab-store'
 import { Archive, Search, Sparkles } from 'lucide-react'
-import React from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import AllTabContent from './components/tab-content/all-tab-content'
 import OnGoingTabContent from './components/tab-content/ongoing-tab-content'
 import ScheduledTabContent from './components/tab-content/scheduled-tab-content'
@@ -12,10 +12,88 @@ import PreviousTabContent from './components/tab-content/previous-tab-content'
 import CreateAssessmentDialog from './components/dialog-box/create-assessment-dialog'
 import DraftsTabContent from './components/tab-content/drafts-tab-content'
 import { useRouter } from 'next/navigation'
+import { useAssessment } from './hooks/useAssessment'
+import { Assessment } from '@/lib/types/assessmentTypes'
+import { ApiError } from '@/lib/api/apiError'
+import useAssessmentsTableStore from '@/lib/stores/manage-assessment-store/assessments-table'
 
 const ManageAssessments = () => {
+
+  // all hooks here
+  const {
+    fetchAssessments,
+  } = useAssessment();
   const router = useRouter();
+
+  // global states here
   const { activeTabIndex, setActiveTabIndex } = useTabStore();
+  const { activePageIndex, sortBy, order, setOrder, setSortBy, } = useAssessmentsTableStore();
+
+  //  local states here
+  const [allAssessments, setAllAssessments] = useState<Assessment[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(1);
+
+  // loading states here
+  const [assessmentLoading, setAssessmentLoading] = useState<boolean>(true);
+
+  // error states here
+  const [assessmentsFetchError, setAssessmentsFetchError] = useState<ApiError | Error>();
+
+  // local vars here
+
+  // all functions here
+  const fetchAssessmentsData = useCallback(async () => {
+    const payload = {
+      page: activePageIndex ? activePageIndex : 1,
+      pageSize: 999,
+      sortBy,
+      order
+    }
+    try {
+      setAssessmentLoading(true)
+      console.log("there u go", activePageIndex)
+      const response = await fetchAssessments(payload);
+      setAllAssessments(response.assesments);
+      setTotalPages(response.totalPages);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setAssessmentsFetchError(err);
+      } else {
+        setAssessmentsFetchError(err as Error);
+      }
+    } finally {
+      setAssessmentLoading(false)
+    }
+  }, [activePageIndex, sortBy, order]);
+
+  // all event handlers here
+  const handleRefreshAssessments = () => {
+    fetchAssessmentsData();
+  };
+  const handleToggleSorting = (field: keyof Assessment) => {
+    if (sortBy === field) {
+      setOrder(order === 'ASC' ? 'DESC' : 'ASC');
+    } else {
+      setSortBy(field);
+      setOrder('ASC');
+    }
+  };
+
+  // configs for all tabs
+  const tabConfig = {
+    assessments: allAssessments,
+    loadingAssessments: assessmentLoading,
+    errorAssessments: assessmentsFetchError,
+    totalPages: totalPages,
+    refreshAssessments: handleRefreshAssessments,
+    toggleSorting: handleToggleSorting,
+  }
+
+  // all useEffects here
+  useEffect(() => {
+    fetchAssessmentsData();
+  }, [fetchAssessmentsData]);
+
   return (
     <div className='flex flex-col gap-2'>
       <Card className='flex flex-row w-full p-2 justify-between items-center border-dashed gap-2'>
@@ -54,19 +132,29 @@ const ManageAssessments = () => {
         </div>
         <div className="w-full">
           <TabsContent value="0">
-            <AllTabContent />
+            <AllTabContent
+              {...tabConfig}
+            />
           </TabsContent>
           <TabsContent value="1">
-            <OnGoingTabContent />
+            <OnGoingTabContent
+              {...tabConfig}
+            />
           </TabsContent>
           <TabsContent value="2" >
-            <ScheduledTabContent />
+            <ScheduledTabContent
+              {...tabConfig}
+            />
           </TabsContent>
           <TabsContent value="3" >
-            <PreviousTabContent />
+            <PreviousTabContent
+              {...tabConfig}
+            />
           </TabsContent>
           <TabsContent value="4" >
-            <DraftsTabContent />
+            <DraftsTabContent
+              {...tabConfig}
+            />
           </TabsContent>
         </div>
       </Tabs >

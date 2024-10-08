@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   RegisterUserProps,
   RegisterUserResponse,
@@ -9,7 +8,8 @@ import {
   DeleteUsersProps,
   DeleteUsersResponse,
   SingleUser,
-  ImportUsersResponse,
+  GetUsersByRoleIdResponse,
+  GetUsersByRoleIdProps,
 } from '@/lib/types/userTypes';
 import {
   registerUser,
@@ -17,101 +17,91 @@ import {
   updateUser,
   deleteUsers,
   importUsers,
+  getUsersByRoleId,
 } from '@/lib/services/user-service/user-service';
 import { ApiError } from '@/lib/api/apiError';
+
+// Hook to manage users
 export const useUsers = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<ApiError | null>(null);
-  const [users, setUsers] = useState<SingleUser[]>([]);
-  const [createdUserRes, setCreatedUserRes] = useState<RegisterUserResponse | null>(null);
-  const [fetchedUsersRes, setFetchedUsersRes] = useState<GetUsersResponse | null>(null);
-  const [updatedUserRes, setUpdatedUserRes] = useState<UpdateUserResponse | null>(null);
-  const [deletedUsersRes, setDeletedUsersRes] = useState<DeleteUsersResponse | null>(null);
 
-  // Function to create a user
-  const addUser = async (data: RegisterUserProps) => {
-    setLoading(true);
-    setError(null);
+  // Hook Method to create a user
+  const addUser = async (data: RegisterUserProps): Promise<SingleUser> => {
     try {
-      const response: RegisterUserResponse | null = await registerUser(data);
-      if (response) {
-        console.info('User created:', response);
-        setCreatedUserRes(response);
-      }
+      const response: RegisterUserResponse = await registerUser(data);
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
+        throw err;
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw new Error('An unexpected error occurred');
       }
     } finally {
-      setLoading(false);
+
     }
   };
 
-  // Function to fetch users
-  const fetchUsers = async (params: BulkUserProps) => {
-    setLoading(true);
-    setError(null);
+  // Hook Method to fetch users
+  const fetchUsers = async (params: BulkUserProps): Promise<GetUsersResponse['data']> => {
     try {
-      const response: GetUsersResponse | null = await getUsers(params);
-      if (response) {
-        setUsers(response.data.users);
-        setFetchedUsersRes(response);
-      }
+      const response: GetUsersResponse = await getUsers(params);
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
+        throw err;
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw new Error('An unexpected error occurred');
       }
     } finally {
-      setLoading(false);
+
     }
   };
 
-  // Function to update a user
-  const editUser = async (data: UpdateUserProps) => {
-    setLoading(true);
-    setError(null);
+  // Hook Method to fetch users by role ID
+  const fetchUsersByRoleId = async (data: GetUsersByRoleIdProps): Promise<SingleUser[]> => {
     try {
-      const response: UpdateUserResponse | null = await updateUser(data);
-      if (response) {
-        console.info('User updated:', response);
-        setUpdatedUserRes(response);
-      }
+      const response: GetUsersByRoleIdResponse = await getUsersByRoleId(data);
+      return response.data; // Return the users array from the response
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
+        throw err; // Rethrow the ApiError for handling at a higher level
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw new Error('An unexpected error occurred');
       }
     } finally {
-      setLoading(false);
+      // You can perform cleanup actions here if needed
     }
   };
 
-  // Function to delete users
-  const removeUsers = async (data: DeleteUsersProps) => {
-    setLoading(true);
-    setError(null);
+  // Hook Method to update a user
+  const editUser = async (data: UpdateUserProps): Promise<SingleUser> => {
     try {
-      const response: DeleteUsersResponse | null = await deleteUsers(data);
-      if (response) {
-        console.info('Users deleted:', response);
-        setDeletedUsersRes(response);
-      }
+      const response: UpdateUserResponse = await updateUser(data);
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
+        throw err;
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw new Error('An unexpected error occurred');
       }
     } finally {
-      setLoading(false);
     }
   };
 
+  // Hook Method to delete users
+  const removeUsers = async (data: DeleteUsersProps): Promise<String> => {
+    try {
+      const response: DeleteUsersResponse = await deleteUsers(data);
+      return response.message;
+    } catch (err) {
+      if (err instanceof ApiError) {
+        throw err;
+      } else {
+        throw new Error('An unexpected error occurred');
+      }
+    } finally {
+
+    }
+  };
 
   interface ImportUsersFromCSVProps {
     users: File;
@@ -119,37 +109,25 @@ export const useUsers = () => {
   }
 
   const importUsersFromCSV = async ({ users, updateExisting }: ImportUsersFromCSVProps) => {
-    setLoading(true);
-    setError(null);
     try {
       const response = await importUsers({ users, updateExisting });
       if (response) {
-        console.info('Users imported:', response);
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
       } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
       }
     } finally {
-      setLoading(false);
+
     }
   };
 
-
   return {
-    users,
-    loading,
-    error,
-    createdUserRes,
-    fetchedUsersRes,
-    updatedUserRes,
-    deletedUsersRes,
-    importUsersFromCSV,
     addUser,
     fetchUsers,
+    fetchUsersByRoleId,
     editUser,
     removeUsers,
+    importUsersFromCSV,
   };
 };

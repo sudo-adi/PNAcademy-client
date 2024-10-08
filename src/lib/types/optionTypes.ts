@@ -5,17 +5,19 @@ export interface CreateOptionProps {
   is_correct: boolean;
 }
 
+export interface Option {
+  id: string;
+  question_id: string;
+  description: string;
+  is_correct: boolean;
+  updatedAt: string;
+  createdAt: string;
+}
+
 // interface for createOption response
 export interface CreateOptionResponse {
   message: string;
-  data: {
-    id: string;
-    question_id: string;
-    description: string;
-    is_correct: boolean;
-    updatedAt: string;
-    createdAt: string;
-  };
+  data: Option;
 }
 
 // interface for updateOption props
@@ -28,14 +30,7 @@ export interface UpdateOptionProps {
 // interface for updateOption response
 export interface UpdateOptionResponse {
   message: string;
-  data: {
-    id: string;
-    question_id: string;
-    description: string;
-    is_correct: boolean;
-    createdAt: string;
-    updatedAt: string;
-  };
+  data: Option;
 }
 
 

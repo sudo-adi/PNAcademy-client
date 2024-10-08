@@ -2,9 +2,24 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Bell, BellPlus, Calendar, Clock, Copy, Edit, FileCog, FilePen, FilePieChart, MousePointer2, PieChart, Scroll, ScrollText, Trash2, User, UserCog, Users } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { TableCell, TableHead, TableRow } from '@/components/ui/table';
+import {
+  Bell,
+  BellPlus,
+  Calendar,
+  Clock,
+  FileCog,
+  FilePieChart,
+  MousePointer2,
+  PieChart,
+  Scroll,
+  ScrollText,
+  Trash2,
+  User,
+  UserCog,
+  Users
+} from 'lucide-react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CreateRoleDialog from '../dialog-box/create-role-dialog';
 import EditRoleDialog from '../dialog-box/edit-role-dialog';
 import DeleteRoleDialog from '../dialog-box/delete-role-dialog';
@@ -15,7 +30,7 @@ import useRolesTableStore from '@/lib/stores/manage-users-store/roles-table-stor
 import { Role } from '@/lib/types/roleTypes';
 import { formatDateInIST } from '../../../../../../lib/helpers/time-converter';
 import { Badge } from '@/components/ui/badge';
-
+import { ApiError } from '@/lib/api/apiError';
 
 // global props
 interface ToggleSortingProps {
@@ -23,29 +38,53 @@ interface ToggleSortingProps {
 }
 
 const RolesTabContent = () => {
-  const { roles, loading, error, fetchRoles, removeRoles } = useRoles();
+
+  // all hooks here
+  const { fetchRoles, removeRoles } = useRoles();
+
+  // global states here
   const { activePageIndex, displayNumberOfRows, sortBy, order, setOrder, setSortBy } = useRolesTableStore();
+
+  // local states here
+  const [roles, setRoles] = useState<Role[]>([]);
   const [selectedRoles, setSelectedRoles] = useState<Set<string>>(new Set());
+
+  const [loadingRoles, setLaoadingRoles] = useState<boolean>(true);
+
+  const [rolesError, setRolesError] = useState<ApiError | Error>()
+
+  // local vars here
   const allSelected = roles.length > 0 && selectedRoles.size === roles.length;
 
-  useEffect(() => {
-    fetchRoles({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy, order });
+  // local functions here
+  const fetchRolesData = useCallback(async () => {
+    try {
+      setLaoadingRoles(true)
+      const response = await fetchRoles(
+        {
+          page: activePageIndex,
+          pageSize: displayNumberOfRows,
+          sortBy,
+          order
+        }
+      )
+      setRoles(response);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setRolesError(err);
+      } else {
+        setRolesError(err as Error);
+      }
+    } finally {
+      setLaoadingRoles(false);
+    }
   }, [sortBy, order]);
 
-  const toggleSorting = ({ field }: ToggleSortingProps) => {
-    if (sortBy === field) {
-      setOrder(order === 'ASC' ? 'DESC' : 'ASC');
-    } else {
-      setSortBy(field);
-      setOrder('ASC');
-    }
-  };
-
-
   const refreshRoles = () => {
-    fetchRoles({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy, order });
+    fetchRolesData();
   }
 
+  // handlers here
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       setSelectedRoles(new Set(roles.map(user => user.id)));
@@ -73,12 +112,25 @@ const RolesTabContent = () => {
     refreshRoles();
   };
 
+  const handleToggleSorting = ({ field }: ToggleSortingProps) => {
+    if (sortBy === field) {
+      setOrder(order === 'ASC' ? 'DESC' : 'ASC');
+    } else {
+      setSortBy(field);
+      setOrder('ASC');
+    }
+  };
+
+  // useEffects here
+  useEffect(() => {
+    fetchRolesData();
+  }, [fetchRolesData]);
 
   return (
     <>
       <Card className='flex flex-row gap-4 w-full p-2 justify-between border-dashed'>
         <div className="flex gap-2">
-          <CreateRoleDialog />
+          <CreateRoleDialog refreshRoles={refreshRoles} />
           {selectedRoles.size > 0 && (
             <Button variant="destructive" onClick={handleDeleteSelected}>
               <Trash2 className='h-4 w-4 mr-2' />
@@ -93,7 +145,7 @@ const RolesTabContent = () => {
             <table className="w-full">
               <thead className="sticky bg-background top-0 z-10">
                 <Schema
-                  toggleSorting={toggleSorting}
+                  toggleSorting={handleToggleSorting}
                   sortBy={sortBy}
                   order={order}
                   allSelected={allSelected}
@@ -107,7 +159,7 @@ const RolesTabContent = () => {
                     selected={selectedRoles.has(role.id)}
                     onSelectRole={handleSelectRole}
                     refreshRoles={refreshRoles}
-                    loading={loading}
+                    loading={loadingRoles}
                   />))}
               </tbody>
             </table>
@@ -244,7 +296,7 @@ const Row: React.FC<RowProps> = ({ role, selected, loading, onSelectRole, refres
       </TableCell>
       <TableCell>
         <div className="flex gap-4">
-          {loading ? (<Skeleton className="w-8 h-8" />) : (<EditRoleDialog refreshRoles={refreshRoles} />)}
+          {loading ? (<Skeleton className="w-8 h-8" />) : (<EditRoleDialog refreshRoles={refreshRoles} role={role} />)}
           {loading ? (<Skeleton className="w-8 h-8" />) : (<DeleteRoleDialog refreshRoles={refreshRoles} role={role} />)}
         </div>
       </TableCell>

@@ -1,22 +1,65 @@
 "use client";
+import { AssignedAssessmentQuestion } from '@/lib/types/attemptionTypes';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface State {
-  activePageIndex: number;
+  assessmentId: string;
+  isFullScreen: boolean;
+  assessmentIsActive: boolean;
+  serverTime: string;
+  startAt: string;
+  duration: number;
+  timer: number;
+  totalSections: number;
+  currentSectionId: number;
+  currentQuestionIndex: number;
+  endedSections: number;
+  activeSectionQuestions: AssignedAssessmentQuestion[];
 }
 
 interface Actions {
-  setActivePageIndex: (index: number) => void;
-
+  setAssessmentId: (value: string) => void;
+  setIsFullScreen: (value: boolean) => void;
+  setAssessmentIsActive: (value: boolean) => void;
+  setServerTime: (value: string) => void;
+  setStartAt: (value: string) => void;
+  setDuration: (value: number) => void;
+  setTimer: (value: number) => void;
+  setTotalSections: (value: number) => void;
+  setCurrentSectionId: (value: number) => void;
+  setCurrentQuestionIndex: (value: number) => void;
+  setEndedSections: (value: number) => void;
+  setActiveSectionQuestions: (value: AssignedAssessmentQuestion[]) => void;
 }
 
-const useAssessmentsTableStore = create<State & Actions>()(
+const useAttemptAssessmentsStore = create<State & Actions>()(
   persist(
     (set) => ({
-      activePageIndex: 1,
-
-      setActivePageIndex: (index) => set({ activePageIndex: index }),
+      assessmentId: '',
+      isFullScreen: false,
+      assessmentIsActive: false,
+      serverTime: '',
+      startAt: '',
+      duration: 0,
+      timer: 0,
+      totalSections: 0,
+      currentSectionId: 0,
+      currentQuestionIndex: 0,
+      endedSections: 0,
+      activeSectionQuestions: [],
+      setAssessmentId: (value) => set(() => ({ assessmentId: value })),
+      setIsFullScreen: (value) => set(() => ({ isFullScreen: value })),
+      setAssessmentIsActive: (value) => set(() => ({ assessmentIsActive: value })),
+      setServerTime: (value) => set(() => ({ serverTime: value })),
+      setStartAt: (value) => set(() => ({ startAt: value })),
+      setDuration: (value) => set(() => ({ duration: value })),
+      setTimer: (value) => set(() => ({ timer: value })),
+      setTotalSections: (value) => set(() => ({ totalSections: value })),
+      setCurrentSectionId: (value) => set(() => ({ currentSectionId: value })),
+      setCurrentQuestionIndex: (value) => set(() => ({ currentQuestionIndex: value })),
+      setEndedSections: (value) => set(() => ({ endedSections: value })),
+      setActiveSectionQuestions: (value) => set(() => ({ activeSectionQuestions: value })),
     }),
     {
       name: 'attemptAssessmentStore',
@@ -24,4 +67,4 @@ const useAssessmentsTableStore = create<State & Actions>()(
   )
 );
 
-export default useAssessmentsTableStore;
+export default useAttemptAssessmentsStore;

@@ -1,0 +1,3 @@
+const validateAssessment = (assessmentId: string) => {
+  
+}

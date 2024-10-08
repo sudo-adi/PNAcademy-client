@@ -3,15 +3,17 @@ export interface CreateTagProps {
   name: string;
 }
 
+export interface ResponseTag {
+  id: string;
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+}
+
 // interface for createTag response
 export interface CreateTagResponse {
   message: string;
-  data: {
-    id: string;
-    name: string;
-    updatedAt: string;
-    createdAt: string;
-  };
+  data: ResponseTag;
 }
 
 // interface for getTagById props
@@ -22,12 +24,7 @@ export interface GetTagProps {
 // interface for getTagById response
 export interface GetTagByIdResponse {
   status: string;
-  data: {
-    id: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  data: ResponseTag;
 }
 
 // interface for getTags props
@@ -42,7 +39,6 @@ export interface GetTagsProps {
 export interface Tag {
   id: string;
   name: string;
-  // Add other properties of a tag if needed
 }
 
 // interface for getTags response
@@ -63,12 +59,7 @@ export interface UpdateTagProps {
 // interface for updateTag response
 export interface UpdateTagResponse {
   message: string;
-  data: {
-    id: string;
-    name: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  data: ResponseTag;
 }
 
 // interface for deleteTag props

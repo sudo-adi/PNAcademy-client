@@ -1,10 +1,10 @@
 import { Input } from '@/components/ui/input';
-import { GetAssessmentByIdData, UpdateAssessmentProps } from '@/lib/types/assessmentTypes';
+import { Assessment, GetAssessmentByIdData, UpdateAssessmentProps } from '@/lib/types/assessmentTypes';
 import React, { useState, useEffect } from 'react';
 
 interface SideBarAssessmentDurationProps {
-  assessment: GetAssessmentByIdData;
-  patchAssessment: (data: UpdateAssessmentProps) => Promise<void>;
+  assessment: Assessment;
+  patchAssessment: (data: UpdateAssessmentProps) => Promise<Assessment>;
 }
 
 const SideBarAssessmentDuration: React.FC<SideBarAssessmentDurationProps> = ({ assessment, patchAssessment }) => {

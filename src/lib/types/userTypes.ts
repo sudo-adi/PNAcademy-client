@@ -1,3 +1,15 @@
+// interface for Single User
+export interface SingleUser {
+  id: string;
+  role_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // interface for Create User props
 export interface RegisterUserProps {
   firstName: string;
@@ -11,28 +23,7 @@ export interface RegisterUserProps {
 // interface for create user response
 export interface RegisterUserResponse {
   message: string;
-  data: {
-    id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string | null;
-    role_id: string | null;
-    updatedAt: string;
-    createdAt: string;
-  };
-}
-
-// interface for Bulk Userz
-export interface SingleUser {
-  id: string;
-  role_id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  createdAt: string;
-  updatedAt: string;
+  data: SingleUser;
 }
 
 // interface for get user response
@@ -48,7 +39,16 @@ export interface GetUsersResponse {
 export interface BulkUserProps {
   page: number;
   pageSize: number;
-  sortBy: "id" | "first_name" | "last_name" | "email" | "phone" | "role_id" | "createdAt" | "updatedAt";
+  sortBy:
+  | "id"
+  | "role_id"
+  | "first_name"
+  | "last_name"
+  | "email"
+  | "phone"
+  | "role_id"
+  | "createdAt"
+  | "updatedAt";
   order: "ASC" | "DESC";
 }
 
@@ -64,20 +64,21 @@ export interface UpdateUserProps {
   };
 }
 
+export interface GetUsersByRoleIdProps {
+  roleId: string; // UUID format for the role ID
+}
+
+// Define the shape of the response data when fetching users by role ID
+export interface GetUsersByRoleIdResponse {
+  data: SingleUser[]; // An array of user objects
+  status: string; // The status of the response
+}
+
+
 // interface for update user response
 export interface UpdateUserResponse {
   message: string;
-  data: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    role_id: string;
-    updatedAt: string;
-    createdAt: string;
-  }
-
+  data: SingleUser;
 }
 
 // interface for delete user props
@@ -107,14 +108,5 @@ export interface ImportUsersResponse {
 
 export interface GetUserInfoResponse {
   message: string;
-  data: {
-    id: string;
-    role_id: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-    phone: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  data: SingleUser;
 }

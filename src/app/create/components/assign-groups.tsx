@@ -4,38 +4,132 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TableCell, TableHead, TableRow } from '@/components/ui/table'
+import { ToastAction } from '@/components/ui/toast'
+import { toast } from '@/components/ui/use-toast'
+import { ApiError } from '@/lib/api/apiError'
 import { formatDateInIST } from '@/lib/helpers/time-converter'
 import useGroupsTableStore from '@/lib/stores/manage-groups-store.ts/groups-table-store'
-import { Group } from '@/lib/types/groupTypes'
-import { Calendar, Plus, Users, X } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { AssignedGroup, Group } from '@/lib/types/groupTypes'
+import { set } from 'date-fns'
+import { Calendar, Loader, Plus, Users, X } from 'lucide-react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 interface AssignedGroupsCardProps {
   assessmentId: string
 }
 
 const AssignedGroupsCard: React.FC<AssignedGroupsCardProps> = ({ assessmentId }) => {
-  const { loading, groups, fetchGroups, fetchAssignedGroups, assignedGroups } = useGroups();
+
+  // all hooks here
+  const { fetchGroups, fetchAssignedGroups } = useGroups();
   const { assignAssessmentToGroup, removeAssessmentFromGroup } = useAssessment();
-  const { activePageIndex, displayNumberOfRows, sortBy, order, setSortBy, setOrder } = useGroupsTableStore();
 
+  // global states here
+  const { sortBy, order, setSortBy, setOrder } = useGroupsTableStore();
+
+  // local states here
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [assignedGroups, setAssignedGroups] = useState<AssignedGroup[]>([]);
+
+  // loading states here
+  const [fetchingGroups, setFetchingGroups] = useState<boolean>(false);
+  const [fetchingAssignedGroups, setFetchingAssignedGroups] = useState<boolean>(false);
+  const [loadingGroupIds, setLoadingGroupIds] = useState<Set<string>>(new Set());
+  const [assigningGroup, setAssigningGroup] = useState<boolean>(false);
+  const [removingGroup, setRemovingGroup] = useState<boolean>(false);
+
+  // local vars here
   const groupList = (groups as Group[]) ?? [];
-
-  // Filter out groups that are already assigned
   const unassignedGroups = groupList.filter(group =>
     !assignedGroups.some(assignedGroup => assignedGroup.id === group.id)
   );
 
-  useEffect(() => {
-    fetchGroups({ page: activePageIndex, pageSize: displayNumberOfRows, sortBy, order });
-    refreshGroups();
-  }, [sortBy, order]);
+  // all functions here
+
+  const fetchGroupsList = useCallback(
+    async () => {
+      try {
+        const response = await fetchGroups({ page: 1, pageSize: 999, sortBy, order });
+        if (response) {
+          setGroups(response.groups);
+        } else {
+          throw new Error("Failed to fetch groups");
+        }
+      } catch (err) {
+        if (err instanceof ApiError) {
+          toast({
+            title: "Error",
+            description: `An error occurred while fetching groups ${err.message}`,
+            action: (
+              <ToastAction altText="error">
+                ok
+              </ToastAction>
+            ),
+          })
+        } else {
+          const error = err as Error;
+          toast({
+            title: "Error",
+            description: `An error occurred while fetching group ${error.message}`,
+            action: (
+              <ToastAction altText="error">
+                ok
+              </ToastAction>
+            ),
+          })
+        }
+      }
+    }, [sortBy, order]
+  );
+
+  const fetchAssignedGroupsList = useCallback(
+    async () => {
+      try {
+        setFetchingAssignedGroups(true);
+        const response = await fetchAssignedGroups({ id: assessmentId });
+        if (response) {
+          setAssignedGroups(response);
+        } else {
+          throw new Error("Failed to fetch assigned groups");
+        }
+      } catch (err) {
+        if (err instanceof ApiError) {
+          toast({
+            title: "Error",
+            description: `An error occurred while fetching groups ${err.message}`,
+            action: (
+              <ToastAction altText="error">
+                ok
+              </ToastAction>
+            ),
+          })
+        } else {
+          const error = err as Error;
+          toast({
+            title: "Error",
+            description: `An error occurred while fetching group ${error.message}`,
+            action: (
+              <ToastAction altText="error">
+                ok
+              </ToastAction>
+            ),
+          })
+        }
+      } finally {
+        setFetchingAssignedGroups(false)
+      }
+    }, [assessmentId]
+  )
 
   const refreshGroups = () => {
-    fetchAssignedGroups({ id: assessmentId });
+    fetchGroupsList();
+    fetchAssignedGroupsList();
   };
 
-  const toggleSorting = (field: keyof Group) => {
+
+  // handlers here
+
+  const handleToggleSorting = (field: keyof Group) => {
     if (sortBy === field) {
       setOrder(order === 'ASC' ? 'DESC' : 'ASC');
     } else {
@@ -46,21 +140,78 @@ const AssignedGroupsCard: React.FC<AssignedGroupsCardProps> = ({ assessmentId })
 
   const handleRemoveAssessmentFromGroup = async (groupId: string) => {
     try {
-      await removeAssessmentFromGroup({ assessmentId, groupId });
+      setLoadingGroupIds(prev => new Set(prev).add(groupId));
+      const response = await removeAssessmentFromGroup({ assessmentId, groupId });
+      if (!response) {
+        throw new Error("Failed to remove assessment from group");
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        toast({
+          title: "Error",
+          description: `Error removing assessment from group: ${err.message}`,
+          action: <ToastAction altText="error">ok</ToastAction>,
+        })
+      } else {
+        const error = err as Error;
+        toast({
+          title: "Error",
+          description: `Error removing assessment from group: ${error.message}`,
+          action: <ToastAction altText="error">ok</ToastAction>,
+        })
+      }
+    } finally {
+      setLoadingGroupIds(prev => {
+        const updated = new Set(prev);
+        updated.delete(groupId);
+        return updated;
+      });
       refreshGroups();
-    } catch (error) {
-      console.error("Failed to remove assessment from group:", error);
     }
   };
 
   const handleAssignAssessmentToGroup = async (groupId: string) => {
     try {
-      await assignAssessmentToGroup({ assessmentId, groupId });
+      setLoadingGroupIds(prev => new Set(prev).add(groupId));
+      const response = await assignAssessmentToGroup({ assessmentId, groupId });
+      if (!response) {
+        throw new Error("Failed to assign assessment to group");
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        toast({
+          title: "Error",
+          description: `Error assigning assessment to group: ${err.message}`,
+          action: <ToastAction altText="error">ok</ToastAction>,
+        })
+      } else {
+        const error = err as Error;
+        toast({
+          title: "Error",
+          description: `Error assigning assessment to group: ${error.message}`,
+          action: <ToastAction altText="error">ok</ToastAction>,
+        })
+      }
+    } finally {
+      setLoadingGroupIds(prev => {
+        const updated = new Set(prev);
+        updated.delete(groupId);
+        return updated;
+      });
       refreshGroups();
-    } catch (error) {
-      console.error("Failed to assign assessment to group:", error);
     }
   };
+
+  // all use effects here
+  useEffect(() => {
+    fetchGroupsList();
+  }, [fetchGroupsList]);
+
+  useEffect(() => {
+    fetchAssignedGroupsList();
+  }, [fetchAssignedGroupsList]);
+
+
 
   return (
     <>
@@ -69,18 +220,27 @@ const AssignedGroupsCard: React.FC<AssignedGroupsCardProps> = ({ assessmentId })
           <div className="absolute inset-0 overflow-auto scrollbar-none">
             <table className="w-full scrollbar-none">
               <thead className="sticky bg-background top-0 z-10">
-                <Schema toggleSorting={toggleSorting} sortBy={sortBy} order={order} />
+                <Schema toggleSorting={handleToggleSorting} sortBy={sortBy} order={order} />
               </thead>
               <tbody>
-                {unassignedGroups.map((group: Group) => (
-                  <Row
-                    key={group.id}
-                    group={group}
-                    add={() => handleAssignAssessmentToGroup(group.id)}
-                    refreshGroups={refreshGroups}
-                    loading={loading}
-                  />
-                ))}
+                {unassignedGroups.length === 0 && !fetchingGroups ? (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                      No unassigned groups found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  unassignedGroups.map((group: Group) => (
+                    <Row
+                      key={group.id}
+                      group={group}
+                      add={() => handleAssignAssessmentToGroup(group.id)}
+                      refreshGroups={refreshGroups}
+                      loading={fetchingGroups}
+                      isActionLoading={loadingGroupIds.has(group.id)}
+                    />
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -89,28 +249,23 @@ const AssignedGroupsCard: React.FC<AssignedGroupsCardProps> = ({ assessmentId })
       <Card className='min-h-[10rem] w-full px-2 pt-2'>
         <div className="flex h-[2rem] border-b-2 border-secondary p-2">Selected Groups</div>
         <div className='flex flex-wrap gap-2 px-2 pt-2 overflow-y-scroll scrollbar-none max-h-[12rem] overflow-hidden'>
-          {assignedGroups.map((group) => (
-            <AssignGroupBadge key={group.id} groupId={group.id} removeAssessmentFromGroup={() => handleRemoveAssessmentFromGroup(group.id)} />
-          ))}
+          {assignedGroups.length === 0 && !fetchingAssignedGroups ? (
+            <div className="w-full text-center py-8 text-muted-foreground">
+              No groups assigned to this assessment
+            </div>
+          ) : (
+            assignedGroups.map((group) => (
+              <AssignGroupBadge
+                key={group.id}
+                group={group}
+                removeAssessmentFromGroup={() => handleRemoveAssessmentFromGroup(group.id)}
+                removingGroup={loadingGroupIds.has(group.id)}
+              />
+            ))
+          )}
         </div>
       </Card>
     </>
-  )
-};
-
-interface AssignGroupBadgeProps {
-  groupId: string;
-  removeAssessmentFromGroup: () => void;
-}
-
-const AssignGroupBadge: React.FC<AssignGroupBadgeProps> = ({ groupId, removeAssessmentFromGroup }) => {
-  return (
-    <Badge className='flex gap-2 cursor-pointer hover:scale-105 transition-all duration-300'>
-      {groupId}
-      <button onClick={removeAssessmentFromGroup}>
-        <X className='h-4 w-4 hover:scale-125 transition-all duration-300 hover:border rounded-full' />
-      </button>
-    </Badge>
   )
 };
 
@@ -143,14 +298,52 @@ const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order }) => (
   </TableRow>
 );
 
+interface AssignGroupBadgeProps {
+  group: AssignedGroup;
+  removingGroup: boolean;
+  removeAssessmentFromGroup: () => void;
+}
+
+const AssignGroupBadge: React.FC<AssignGroupBadgeProps> = ({
+  group,
+  removeAssessmentFromGroup,
+  removingGroup
+}) => {
+  return (
+    <Badge
+      className={`flex gap-2 cursor-pointer hover:scale-105 transition-all duration-300 ${removingGroup ? 'opacity-50' : ''
+        }`}
+    >
+      {group.name}
+      <button
+        onClick={removeAssessmentFromGroup}
+        disabled={removingGroup}
+        className="disabled:cursor-not-allowed"
+      >
+        {removingGroup ? (
+          <Loader className="h-4 w-4 rounded-full" />
+        ) : (
+          <X className='h-4 w-4 hover:scale-125 transition-all duration-300 hover:border rounded-full' />
+        )}
+      </button>
+    </Badge>
+  )
+};
+
 interface RowProps {
   group: Group;
   add: () => void;
   refreshGroups: () => void;
   loading: boolean;
+  isActionLoading: boolean;
 }
 
-const Row: React.FC<RowProps> = ({ group, refreshGroups, loading, add }) => (
+const Row: React.FC<RowProps> = ({
+  group,
+  loading,
+  add,
+  isActionLoading
+}) => (
   <TableRow>
     <TableCell className="font-medium text-left text-xs">
       {loading ? <Skeleton className="w-32 h-4" /> : group.name}
@@ -159,11 +352,22 @@ const Row: React.FC<RowProps> = ({ group, refreshGroups, loading, add }) => (
       {loading ? <Skeleton className="w-32 h-4" /> : formatDateInIST(group.createdAt)}
     </TableCell>
     <TableCell>
-      <button onClick={add}>
-        <Badge className='cursor-pointer'>+</Badge>
+      <button
+        onClick={add}
+        disabled={isActionLoading}
+        className="disabled:cursor-not-allowed"
+      >
+        <Badge className={`cursor-pointer ${isActionLoading ? 'opacity-50' : ''}`}>
+          {isActionLoading ? (
+            <Loader className="h-4 w-4" />
+          ) : (
+            '+'
+          )}
+        </Badge>
       </button>
     </TableCell>
   </TableRow>
 );
+
 
 export default AssignedGroupsCard;

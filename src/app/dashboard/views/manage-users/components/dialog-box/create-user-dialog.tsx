@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,11 @@ import { useRoles } from '../../hooks/useRoles';
 import { ApiError } from '@/lib/api/apiError';
 import { useUsers } from '../../hooks/useUsers';
 import { Card } from '@/components/ui/card';
+import { Role } from '@/lib/types/roleTypes';
+import { SingleUser } from '@/lib/types/userTypes';
+import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { formatDateInIST } from '@/lib/helpers/time-converter';
 
 // Define schema using zod
 const schema = z.object({
@@ -39,11 +44,11 @@ interface CreateUserDialogProps {
 
 
 const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => {
-  const { loading: loadingRoles, roles, fetchRoles } = useRoles();
-  const { loading, error, addUser } = useUsers();
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
-  const [createError, setCreateError] = useState<ApiError | null>(null);
-  const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+
+  // all hooks here
+  const { fetchRoles, } = useRoles();
+  const { addUser } = useUsers();
+  const { control, handleSubmit, formState: { errors }, reset, watch } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       firstName: '',
@@ -55,12 +60,32 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
     },
   });
 
+  // global states here
+
+  // local states here
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [createdUser, setCreatedUser] = useState<SingleUser>();
+
+  // loading states
+  const [loadingRoles, setLoadingRoles] = useState<boolean>(true);
+  const [creatingUser, setCreatingUser] = useState<boolean>(false);
+
+  // error states
+  const [createError, setCreateError] = useState<ApiError | null>(null);
+  const [rolesError, setRolesError] = useState<ApiError | Error>();
+
+  // disable states
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
+
+  // local functions here
   const onSubmit = async (data: FormData) => {
     try {
+      setCreatingUser(true)
       setStatusDialogOpen(true);
       reset();
       const res = await addUser(data);
-      console.log(res);
+      setCreatedUser(res)
       refreshUsers();
     } catch (err) {
       if (err instanceof ApiError) {
@@ -69,17 +94,50 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
         setCreateError(new ApiError(500, 'An unexpected error occurred', err));
       }
     } finally {
-
+      setCreatingUser(false);
     }
   };
 
+  const fetchRolesData = useCallback(async () => {
+    try {
+      setLoadingRoles(true);
+      const response = await fetchRoles(
+        {
+          page: 1,
+          pageSize: 999,
+          sortBy: "name",
+          order: "ASC"
+        }
+      )
+      console.log(response);
+      setRoles(response);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setRolesError(err);
+      } else {
+        setRolesError(err as Error);
+      }
+    } finally {
+      setLoadingRoles(false);
+    }
+  }, []);
+
+
+  // handlers here
   const handleClear = () => {
     reset(); // Clear form values
   };
 
+  // useEffects here
   useEffect(() => {
-    fetchRoles({ page: 1, pageSize: 9999, order: "ASC", sortBy: "name" });
-  }, []);
+    fetchRolesData();
+  }, [fetchRolesData]);
+
+  const formValues = watch();
+  useEffect(() => {
+    const isFormValid = !!(formValues.firstName && formValues.lastName && formValues.email && formValues.password && formValues.phone && formValues.roleId && Object.keys(errors).length === 0);
+    setIsFormValid(isFormValid);
+  }, [formValues, errors]);
 
   return (
     <>
@@ -228,29 +286,50 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
                     Clear
                   </Button>
                 </div>
-                <Button variant="default" type="submit">
-                  {loading ? <Loader2 className="animate-spin" /> : "Create User"}
+                <Button variant="default" type="submit" disabled={!isFormValid || creatingUser}>
+                  {creatingUser ? <Loader2 className="animate-spin" /> : "Create User"}
                 </Button>
               </div>
             </DialogFooter>
           </form>
         </DialogContent>
-      </Dialog>
+      </Dialog >
 
       {/* Success Dialog */}
-      <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+      < Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen} >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{createError ? 'Error' : 'Success'}</DialogTitle>
+            <DialogTitle>{creatingUser ? "Creating User" : createError ? 'Error' : 'Success'} </DialogTitle>
           </DialogHeader>
-          <DialogDescription>{createError ? createError.message : 'User Created Successfully'}</DialogDescription>
+          <DialogDescription className='flex flex-row justify-between w-full'>
+            <div>
+              {creatingUser ?
+                <Loader2 className='h-4 w-4' />
+                : createError ? createError.message
+                  : 'User Created Successfully'}
+            </div>
+
+            <Badge>
+              {createdUser?.createdAt ? formatDateInIST(createdUser.createdAt) : ""}
+            </Badge>
+
+          </DialogDescription>
+          <Card className='flex flex-col gap-2 w-full p-4'>
+            First Name : {createdUser?.first_name}
+            <Separator />
+            Last Name : {createdUser?.last_name}
+            <Separator />
+            Email : {createdUser?.email}
+            <Separator />
+            Phone Number : {createdUser?.phone}
+          </Card>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="default">Close</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog >
     </>
   );
 };
