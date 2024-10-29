@@ -101,3 +101,47 @@ export interface StartAssessmentSectionResponse {
   message: string;
   questions: AssignedAssessmentQuestion[];
 }
+
+
+// view part for manage assessment side
+
+export interface ViewOption {
+  id: string;
+  question_id: string;
+  description: string;
+  is_correct: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ViewQuestion {
+  id: string;
+  assessment_id: string;
+  description: string;
+  marks: number;
+  section: number;
+  createdAt: string;
+  updatedAt: string;
+  options: ViewOption[];
+}
+
+export interface ViewSection {
+  [index: number]: ViewQuestion[];
+}
+
+export interface ViewAssessmentData {
+  id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+  start_at: string;
+  end_at: string;
+  duration: number;
+  created_by: string;
+  sections: ViewSection[];
+}
+
+export interface ViewAssessmentResponse {
+  message: string;
+  data: ViewAssessmentData;
+}

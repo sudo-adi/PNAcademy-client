@@ -5,24 +5,23 @@ import { persist } from 'zustand/middleware';
 interface State {
   activePageIndex: number;
   displayNumberOfRows: number;
-  sortBy: "id" | "name" | "createdAt" | "updatedAt";
+  sortBy: "createdAt"
   order: "ASC" | "DESC";
 }
 
 interface Actions {
   setActivePageIndex: (index: number) => void;
   setDisplayNumberOfRows: (Rows: number) => void;
-  setSortBy: (sortBy: "id" | "name" | "createdAt" | "updatedAt") => void;
+  setSortBy: (sortBy: "createdAt" ) => void;
   setOrder: (order: "ASC" | "DESC") => void;
 }
 
-const useGroupsTableStore = create<State & Actions>()(
-  persist(
+const useNotificationTableStore = create<State & Actions>()(
     (set) => ({
       activePageIndex: 1,
-      displayNumberOfRows: 10,
-      sortBy: "name" as "name",
-      order: "ASC" as "ASC",
+      displayNumberOfRows: 999,
+      sortBy: "createdAt" as "createdAt",
+      order: "DESC" as "DESC",
       setActivePageIndex: (index) => set({ activePageIndex: index }),
       setDisplayNumberOfRows(Rows) {
         set({ displayNumberOfRows: Rows });
@@ -30,10 +29,6 @@ const useGroupsTableStore = create<State & Actions>()(
       setSortBy: (sortBy) => set({ sortBy }),
       setOrder: (order) => set({ order }),
     }),
-    {
-      name: 'useGroupTableStore', 
-    }
-  )
 );
 
-export default useGroupsTableStore;
+export default useNotificationTableStore;

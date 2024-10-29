@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { GenerateQuestionsProps, GenerateQuestionsResponse } from '@/lib/types/ai-assessment';
+import { GenerateQuestionsProps, GenerateQuestionsResponse, SaveAiGeneratedAssessmentProps, SaveAiGeneratedAssessmentResponse } from '@/lib/types/ai-assessment';
 import { ApiError } from '@/lib/api/apiError';
-import { generateQuestions } from '@/lib/services/ai-assessment/create';
+import { generateQuestions, saveAiGeneratedAssessment } from '@/lib/services/ai-assessment/create';
+
 
 export const useAICreate = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -45,10 +46,30 @@ export const useAICreate = () => {
     }
   };
 
+  // Function to save AI-generated assessment
+  const saveAssessment = async (data: SaveAiGeneratedAssessmentProps) => {
+    setLoading(true);
+    try {
+      const response: SaveAiGeneratedAssessmentResponse = await saveAiGeneratedAssessment(data);
+      if (response) {
+        return response;
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        throw err;
+      } else {
+        throw new ApiError(500, 'An error occurred while saving the assessment', err);
+      }
+    } finally {
+    }
+  };
+
+
   return {
     loading,
     questionsResponse,
     createQuestions,
+    saveAssessment,
     createSingleQuestion,
   };
 };

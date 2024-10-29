@@ -12,9 +12,12 @@ import { useQuestions } from "@/app/create/hooks/useQuestion";
 import { Separator } from "@/components/ui/separator";
 import useCreateAssessmentStore from "@/lib/stores/manage-assessment-store/assessment-create";
 import { useOptions } from "@/app/create/hooks/useOption";
-import { CreateQuestionProps, UpdateQuestionProps } from "@/lib/types/questionTypes";
+import {
+  CreateQuestionProps,
+  UpdateQuestionProps,
+} from "@/lib/types/questionTypes";
 import SectionButton from "../components/buttons/sectionbutton";
-import QuestionButon from "../components/buttons/questionbutton";
+import QuestionButton from "../components/buttons/questionbutton";
 import AddQuestionButton from "../components/buttons/addquestionbuton";
 import AddSectionButton from "../components/buttons/addsectionbutton";
 import { useSection } from "../hooks/useSection";
@@ -25,28 +28,19 @@ import { ApiError } from "@/lib/api/apiError";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 
-export default function Create({ params }: { params: { assessmentId: string } }) {
-
+export default function Create({
+  params,
+}: {
+  params: { assessmentId: string };
+}) {
   // all hooks here
-  const {
-    fetchAssessmentById
-  } = useAssessment();
+  const { fetchAssessmentById } = useAssessment();
 
-  const {
-    addQuestion,
-    patchQuestion,
-    removeQuestion,
-  } = useQuestions();
+  const { addQuestion, patchQuestion, removeQuestion } = useQuestions();
 
-  const {
-    addOption,
-    patchOption,
-    removeOptionById,
-  } = useOptions();
+  const { addOption, patchOption, removeOptionById } = useOptions();
 
-  const {
-    removeSection,
-  } = useSection();
+  const { removeSection } = useSection();
 
   // global states here
   const {
@@ -83,75 +77,6 @@ export default function Create({ params }: { params: { assessmentId: string } })
 
   // local functions here
 
-  // old implementation
-  // const initalizeSection = async () => {
-  //   const payload: CreateQuestionProps = {
-  //     assessment_id: assessmentId,
-  //     description: "Question...",
-  //     marks: 0,
-  //     section: assessmentData.length + 1,
-  //   };
-  //   try {
-  //     const response = await addQuestion(payload);
-  //     const newQuestionId = response.id;
-  //     if (newQuestionId) {
-  //       const option1 = await addOption({ question_id: newQuestionId, description: `Option 1`, is_correct: false });
-  //       const option2 = await addOption({ question_id: newQuestionId, description: `Option 2`, is_correct: false });
-  //       if (option1 && option2) {
-  //         const newQuestion = {
-  //           id: newQuestionId,
-  //           assessment_id: assessmentId,
-  //           description: response.description,
-  //           marks: response.marks,
-  //           section: response.section,
-  //           updatedAt: response.updatedAt,
-  //           createdAt: response.createdAt,
-  //           options: [option1, option2],
-  //         }
-  //         const newSectionData = [];
-  //         newSectionData.push(newQuestion);
-  //         console.log(newSectionData);
-  //         setCurrentSectionData(newSectionData);
-  //         const updatedAssessmentData = [...assessmentData];
-  //         updatedAssessmentData.push(newSectionData);
-  //         setAssessmentData(updatedAssessmentData);
-  //         setCurrentQuestionId(newQuestionId);
-  //         return true;
-  //       } else {
-  //         throw new Error("UnExpected Error Occured While Adding Options");
-  //       }
-  //     } else {
-  //       throw new Error("Failed to initialize question: Missing question ID");
-  //     }
-  //   } catch (err) {
-  //     if (err instanceof ApiError) {
-  //       toast({
-  //         title: `Error Ocurred ${err.status}`,
-  //         description: `${err.message}`,
-  //         action: (
-  //           <ToastAction altText="error">
-  //             ok
-  //           </ToastAction>
-  //         ),
-  //       })
-  //     } else {
-  //       const error = err as Error;
-  //       toast({
-  //         title: `Error Ocurred ${error.name}`,
-  //         description: `An Unexpected Error Occured While Initalizing Question : ${error.message} `,
-  //         action: (
-  //           <ToastAction altText="error">
-  //             ok
-  //           </ToastAction>
-  //         ),
-  //       })
-  //     }
-  //     return false;
-  //   }
-  // };
-
-
-  // new implementation
   const initalizeSection = async () => {
     const payload: CreateQuestionProps = {
       assessment_id: assessmentId,
@@ -163,8 +88,16 @@ export default function Create({ params }: { params: { assessmentId: string } })
       const response = await addQuestion(payload);
       const newQuestionId = response.id;
       if (newQuestionId) {
-        const option1 = await addOption({ question_id: newQuestionId, description: `Option 1`, is_correct: false });
-        const option2 = await addOption({ question_id: newQuestionId, description: `Option 2`, is_correct: false });
+        const option1 = await addOption({
+          question_id: newQuestionId,
+          description: `Option 1`,
+          is_correct: false,
+        });
+        const option2 = await addOption({
+          question_id: newQuestionId,
+          description: `Option 2`,
+          is_correct: false,
+        });
         if (option1 && option2) {
           handleRefreshAssessment();
           return true;
@@ -179,23 +112,15 @@ export default function Create({ params }: { params: { assessmentId: string } })
         toast({
           title: `Error Ocurred ${err.status}`,
           description: `${err.message}`,
-          action: (
-            <ToastAction altText="error">
-              ok
-            </ToastAction>
-          ),
-        })
+          action: <ToastAction altText="error">ok</ToastAction>,
+        });
       } else {
         const error = err as Error;
         toast({
           title: `Error Ocurred ${error.name}`,
           description: `An Unexpected Error Occured While Initalizing Question : ${error.message} `,
-          action: (
-            <ToastAction altText="error">
-              ok
-            </ToastAction>
-          ),
-        })
+          action: <ToastAction altText="error">ok</ToastAction>,
+        });
       }
       return false;
     }
@@ -207,13 +132,21 @@ export default function Create({ params }: { params: { assessmentId: string } })
       description: "Question...",
       marks: 0,
       section: currentSectionIndex + 1,
-    }
+    };
     try {
       const response = await addQuestion(payload);
       const newQuestionId = response.id;
       if (newQuestionId) {
-        const option1 = await addOption({ question_id: newQuestionId, description: `Option 1`, is_correct: false });
-        const option2 = await addOption({ question_id: newQuestionId, description: `Option 2`, is_correct: false });
+        const option1 = await addOption({
+          question_id: newQuestionId,
+          description: `Option 1`,
+          is_correct: false,
+        });
+        const option2 = await addOption({
+          question_id: newQuestionId,
+          description: `Option 2`,
+          is_correct: false,
+        });
         if (option1 && option2) {
           const newQuestion = {
             id: newQuestionId,
@@ -224,7 +157,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
             updatedAt: response.updatedAt,
             createdAt: response.createdAt,
             options: [option1, option2],
-          }
+          };
           const updatedSectionData = [...currentSectionData];
           updatedSectionData.push(newQuestion);
           setCurrentSectionData(updatedSectionData);
@@ -244,23 +177,15 @@ export default function Create({ params }: { params: { assessmentId: string } })
         toast({
           title: `Error Ocurred ${err.status}`,
           description: `${err.message}`,
-          action: (
-            <ToastAction altText="error">
-              ok
-            </ToastAction>
-          ),
-        })
+          action: <ToastAction altText="error">ok</ToastAction>,
+        });
       } else {
         const error = err as Error;
         toast({
           title: `Error Ocurred ${error.name}`,
           description: `An Unexpected Error Occured While Initalizing Question : ${error.message} `,
-          action: (
-            <ToastAction altText="error">
-              ok
-            </ToastAction>
-          ),
-        })
+          action: <ToastAction altText="error">ok</ToastAction>,
+        });
       }
       return false;
     }
@@ -273,38 +198,20 @@ export default function Create({ params }: { params: { assessmentId: string } })
       if (response) {
         setAssessmentData(response.sections);
         setCurrentSectionData(response.sections[currentSectionIndex]);
-        setCurrentQuestionContent(response.sections[currentSectionIndex][currentQuestionIndex].description);
-        setCurrentOptionsContent(response.sections[currentSectionIndex][currentQuestionIndex].options);
+        setCurrentQuestionContent(
+          response.sections[currentSectionIndex][currentQuestionIndex]
+            .description
+        );
+        setCurrentOptionsContent(
+          response.sections[currentSectionIndex][currentQuestionIndex].options
+        );
       } else {
         throw new Error("Failed to fetch assessment data");
       }
     } catch (err) {
       // handle error
-    };
-  }
-
-  // old implementation
-  // const handleAddNewOption = async () => {
-  //   const payload = {
-  //     question_id: currentQuestionId,
-  //     description: `Option ${currentOptionsContent.length + 1}`,
-  //     is_correct: false,
-  //   };
-  //   try {
-  //     const response = await addOption(payload);
-  //     if (response) {
-  //       const updatedAssessmentData = [...assessmentData];
-  //       const updatedSectionData = [...currentSectionData];
-  //       updatedSectionData[currentQuestionIndex].options.push(response);
-  //       updatedAssessmentData[currentSectionIndex] = updatedSectionData;
-  //       setCurrentSectionData(updatedSectionData);
-  //       setAssessmentData(updatedAssessmentData);
-  //     } else {
-  //       throw new Error("Failed to add new option");
-  //     }
-  //   } catch (err) {
-  //   }
-  // }
+    }
+  };
 
   // new implementation
   const handleAddNewOption = async () => {
@@ -316,12 +223,15 @@ export default function Create({ params }: { params: { assessmentId: string } })
       };
 
       await addOption(payload);
-      const updatedAssessment = await fetchAssessmentById({ id: params.assessmentId });
+      const updatedAssessment = await fetchAssessmentById({
+        id: params.assessmentId,
+      });
 
       if (updatedAssessment) {
         setAssessmentData(updatedAssessment.sections);
         setCurrentSectionData(updatedAssessment.sections[currentSectionIndex]);
-        const question = updatedAssessment.sections[currentSectionIndex][currentQuestionIndex];
+        const question =
+          updatedAssessment.sections[currentSectionIndex][currentQuestionIndex];
         setCurrentOptionsContent(question.options);
       }
     } catch (error) {
@@ -333,34 +243,18 @@ export default function Create({ params }: { params: { assessmentId: string } })
     }
   };
 
-  // old implementation
-  // const handleRemoveOption = async (id: string) => {
-  //   try {
-  //     const response = await removeOptionById({ id });
-  //     if (response) {
-  //       const updatedAssessmentData = [...assessmentData];
-  //       const updatedSectionData = [...currentSectionData];
-  //       updatedSectionData[currentQuestionIndex].options = updatedSectionData[currentQuestionIndex].options.filter((option) => option.id !== id);
-  //       updatedAssessmentData[currentSectionIndex] = updatedSectionData;
-  //       setCurrentSectionData(updatedSectionData);
-  //       setAssessmentData(updatedAssessmentData);
-  //     } else {
-  //       throw new Error("Failed to remove option");
-  //     }
-  //   } catch (err) {
-  //   }
-  // }
-
-  // new implementation
   const handleRemoveOption = async (id: string) => {
     try {
       await removeOptionById({ id });
-      const updatedAssessment = await fetchAssessmentById({ id: params.assessmentId });
+      const updatedAssessment = await fetchAssessmentById({
+        id: params.assessmentId,
+      });
 
       if (updatedAssessment) {
         setAssessmentData(updatedAssessment.sections);
         setCurrentSectionData(updatedAssessment.sections[currentSectionIndex]);
-        const question = updatedAssessment.sections[currentSectionIndex][currentQuestionIndex];
+        const question =
+          updatedAssessment.sections[currentSectionIndex][currentQuestionIndex];
         setCurrentOptionsContent(question.options);
       }
     } catch (error) {
@@ -373,37 +267,11 @@ export default function Create({ params }: { params: { assessmentId: string } })
     }
   };
 
-  // old implementation
-  // const handleUpdateOption = async (id: string, description: string, isCorrect: boolean) => {
-  //   const payload = {
-  //     id,
-  //     description,
-  //     is_correct: isCorrect,
-  //   };
-  //   try {
-  //     const response = await patchOption(payload);
-  //     if (response) {
-  //       const updatedAssessmentData = [...assessmentData];
-  //       const updatedSectionData = [...currentSectionData];
-  //       const updatedOptions = updatedSectionData[currentQuestionIndex].options.map((option) => {
-  //         if (option.id === id) {
-  //           return { ...option, description: response.description, is_correct: response.is_correct };
-  //         }
-  //         return option;
-  //       });
-  //       updatedSectionData[currentQuestionIndex].options = updatedOptions;
-  //       updatedAssessmentData[currentSectionIndex] = updatedSectionData;
-  //       setCurrentSectionData(updatedSectionData);
-  //       setAssessmentData(updatedAssessmentData);
-  //     } else {
-  //       throw new Error("Failed to update option");
-  //     }
-  //   } catch (error) {
-  //   }
-  // }
-
-  // new implementation
-  const handleUpdateOption = async (id: string, description: string, isCorrect: boolean) => {
+  const handleUpdateOption = async (
+    id: string,
+    description: string,
+    isCorrect: boolean
+  ) => {
     try {
       const payload = {
         id,
@@ -412,12 +280,15 @@ export default function Create({ params }: { params: { assessmentId: string } })
       };
 
       await patchOption(payload);
-      const updatedAssessment = await fetchAssessmentById({ id: params.assessmentId });
+      const updatedAssessment = await fetchAssessmentById({
+        id: params.assessmentId,
+      });
 
       if (updatedAssessment) {
         setAssessmentData(updatedAssessment.sections);
         setCurrentSectionData(updatedAssessment.sections[currentSectionIndex]);
-        const question = updatedAssessment.sections[currentSectionIndex][currentQuestionIndex];
+        const question =
+          updatedAssessment.sections[currentSectionIndex][currentQuestionIndex];
         setCurrentOptionsContent(question.options);
       }
     } catch (error) {
@@ -430,39 +301,40 @@ export default function Create({ params }: { params: { assessmentId: string } })
     }
   };
 
-  // old implementation
-  // const handleAddSection = async () => {
-  //   try {
-  //     setAllButtonsDisabled(true);
-  //     setAddSectionLoading(true);
-  //     const status = await initalizeSection();
-  //     setCurrentSectionIndex(assessmentData.length);
-  //     setCurrentQuestionIndex(0);
-  //   } catch (error) {
-  //     console.error("Error adding section:", error);
-  //   } finally {
-  //     setAddSectionLoading(false);
-  //     setAllButtonsDisabled(false);
-  //   }
-  // };
-
-  // new implementation
   const handleAddSection = async () => {
     try {
       setAllButtonsDisabled(true);
       setAddSectionLoading(true);
       const status = await initalizeSection();
       if (status) {
-        const updatedAssessment = await fetchAssessmentById({ id: params.assessmentId });
+        const updatedAssessment = await fetchAssessmentById({
+          id: params.assessmentId,
+        });
         if (updatedAssessment) {
           setCurrentSectionIndex(updatedAssessment.sections.length - 1);
-          setCurrentSectionData(updatedAssessment.sections[updatedAssessment.sections.length - 1]);
+          setCurrentSectionData(
+            updatedAssessment.sections[updatedAssessment.sections.length - 1]
+          );
           setAssessmentData(updatedAssessment.sections);
           setCurrentQuestionIndex(0);
-          if (updatedAssessment.sections[updatedAssessment.sections.length - 1][0]) {
-            setCurrentQuestionId(updatedAssessment.sections[updatedAssessment.sections.length - 1][0].id);
-            setCurrentQuestionContent(updatedAssessment.sections[updatedAssessment.sections.length - 1][0].description);
-            setCurrentOptionsContent(updatedAssessment.sections[updatedAssessment.sections.length - 1][0].options);
+          if (
+            updatedAssessment.sections[updatedAssessment.sections.length - 1][0]
+          ) {
+            setCurrentQuestionId(
+              updatedAssessment.sections[
+                updatedAssessment.sections.length - 1
+              ][0].id
+            );
+            setCurrentQuestionContent(
+              updatedAssessment.sections[
+                updatedAssessment.sections.length - 1
+              ][0].description
+            );
+            setCurrentOptionsContent(
+              updatedAssessment.sections[
+                updatedAssessment.sections.length - 1
+              ][0].options
+            );
           }
         }
       }
@@ -474,64 +346,26 @@ export default function Create({ params }: { params: { assessmentId: string } })
     }
   };
 
-  // old implementation
-  // const handleRemoveSection = async () => {
-  //   const section = currentSectionIndex + 1;
-  //   const data: DeleteSectionProps = {
-  //     assessmentId: assessmentId,
-  //     section: section,
-  //   }
-  //   try {
-  //     setAllButtonsDisabled(true);
-  //     setRemoveSectionLoading(true)
-  //     console.log("data", data);
-  //     if (data.section === 1) {
-  //       console.log("data", data);
-  //       const status = await removeSection(data);
-  //       console.log(status);
-
-  //       const updatedAssessmentData = [...assessmentData];
-  //       updatedAssessmentData.splice(currentSectionIndex, 1);
-  //       setAssessmentData(updatedAssessmentData);
-  //       setCurrentSectionData((updatedAssessmentData[0]));
-  //       setCurrentSectionIndex(0);
-  //     } else if (data.section > 1) {
-  //       await removeSection(data);
-
-  //       const updatedAssessmentData = [...assessmentData];
-  //       updatedAssessmentData.splice(currentSectionIndex, 1);
-  //       setAssessmentData(updatedAssessmentData);
-  //       setCurrentSectionData((assessmentData[currentSectionIndex - 1]));
-  //       setCurrentSectionIndex(currentSectionIndex - 1);
-  //     } else {
-  //       throw new Error("Can not delete Section, at least 1 section should present in the assessment");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   } finally {
-  //     setRemoveSectionLoading(false);
-  //     setAllButtonsDisabled(false);
-
-  //   }
-  // }
-
-
   const handleRemoveSection = async () => {
     const section = currentSectionIndex + 1;
     const data: DeleteSectionProps = {
       assessmentId: assessmentId,
       section: section,
-    }
+    };
     try {
       setAllButtonsDisabled(true);
       setRemoveSectionLoading(true);
 
       if (assessmentData.length <= 1) {
-        throw new Error("Cannot delete section: at least 1 section should be present in the assessment");
+        throw new Error(
+          "Cannot delete section: at least 1 section should be present in the assessment"
+        );
       }
 
       await removeSection(data);
-      const updatedAssessment = await fetchAssessmentById({ id: params.assessmentId });
+      const updatedAssessment = await fetchAssessmentById({
+        id: params.assessmentId,
+      });
 
       if (updatedAssessment) {
         setAssessmentData(updatedAssessment.sections);
@@ -544,9 +378,15 @@ export default function Create({ params }: { params: { assessmentId: string } })
         setCurrentQuestionIndex(0);
 
         if (updatedAssessment.sections[newSectionIndex][0]) {
-          setCurrentQuestionId(updatedAssessment.sections[newSectionIndex][0].id);
-          setCurrentQuestionContent(updatedAssessment.sections[newSectionIndex][0].description);
-          setCurrentOptionsContent(updatedAssessment.sections[newSectionIndex][0].options);
+          setCurrentQuestionId(
+            updatedAssessment.sections[newSectionIndex][0].id
+          );
+          setCurrentQuestionContent(
+            updatedAssessment.sections[newSectionIndex][0].description
+          );
+          setCurrentOptionsContent(
+            updatedAssessment.sections[newSectionIndex][0].options
+          );
         }
       }
     } catch (err) {
@@ -574,14 +414,20 @@ export default function Create({ params }: { params: { assessmentId: string } })
     try {
       setCurrentSectionIndex(index);
       setCurrentQuestionIndex(0);
-      const updatedAssessment = await fetchAssessmentById({ id: params.assessmentId });
+      const updatedAssessment = await fetchAssessmentById({
+        id: params.assessmentId,
+      });
       if (updatedAssessment) {
         setAssessmentData(updatedAssessment.sections);
         setCurrentSectionData(updatedAssessment.sections[index]);
         if (updatedAssessment.sections[index][0]) {
           setCurrentQuestionId(updatedAssessment.sections[index][0].id);
-          setCurrentQuestionContent(updatedAssessment.sections[index][0].description);
-          setCurrentOptionsContent(updatedAssessment.sections[index][0].options);
+          setCurrentQuestionContent(
+            updatedAssessment.sections[index][0].description
+          );
+          setCurrentOptionsContent(
+            updatedAssessment.sections[index][0].options
+          );
         }
       }
     } catch (error) {
@@ -596,14 +442,20 @@ export default function Create({ params }: { params: { assessmentId: string } })
       setAddQuestionLoading(true);
       const status = await initalizeQuestion();
       if (status) {
-        const updatedAssessment = await fetchAssessmentById({ id: params.assessmentId });
+        const updatedAssessment = await fetchAssessmentById({
+          id: params.assessmentId,
+        });
         if (updatedAssessment) {
           setAssessmentData(updatedAssessment.sections);
-          setCurrentSectionData(updatedAssessment.sections[currentSectionIndex]);
-          const newQuestionIndex = updatedAssessment.sections[currentSectionIndex].length - 1;
+          setCurrentSectionData(
+            updatedAssessment.sections[currentSectionIndex]
+          );
+          const newQuestionIndex =
+            updatedAssessment.sections[currentSectionIndex].length - 1;
           setCurrentQuestionIndex(newQuestionIndex);
 
-          const newQuestion = updatedAssessment.sections[currentSectionIndex][newQuestionIndex];
+          const newQuestion =
+            updatedAssessment.sections[currentSectionIndex][newQuestionIndex];
           if (newQuestion) {
             setCurrentQuestionId(newQuestion.id);
             setCurrentQuestionContent(newQuestion.description);
@@ -633,12 +485,15 @@ export default function Create({ params }: { params: { assessmentId: string } })
       };
 
       await patchQuestion(data);
-      const updatedAssessment = await fetchAssessmentById({ id: params.assessmentId });
+      const updatedAssessment = await fetchAssessmentById({
+        id: params.assessmentId,
+      });
 
       if (updatedAssessment) {
         setAssessmentData(updatedAssessment.sections);
         setCurrentSectionData(updatedAssessment.sections[currentSectionIndex]);
-        const question = updatedAssessment.sections[currentSectionIndex][currentQuestionIndex];
+        const question =
+          updatedAssessment.sections[currentSectionIndex][currentQuestionIndex];
         setCurrentQuestionContent(question.description);
         setCurrentQuestionMarks(question.marks);
       }
@@ -652,28 +507,33 @@ export default function Create({ params }: { params: { assessmentId: string } })
     }
   };
 
-
   const handleRemoveQuestion = async () => {
     try {
       setAllButtonsDisabled(true);
       setRemoveQuestionLoading(true);
 
       if (currentSectionData.length <= 1) {
-        throw new Error("Cannot delete question: at least 1 question should be present in the section");
+        throw new Error(
+          "Cannot delete question: at least 1 question should be present in the section"
+        );
       }
 
       await removeQuestion({ id: currentQuestionId });
-      const updatedAssessment = await fetchAssessmentById({ id: params.assessmentId });
+      const updatedAssessment = await fetchAssessmentById({
+        id: params.assessmentId,
+      });
 
       if (updatedAssessment) {
         setAssessmentData(updatedAssessment.sections);
         setCurrentSectionData(updatedAssessment.sections[currentSectionIndex]);
 
         // If we're removing the first question or last question, adjust the index accordingly
-        const newQuestionIndex = currentQuestionIndex === 0 ? 0 : currentQuestionIndex - 1;
+        const newQuestionIndex =
+          currentQuestionIndex === 0 ? 0 : currentQuestionIndex - 1;
         setCurrentQuestionIndex(newQuestionIndex);
 
-        const newQuestion = updatedAssessment.sections[currentSectionIndex][newQuestionIndex];
+        const newQuestion =
+          updatedAssessment.sections[currentSectionIndex][newQuestionIndex];
         if (newQuestion) {
           setCurrentQuestionId(newQuestion.id);
           setCurrentQuestionContent(newQuestion.description);
@@ -701,20 +561,25 @@ export default function Create({ params }: { params: { assessmentId: string } })
     }
   };
 
-  const handleRenderQuestionDescription = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleRenderQuestionDescription = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setCurrentQuestionContent(e.target.value);
-  }
+  };
 
-  const handleNavigateQuestion = async (index: number,) => {
+  const handleNavigateQuestion = async (index: number) => {
     setCurrentQuestionIndex(index);
     setCurrentQuestionId(currentSectionData[index].id);
-  }
+  };
 
   const handleQuestionOnBlur = async () => {
-    if (currentQuestionContent !== currentSectionData![currentQuestionIndex].description) {
+    if (
+      currentQuestionContent !==
+      currentSectionData![currentQuestionIndex].description
+    ) {
       await handleUpdateQuestion();
     }
-  }
+  };
 
   const handleNavigateToNextQuestion = async () => {
     if (currentQuestionIndex === currentSectionData.length - 1) {
@@ -724,13 +589,13 @@ export default function Create({ params }: { params: { assessmentId: string } })
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setCurrentQuestionId(currentSectionData![currentQuestionIndex + 1].id);
     }
-  }
+  };
   const handleNavigateToPreviousQuestion = async () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
       setCurrentQuestionId(currentSectionData![currentQuestionIndex - 1].id);
     }
-  }
+  };
 
   // all useEffects here
   useEffect(() => {
@@ -740,7 +605,9 @@ export default function Create({ params }: { params: { assessmentId: string } })
   useEffect(() => {
     const fetchAssessment = async () => {
       try {
-        const assessment: GetAssessmentByIdData = await fetchAssessmentById({ id: params.assessmentId });
+        const assessment: GetAssessmentByIdData = await fetchAssessmentById({
+          id: params.assessmentId,
+        });
         if (assessment.sections.length > 0) {
           setAssessmentData(assessment.sections);
           setCurrentSectionData(assessment.sections[currentSectionIndex]);
@@ -750,22 +617,28 @@ export default function Create({ params }: { params: { assessmentId: string } })
         }
       } catch (err) {
         if (err instanceof ApiError) {
-
         } else {
-
         }
       } finally {
-
       }
-    }
+    };
     fetchAssessment();
-  }, [params.assessmentId])
+  }, [params.assessmentId]);
 
   useEffect(() => {
-    if (currentSectionData && Array.isArray(currentSectionData) && currentSectionData.length > 0 && currentSectionData[currentQuestionIndex]) {
+    if (
+      currentSectionData &&
+      Array.isArray(currentSectionData) &&
+      currentSectionData.length > 0 &&
+      currentSectionData[currentQuestionIndex]
+    ) {
       setCurrentQuestionId(currentSectionData[currentQuestionIndex].id);
-      setCurrentQuestionContent(currentSectionData[currentQuestionIndex].description);
-      setCurrentOptionsContent(currentSectionData[currentQuestionIndex].options);
+      setCurrentQuestionContent(
+        currentSectionData[currentQuestionIndex].description
+      );
+      setCurrentOptionsContent(
+        currentSectionData[currentQuestionIndex].options
+      );
     }
   }, [currentSectionData, currentQuestionIndex]);
 
@@ -786,7 +659,11 @@ export default function Create({ params }: { params: { assessmentId: string } })
                   <RemoveButton
                     loading={removeQuestionLoading}
                     onClick={handleRemoveQuestion}
-                    disabled={currentSectionData.length === 1 || removeQuestionLoading || allButtonsDisabled}
+                    disabled={
+                      currentSectionData.length === 1 ||
+                      removeQuestionLoading ||
+                      allButtonsDisabled
+                    }
                   />
                 </div>
                 <Textarea
@@ -802,8 +679,7 @@ export default function Create({ params }: { params: { assessmentId: string } })
             <div className="flex items-cen justify-center mt-2">
               <Separator className="w-[98%]" />
             </div>
-            <Card
-              className="flex flex-col  items-center justify-start gap-2 border border-none rounded-lg h-[calc(100vh-10rem)] min-h-[12rem] max-h-[60rem] w-full p-1 overflow-y-auto scrollbar-none">
+            <Card className="flex flex-col  items-center justify-start gap-2 border border-none rounded-lg h-[calc(100vh-10rem)] min-h-[12rem] max-h-[60rem] w-full p-1 overflow-y-auto scrollbar-none">
               {currentOptionsContent.map((option, index) => (
                 <div className="flex flex-col gap-2 w-full p-1" key={index}>
                   <div className="flex flex-row justify-between items-center">
@@ -813,33 +689,56 @@ export default function Create({ params }: { params: { assessmentId: string } })
                       </Badge>
                       <button
                         className="flex gap-2"
-                        onClick={() => { handleUpdateOption(option.id, option.description, !option.is_correct) }}
+                        onClick={() => {
+                          handleUpdateOption(
+                            option.id,
+                            option.description,
+                            !option.is_correct
+                          );
+                        }}
                       >
                         <Badge
-                          className={`text - [10px] cursor -default ${option.is_correct ? "bg-green-800 hover:bg-green-900" : "bg-transparent border-dashed text-red-900 border-red-900 hover:bg-transparent hover:border-solid"} `} >
+                          className={`text - [10px] cursor -default ${
+                            option.is_correct
+                              ? "bg-green-800 hover:bg-green-900"
+                              : "bg-transparent border-dashed text-red-900 border-red-900 hover:bg-transparent hover:border-solid"
+                          } `}
+                        >
                           {option.is_correct ? "Correct" : "Incorrect"}
                         </Badge>
                       </button>
                     </div>
-                    <button
-                      onClick={() => handleRemoveOption(option.id)}
-                    >
-                      <Badge className="text-[10px] cursor-pointer" variant={"destructive"}>
+                    <button onClick={() => handleRemoveOption(option.id)}>
+                      <Badge
+                        className="text-[10px] cursor-pointer"
+                        variant={"destructive"}
+                      >
                         remove
                       </Badge>
                     </button>
                   </div>
                   <Textarea
-                    className={`w - full max - h - [10rem] ${currentSectionData!.length === 0 ? "cursor-not-allowed" : ""} `}
+                    className={`w - full max - h - [10rem] ${
+                      currentSectionData!.length === 0
+                        ? "cursor-not-allowed"
+                        : ""
+                    } `}
                     placeholder="Enter option description..."
                     value={currentOptionsContent[index].description}
                     onChange={(e) => {
                       const updatedOptions = [...currentOptionsContent];
-                      updatedOptions[index] = { ...option, description: e.target.value }; // Update local state
+                      updatedOptions[index] = {
+                        ...option,
+                        description: e.target.value,
+                      }; // Update local state
                       setCurrentOptionsContent(updatedOptions); // Update store with new options
                     }}
                     onBlur={() => {
-                      handleUpdateOption(option.id, option.description, option.is_correct); // Call API to update option on blur
+                      handleUpdateOption(
+                        option.id,
+                        option.description,
+                        option.is_correct
+                      ); // Call API to update option on blur
                     }}
                   />
                 </div>
@@ -847,51 +746,67 @@ export default function Create({ params }: { params: { assessmentId: string } })
               <button
                 disabled={assessmentData.length === 0}
                 onClick={handleAddNewOption}
-                className={`text-[10px] border p-3 text-xs rounded-[8px] hover:bg-secondary  items-center justify-center ${assessmentData.length === 0 ? "hidden" : "flex"} `}>
+                className={`text-[10px] border p-3 text-xs rounded-[8px] hover:bg-secondary  items-center justify-center ${
+                  assessmentData.length === 0 ? "hidden" : "flex"
+                } `}
+              >
                 <Plus className="h-3 w-3 mr-2" />
                 Add Option
               </button>
             </Card>
             <Separator />
             <div className="flex flex-row w-full gap-2">
-              <div className="flex flex-col w-full justify-center gap-1 items-center">
-                {assessmentData.length > 0 && (<Card className="flex flex-row items-center w-full p-2 gap-2 border border-dashed bg-transparent justify-between">
-                  <div className="flex gap-2 flex-row items-center scrollbar-none">
-                    <div className="flex flex-row items-center w-full gap-2 overflow-x-scroll scrollbar-none">
-                      {currentSectionData.map((question, index) => (
-                        <QuestionButon
-                          disabled={allButtonsDisabled}
-                          isCurrentSection={currentQuestionIndex === index}
-                          key={index}
-                          index={index}
-                          onClick={() => {
-                            handleNavigateQuestion(index);
-                          }} />
-                      ))}
+              <div className="flex flex-col w-full justify-center gap-1 items-start">
+                {assessmentData.length > 0 && (
+                  <Card className="flex flex-row items-center w-full lg:min-w-[calc(100vw-27rem)] p-2 gap-2 border border-dashed bg-transparent justify-between">
+                    <div className="flex gap-2 flex-row items-center scrollbar-none">
+                      <div className="flex flex-row items-center max-w-[calc(100vw-7rem)] md:max-w-[calc(100vw-21rem)] lg:max-w-[calc(100vw-32rem)] gap-2 overflow-x-scroll scrollbar-none">
+                        {currentSectionData.map((_, index) => (
+                          <QuestionButton
+                            disabled={allButtonsDisabled}
+                            isCurrentSection={currentQuestionIndex === index}
+                            key={index}
+                            index={index}
+                            onClick={() => {
+                              handleNavigateQuestion(index);
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <AddQuestionButton
+                        disabled={
+                          allButtonsDisabled || currentSectionData!.length === 0
+                        }
+                        onClick={() => handleAddQuestion()}
+                        loading={addQuestionLoading}
+                      />
                     </div>
-                    <AddQuestionButton
-                      disabled={allButtonsDisabled || currentSectionData!.length === 0}
-                      onClick={() => handleAddQuestion()}
-                      loading={addQuestionLoading} />
-                  </div>
-                  <RemoveButton
-                    loading={removeQuestionLoading}
-                    onClick={handleRemoveQuestion}
-                    disabled={currentSectionData.length <= 1 || removeQuestionLoading || allButtonsDisabled}
-                  />
-                </Card>)}
+                    <RemoveButton
+                      loading={removeQuestionLoading}
+                      onClick={handleRemoveQuestion}
+                      disabled={
+                        currentSectionData.length <= 1 ||
+                        removeQuestionLoading ||
+                        allButtonsDisabled
+                      }
+                    />
+                  </Card>
+                )}
                 <div className="flex flex-row gap-2 w-full">
-                  <Card className="flex flex-row w-full p-2 gap-2 border-dashed bg-transparent">
-                    <div className="flex flex-row items-center w-full gap-2 overflow-x-scroll scrollbar-none">
-                      {assessmentData.map((section, index) => (
-                        <SectionButton
-                          disabled={allButtonsDisabled}
-                          isCurrentSection={currentSectionIndex === index}
-                          key={index}
-                          index={index}
-                          onClick={() => handleNavigateSection(index)}
-                        />
-                      ))}
+                  <Card className="flex flex-row items-center w-full lg:min-w-[calc(100vw-27rem)] p-2 gap-2 border border-dashed bg-transparent justify-between">
+                    <div className="flex gap-2 flex-row items-center scrollbar-none">
+                      <div className="flex flex-row items-center max-w-[calc(100vw-7rem)] md:max-w-[calc(100vw-21rem)] lg:max-w-[calc(100vw-32rem)] gap-2 overflow-x-scroll scrollbar-none">
+                        {assessmentData.map((_, index) => (
+                          <SectionButton
+                            disabled={allButtonsDisabled}
+                            isCurrentSection={currentSectionIndex === index}
+                            key={index}
+                            index={index}
+                            onClick={() => handleNavigateSection(index)}
+                          />
+                        ))}
+                      </div>
+
                       <AddSectionButton
                         disabled={allButtonsDisabled}
                         onClick={handleAddSection}
@@ -901,7 +816,11 @@ export default function Create({ params }: { params: { assessmentId: string } })
                     <RemoveButton
                       loading={removeSectionLoading}
                       onClick={handleRemoveSection}
-                      disabled={assessmentData.length <= 1 || removeSectionLoading || allButtonsDisabled}
+                      disabled={
+                        assessmentData.length <= 1 ||
+                        removeSectionLoading ||
+                        allButtonsDisabled
+                      }
                     />
                   </Card>
                 </div>
@@ -916,18 +835,20 @@ export default function Create({ params }: { params: { assessmentId: string } })
                 <Button
                   variant="outline"
                   onClick={() => handleNavigateToPreviousQuestion()}
-                >Previous</Button>
-                <Button
-                  onClick={() => handleNavigateToNextQuestion()}
-                >Next</Button>
+                >
+                  Previous
+                </Button>
+                <Button onClick={() => handleNavigateToNextQuestion()}>
+                  Next
+                </Button>
               </div>
             </div>
           </div>
         </main>
-      </div >
-      <div className="hidden h-full border-r bg-muted/40 md:block md:w-[350px] lg:min-w-[400px]">
+      </div>
+      <div className="hidden h-full border-r bg-muted/40 md:block md:min-w-[230px] md:max-w-[230px]  md:w-[230px] lg:min-w-[400px]">
         <SideBar assessmentId={params.assessmentId} />
       </div>
-    </div >
+    </div>
   );
 }

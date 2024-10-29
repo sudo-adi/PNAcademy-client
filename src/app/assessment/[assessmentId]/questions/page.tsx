@@ -1,19 +1,23 @@
-"use client"
-import React, { useCallback, useEffect, useState } from 'react'
+"use client";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Button } from '@/components/ui/button'
-import { Slider } from "@/components/ui/slider"
-import { cn } from "@/lib/utils"
-import useAttemptAssessmentsStore from '@/lib/stores/attempt-assessment/attempt-assessment.store'
-import { useAttemption } from '../../hooks/useAttemptAssessments'
-import { AssessmentStartSectionStatus, AssignedAssessmentQuestion, AttemptQuestionProps } from '@/lib/types/attemptionTypes'
-import { useRouter } from 'next/navigation'
+} from "@/components/ui/resizable";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { cn } from "@/lib/utils";
+import useAttemptAssessmentsStore from "@/lib/stores/attempt-assessment/attempt-assessment.store";
+import { useAttemption } from "../../hooks/useAttemptAssessments";
+import {
+  AssessmentStartSectionStatus,
+  AssignedAssessmentQuestion,
+  AttemptQuestionProps,
+} from "@/lib/types/attemptionTypes";
+import { useRouter } from "next/navigation";
 
 interface AssessmentProps {
   params: {
@@ -23,17 +27,13 @@ interface AssessmentProps {
 
 const Assessment: React.FC<AssessmentProps> = ({ params }) => {
   // all hooks here
-  const {
-    startQuestion,
-    startSection,
-    startAssessment,
-  } = useAttemption();
+  const { startQuestion, startSection, startAssessment } = useAttemption();
   const router = useRouter();
 
-  const [fontSize, setFontSize] = useState(16)
+  const [fontSize, setFontSize] = useState(16);
   const handleSliderChange = (value: number[]) => {
-    setFontSize(value[0])
-  }
+    setFontSize(value[0]);
+  };
 
   // global states here
   const {
@@ -43,21 +43,23 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
     setCurrentQuestionIndex,
   } = useAttemptAssessmentsStore();
 
-
   // local states here
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
-  const [activeSectionQuestions, setActiveSectionQuestions] = useState<AssignedAssessmentQuestion[]>([]);
+  const [activeSectionQuestions, setActiveSectionQuestions] = useState<
+    AssignedAssessmentQuestion[]
+  >([]);
   const assessmentId = params.assessmentId;
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
-
+  const [selectedOptions, setSelectedOptions] = useState<
+    Record<string, string>
+  >({});
 
   // Current Question Data
   const currentQuestion = activeSectionQuestions[currentQuestionIndex];
-  const currentSelectedOptionId: string | null = currentQuestion?.selectedOptionId;
+  const currentSelectedOptionId: string | null =
+    currentQuestion?.selectedOptionId;
 
   const [isLoading, setIsLoading] = useState(false);
   const [sections, setSections] = useState<AssessmentStartSectionStatus[]>([]);
-
 
   // local functions here
   const findCurrentSectionId = async (): Promise<number> => {
@@ -65,19 +67,21 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
       const statusSections = await startAssessment({ assessmentId });
       if (!statusSections) throw new Error("Failed to start assessment");
       setSections(statusSections);
-      const activeSection = statusSections.find(section => section.status === "started");
+      const activeSection = statusSections.find(
+        (section) => section.status === "started"
+      );
       const sectionToStart = activeSection ? activeSection.section : 1;
       setCurrentSectionId(sectionToStart);
       return sectionToStart;
     } catch (err) {
-      throw Error('Error starting assessment');
+      throw Error("Error starting assessment");
     }
   };
 
   const initializeAssessment = useCallback(async () => {
     try {
       console.log(currentSectionId);
-      const sectionId = currentSectionId || await findCurrentSectionId();
+      const sectionId = currentSectionId || (await findCurrentSectionId());
       const response = await startSection({
         assessmentId: assessmentId,
         section: sectionId,
@@ -85,7 +89,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
       if (response) {
         setActiveSectionQuestions(response);
         const initialSelectedOptions: Record<string, string> = {};
-        response.forEach(question => {
+        response.forEach((question) => {
           if (question.selectedOptionId) {
             initialSelectedOptions[question.id] = question.selectedOptionId;
           }
@@ -93,64 +97,59 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
         setSelectedOptions(initialSelectedOptions);
       }
     } catch (err) {
-      console.error('Error initializing assessment:', err);
+      console.error("Error initializing assessment:", err);
     } finally {
       setIsLoading(false);
     }
-  }, [])
-
+  }, []);
 
   // handlers here
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1)
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
-  }
-
-
+  };
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex < activeSectionQuestions?.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
-  }
+  };
 
   const handleAttemptQuestion = async (optionId: string) => {
     const payload: AttemptQuestionProps = {
       assessmentId: assessmentId,
       questionId: activeSectionQuestions[currentQuestionIndex].id,
       selectedOptionId: optionId,
-    }
+    };
     try {
       const status = await startQuestion(payload);
       if (status) {
-        console.log('Question attempted successfully');
+        console.log("Question attempted successfully");
       }
     } catch (err) {
       console.log(err);
     }
-  }
-
-
+  };
 
   const handleOptionSelect = async (optionId: string) => {
     if (!currentQuestion) return;
 
     // Update UI immediately
-    setSelectedOptions(prev => ({
+    setSelectedOptions((prev) => ({
       ...prev,
-      [currentQuestion.id]: optionId
+      [currentQuestion.id]: optionId,
     }));
 
     // Make API call
     await handleAttemptQuestion(optionId);
     initializeAssessment();
-  }
+  };
 
   const handleGoBackToOverview = () => {
     // navigate to overview page
-    router.push(`/assessment/${assessmentId}/overview`)
-  }
+    router.push(`/assessment/${assessmentId}/overview`);
+  };
 
   // Initial Setup
   useEffect(() => {
@@ -163,21 +162,17 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
       <div className="flex items-center justify-center h-screen">
         <Badge variant="outline">No questions available</Badge>
       </div>
-    )
+    );
   }
   return (
     <>
-      <main className='overflow-hidden hidden lg:block'>
+      <main className="overflow-hidden hidden lg:block">
         <div className="flex w-full h-[4rem] border-b justify-between">
           <div className="flex items-center justify-center p-6">
-            <span className="font-semibold text-muted-foreground">
-
-            </span>
+            <span className="font-semibold text-muted-foreground"></span>
           </div>
           <div className="flex items-center justify-center p-6">
-            <Badge variant={'outline'}>
-              Section {currentSectionId}
-            </Badge>
+            <Badge variant={"outline"}>Section {currentSectionId}</Badge>
           </div>
           <div className="flex">
             <div className="flex items-center justify-center p-4 border-dashed-2 border rounded-md border-primary/40 my-2 mx-4">
@@ -214,12 +209,10 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
             <ResizablePanel defaultSize={50}>
               <div className="flex p-8 flex-col gap-4">
                 <div className="flex">
-                  <Badge>
-                    Question {currentQuestionIndex + 1}
-                  </Badge>
+                  <Badge>Question {currentQuestionIndex + 1}</Badge>
                 </div>
                 <div className="flex" style={{ fontSize: `${fontSize}px` }}>
-                  {currentQuestion?.description || 'Question not available'}
+                  {currentQuestion?.description || "Question not available"}
                 </div>
               </div>
             </ResizablePanel>
@@ -227,9 +220,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
             <ResizablePanel defaultSize={50}>
               <div className="flex flex-col w-full h-full overflow-hidden overflow-y-scroll p-8 gap-8">
                 <div className="flex">
-                  <Badge>
-                    Options
-                  </Badge>
+                  <Badge>Options</Badge>
                 </div>
                 {currentQuestion?.options?.map((option) => (
                   <div className="flex flex-col gap-2" key={option.id}>
@@ -242,7 +233,9 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
                     >
                       <div className="flex w-1/7 p-8 h-full items-center justify-center">
                         <Checkbox
-                          checked={selectedOptions[currentQuestion.id] === option.id}
+                          checked={
+                            selectedOptions[currentQuestion.id] === option.id
+                          }
                           onClick={(e) => e.stopPropagation()}
                         />
                       </div>
@@ -262,9 +255,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
         <div className="flex h-[4rem] flex-row items-center px-8 justify-between">
           <div className="flex gap-2">
             Powered By
-            <Badge variant={'outline'}>
-              PNAcademy
-            </Badge>
+            <Badge variant={"outline"}>PNAcademy</Badge>
           </div>
           <Slider
             defaultValue={[16]}
@@ -276,7 +267,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
           />
           <div className="flex h-full items-center justify-center gap-2">
             <Button
-              variant={'outline'}
+              variant={"outline"}
               onClick={handlePreviousQuestion}
               disabled={currentQuestionIndex === 0}
             >
@@ -284,19 +275,25 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
             </Button>
             {
               <Button
-                onClick={(currentQuestionIndex === activeSectionQuestions.length - 1) ? handleGoBackToOverview : handleNextQuestion}
+                onClick={
+                  currentQuestionIndex === activeSectionQuestions.length - 1
+                    ? handleGoBackToOverview
+                    : handleNextQuestion
+                }
               >
                 Next
               </Button>
             }
           </div>
         </div>
-      </main >
+      </main>
       {/* mobile view */}
-      <main className='overflow-hidden lg:hidden' >
+      <main className="overflow-hidden lg:hidden">
         <div className="flex w-full h-[4rem] border-b justify-between">
           <div className="flex items-center justify-center p-6">
-            <span className="font-semibold text-muted-foreground">#Assessment 1 | 5 Marks/Q</span>
+            <span className="font-semibold text-muted-foreground">
+              #Assessment 1 | 5 Marks/Q
+            </span>
           </div>
 
           <div className="flex">
@@ -313,7 +310,10 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
             <div className="flex flex-row w-full border border-b">
               <div className="flex flex-row w-full items-start justify-start p-6 gap-4 overflow-x-scroll oveflow-hidden scrollbar-thin">
                 {Array.from({ length: 22 }).map((_, index) => (
-                  <div key={index} className="flex min-h-[40px] min-w-[40px] border-2 items-center justify-center rounded-md">
+                  <div
+                    key={index}
+                    className="flex min-h-[40px] min-w-[40px] border-2 items-center justify-center rounded-md"
+                  >
                     {index + 1}
                   </div>
                 ))}
@@ -327,12 +327,12 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
             <ResizablePanel defaultSize={20}>
               <div className="flex p-8 flex-col gap-4">
                 <div className="flex">
-                  <Badge>
-                    Question 1
-                  </Badge>
+                  <Badge>Question 1</Badge>
                 </div>
                 <div className="flex text-md">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae quam alias saepe autem nostrum minus debitis ipsam inventore, velit maxime?
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Repudiandae quam alias saepe autem nostrum minus debitis ipsam
+                  inventore, velit maxime?
                 </div>
               </div>
             </ResizablePanel>
@@ -340,9 +340,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
             <ResizablePanel defaultSize={80}>
               <div className="flex flex-col w-full h-full overflow-hidden overflow-y-scroll p-8 gap-8">
                 <div className="flex">
-                  <Badge>
-                    Options
-                  </Badge>
+                  <Badge>Options</Badge>
                 </div>
                 {Array.from({ length: 4 }).map((_, index) => (
                   <div className="flex flex-col gap-2" key={index}>
@@ -351,7 +349,9 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
                         <Checkbox />
                       </div>
                       <div className="flex h-full w-6/7 p-5 border-l bg-background scrollbar-thin rounded-r-sm text-sm">
-                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quo quidem voluptate minima voluptatem aperiam repellat sequi voluptatum autem id consequuntur.
+                        Lorem, ipsum dolor sit amet consectetur adipisicing
+                        elit. Quo quidem voluptate minima voluptatem aperiam
+                        repellat sequi voluptatum autem id consequuntur.
                       </div>
                     </div>
                   </div>
@@ -361,26 +361,20 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
           </ResizablePanelGroup>
         </div>
         <div className="flex h-[4rem] flex-row items-center px-8 justify-between">
-          <Badge variant={'outline'}>
-            PNAcademy
-          </Badge>
+          <Badge variant={"outline"}>PNAcademy</Badge>
           <div className="flex items-center justify-center p-6">
-            <Badge variant={'outline'}>
-              Section 1
-            </Badge>
+            <Badge variant={"outline"}>Section 1</Badge>
           </div>
           <div className="flex h-full items-center justify-center gap-2">
-            <Button variant={'outline'} className='text-xs'>
+            <Button variant={"outline"} className="text-xs">
               Back
             </Button>
-            <Button className='text-xs'>
-              Next
-            </Button>
+            <Button className="text-xs">Next</Button>
           </div>
         </div>
-      </main >
+      </main>
     </>
-  )
-}
+  );
+};
 
-export default Assessment
+export default Assessment;

@@ -1,37 +1,56 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { FileDownIcon, Mail, User, Clock, Calendar, MousePointer2, Phone } from 'lucide-react';
-import { useUsers } from '../../hooks/useUsers';
-import { Skeleton } from '@/components/ui/skeleton';
-import { SingleUser } from '@/lib/types/userTypes';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { TableCell, TableHead, TableRow } from '@/components/ui/table';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
-import { formatDateInIST } from '@/lib/helpers/time-converter';
-import { copyToClipboard } from '@/lib/helpers/copy-to-clipboard';
-import CreateUserDialog from '../dialog-box/create-user-dialog';
-import ImportCsvDialog from '../dialog-box/import-users-csv-dialog';
-import ViewUserDialog from '../dialog-box/view-user-dialog';
-import EditUserDialog from '../dialog-box/edit-user-diallog';
-import DeleteUserDialog from '../dialog-box/delete-user-dialog';
-import useUserTableStore from '@/lib/stores/manage-users-store/user-table-store';
-import { ApiError } from '@/lib/api/apiError';
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  FileDownIcon,
+  Mail,
+  User,
+  Clock,
+  Calendar,
+  MousePointer2,
+  Phone,
+} from "lucide-react";
+import { useUsers } from "../../hooks/useUsers";
+import { Skeleton } from "@/components/ui/skeleton";
+import { SingleUser } from "@/lib/types/userTypes";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { TableCell, TableHead, TableRow } from "@/components/ui/table";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { formatDateInIST } from "@/lib/helpers/time-converter";
+import { copyToClipboard } from "@/lib/helpers/copy-to-clipboard";
+import CreateUserDialog from "../dialog-box/create-user-dialog";
+import ImportCsvDialog from "../dialog-box/import-users-csv-dialog";
+import ViewUserDialog from "../dialog-box/view-user-dialog";
+import EditUserDialog from "../dialog-box/edit-user-diallog";
+import DeleteUserDialog from "../dialog-box/delete-user-dialog";
+import useUserTableStore from "@/lib/stores/manage-users-store/user-table-store";
+import { ApiError } from "@/lib/api/apiError";
 
 const UsersTabContent: React.FC = () => {
-
   // all hooks here
   const { fetchUsers, removeUsers } = useUsers();
 
   // global states here
-  const { activePageIndex, displayNumberOfRows, sortBy, order, setOrder, setSortBy } = useUserTableStore();
+  const {
+    activePageIndex,
+    displayNumberOfRows,
+    sortBy,
+    order,
+    setOrder,
+    setSortBy,
+  } = useUserTableStore();
 
   // local states here
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
   const [users, setUsers] = useState<SingleUser[]>([]);
-  const [error, setError] = useState<ApiError | Error>()
+  const [error, setError] = useState<ApiError | Error>();
 
   const [loadingUsers, setLoadingUsers] = useState<boolean>(true);
 
@@ -44,10 +63,10 @@ const UsersTabContent: React.FC = () => {
       page: activePageIndex,
       pageSize: displayNumberOfRows,
       sortBy,
-      order
-    }
+      order,
+    };
     try {
-      setLoadingUsers(true)
+      setLoadingUsers(true);
       const response = await fetchUsers(payload);
       setUsers(response.users);
     } catch (err) {
@@ -57,7 +76,7 @@ const UsersTabContent: React.FC = () => {
         setError(err as Error);
       }
     } finally {
-      setLoadingUsers(false)
+      setLoadingUsers(false);
     }
   }, [sortBy, order]);
 
@@ -68,16 +87,16 @@ const UsersTabContent: React.FC = () => {
   // handlers here
   const handleToggleSorting = (field: keyof SingleUser) => {
     if (sortBy === field) {
-      setOrder(order === 'ASC' ? 'DESC' : 'ASC');
+      setOrder(order === "ASC" ? "DESC" : "ASC");
     } else {
       setSortBy(field);
-      setOrder('ASC');
+      setOrder("ASC");
     }
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedUsers(new Set(users.map(user => user.id)));
+      setSelectedUsers(new Set(users.map((user) => user.id)));
     } else {
       setSelectedUsers(new Set());
     }
@@ -175,54 +194,67 @@ interface SchemaProps {
   onSelectAll: (checked: boolean) => void;
 }
 
-const Schema: React.FC<SchemaProps> = ({ toggleSorting, sortBy, order, allSelected, onSelectAll, }) => (
+const Schema: React.FC<SchemaProps> = ({
+  toggleSorting,
+  sortBy,
+  order,
+  allSelected,
+  onSelectAll,
+}) => (
   <TableRow>
     <TableHead className="sm:table-cell">
       <div className="flex items-center gap-2">
         <Checkbox
           checked={allSelected}
-          onCheckedChange={(checked) => onSelectAll(checked as boolean)} />
+          onCheckedChange={(checked) => onSelectAll(checked as boolean)}
+        />
       </div>
     </TableHead>
-    <TableHead onClick={() => toggleSorting('first_name')}>
+    <TableHead onClick={() => toggleSorting("first_name")}>
       <div className="flex gap-2 items-center cursor-pointer text-[10px] w-22">
         <User className="h-3 w-3" />
-        First Name {sortBy === 'first_name' && (order === 'ASC' ? '↓' : '↑')}
+        First Name {sortBy === "first_name" && (order === "ASC" ? "↓" : "↑")}
       </div>
     </TableHead>
-    <TableHead onClick={() => toggleSorting('last_name')}>
+    <TableHead onClick={() => toggleSorting("last_name")}>
       <div className="flex gap-2 items-center cursor-pointer text-[10px] w-22">
         <User className="h-3 w-3" />
-        Last Name {sortBy === 'last_name' && (order === 'ASC' ? '↓' : '↑')}
+        Last Name {sortBy === "last_name" && (order === "ASC" ? "↓" : "↑")}
       </div>
     </TableHead>
-    <TableHead onClick={() => toggleSorting('email')}>
+    <TableHead onClick={() => toggleSorting("email")}>
       <div className="flex gap-2 items-center cursor-pointer text-[10px]">
         <Mail className="h-3 w-3" />
-        Email {sortBy === 'email' && (order === 'ASC' ? '↓' : '↑')}
+        Email {sortBy === "email" && (order === "ASC" ? "↓" : "↑")}
       </div>
     </TableHead>
     <TableHead className="hidden md:table-cell">
       <div className="flex gap-2 items-center cursor-default text-[10px]">
-        <Phone className='h-3 w-3' />
+        <Phone className="h-3 w-3" />
         Phone Number
       </div>
     </TableHead>
-    <TableHead onClick={() => toggleSorting('createdAt')} className="hidden md:table-cell">
+    <TableHead
+      onClick={() => toggleSorting("createdAt")}
+      className="hidden md:table-cell"
+    >
       <div className="flex gap-2 items-center cursor-pointer text-[10px]">
         <Calendar className="h-3 w-3" />
-        Created At {sortBy === 'createdAt' && (order === 'ASC' ? '↓' : '↑')}
+        Created At {sortBy === "createdAt" && (order === "ASC" ? "↓" : "↑")}
       </div>
     </TableHead>
-    <TableHead onClick={() => toggleSorting('updatedAt')} className="hidden md:table-cell">
+    <TableHead
+      onClick={() => toggleSorting("updatedAt")}
+      className="hidden md:table-cell"
+    >
       <div className="flex gap-2 items-center cursor-pointer text-[10px]">
         <Clock className="h-3 w-3" />
-        Updated At {sortBy === 'updatedAt' && (order === 'ASC' ? '↓' : '↑')}
+        Updated At {sortBy === "updatedAt" && (order === "ASC" ? "↓" : "↑")}
       </div>
     </TableHead>
     <TableHead>
       <div className="flex items-center cursor-default text-[10px]">
-        <MousePointer2 className='h-3 w-3 mr-2' />
+        <MousePointer2 className="h-3 w-3 mr-2" />
         Actions
       </div>
     </TableHead>
@@ -237,20 +269,28 @@ interface RowProps {
   loading: boolean;
 }
 
-const Row: React.FC<RowProps> = ({ user, selected, onSelectUser, refreshUsers, loading }) => {
+const Row: React.FC<RowProps> = ({
+  user,
+  selected,
+  onSelectUser,
+  refreshUsers,
+  loading,
+}) => {
   return (
     <TableRow>
       <TableCell className="hidden sm:table-cell">
         <Checkbox
           checked={selected}
-          onCheckedChange={(checked) => onSelectUser(user.id, checked as boolean)}
+          onCheckedChange={(checked) =>
+            onSelectUser(user.id, checked as boolean)
+          }
         />
       </TableCell>
       <TableCell className="font-medium text-left text-xs">
-        {loading ? (<Skeleton className="w-10 h-4" />) : user.first_name}
+        {loading ? <Skeleton className="w-10 h-4" /> : user.first_name}
       </TableCell>
       <TableCell className="font-medium text-left text-xs">
-        {loading ? (<Skeleton className="w-8 h-4" />) : user.last_name}
+        {loading ? <Skeleton className="w-8 h-4" /> : user.last_name}
       </TableCell>
       <TableCell>
         {loading ? (
@@ -260,14 +300,15 @@ const Row: React.FC<RowProps> = ({ user, selected, onSelectUser, refreshUsers, l
             <Tooltip>
               <TooltipTrigger asChild>
                 <button onClick={() => copyToClipboard(user.email)}>
-                  <Badge variant="outline" className="hover:bg-secondary text-[10px]">
+                  <Badge
+                    variant="outline"
+                    className="hover:bg-secondary text-[10px]"
+                  >
                     {user.email}
                   </Badge>
                 </button>
               </TooltipTrigger>
-              <TooltipContent>
-                Copy to Clipboard
-              </TooltipContent>
+              <TooltipContent>Copy to Clipboard</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}
@@ -280,39 +321,64 @@ const Row: React.FC<RowProps> = ({ user, selected, onSelectUser, refreshUsers, l
             <Tooltip>
               <TooltipTrigger asChild>
                 <button onClick={() => copyToClipboard(user.phone)}>
-                  <Badge variant="outline" className="hover:bg-secondary text-[10px]">
+                  <Badge
+                    variant="outline"
+                    className="hover:bg-secondary text-[10px]"
+                  >
                     {user.phone}
                   </Badge>
                 </button>
               </TooltipTrigger>
-              <TooltipContent>
-                Copy to Clipboard
-              </TooltipContent>
+              <TooltipContent>Copy to Clipboard</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         )}
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {loading ? <Skeleton className="w-10 h-4" /> :
-          <Badge variant={'outline'} className='text-[10px] bg-transparent cursor-default'>
+        {loading ? (
+          <Skeleton className="w-10 h-4" />
+        ) : (
+          <Badge
+            variant={"outline"}
+            className="text-[10px] bg-transparent cursor-default"
+          >
             {formatDateInIST(user.createdAt)}
-          </Badge>}
+          </Badge>
+        )}
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        {loading ? <Skeleton className="w-10 h-4" /> :
-          <Badge variant={'outline'} className='text-[10px] bg-transparent cursor-default'>
+        {loading ? (
+          <Skeleton className="w-10 h-4" />
+        ) : (
+          <Badge
+            variant={"outline"}
+            className="text-[10px] bg-transparent cursor-default"
+          >
             {formatDateInIST(user.updatedAt)}
-          </Badge>}
+          </Badge>
+        )}
       </TableCell>
       <TableCell>
         <div className="flex gap-4">
-          {loading ? (<Skeleton className="w-8 h-8" />) : (<ViewUserDialog user={user} />)}
-          {loading ? (<Skeleton className="w-8 h-8" />) : (<EditUserDialog user={user} refreshUsers={refreshUsers} />)}
-          {loading ? (<Skeleton className="w-8 h-8" />) : (<DeleteUserDialog user={user} refreshUsers={refreshUsers} />)}
+          {loading ? (
+            <Skeleton className="w-8 h-8" />
+          ) : (
+            <ViewUserDialog user={user} />
+          )}
+          {loading ? (
+            <Skeleton className="w-8 h-8" />
+          ) : (
+            <EditUserDialog user={user} refreshUsers={refreshUsers} />
+          )}
+          {loading ? (
+            <Skeleton className="w-8 h-8" />
+          ) : (
+            <DeleteUserDialog user={user} refreshUsers={refreshUsers} />
+          )}
         </div>
       </TableCell>
     </TableRow>
-  )
-}
+  );
+};
 
 export default UsersTabContent;

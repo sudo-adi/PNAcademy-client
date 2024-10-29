@@ -5,7 +5,7 @@ import { AddGroupToNotificationProps, AddGroupToNotificationResponse, CreateNoti
 
 
 // Function to create a notification
-export const createNotification = async (data: CreateNotificationProps): Promise<NotificationResponse | null> => {
+export const createNotification = async (data: CreateNotificationProps): Promise<NotificationResponse> => {
   try {
     const formData = new FormData();
     formData.append('title', data.title);
@@ -26,7 +26,7 @@ export const createNotification = async (data: CreateNotificationProps): Promise
     if (response.status === 200 || response.status === 201) {
       return response.data;
     }
-    return null;
+    throw new ApiError(response.status!, 'An unexpected error occurred', response.data);
   } catch (error) {
     if (error instanceof AxiosError) {
       const { status, data } = error.response || {};

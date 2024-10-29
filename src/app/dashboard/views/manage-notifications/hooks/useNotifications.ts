@@ -13,15 +13,11 @@ import {
   RemoveGroupFromNotificationProps,
   RemoveGroupFromNotificationResponse,
 } from '@/lib/types/notifications';
+import { ApiError } from '@/lib/api/apiError';
 
 export const useNotifications = () => {
-  const [notifications, setNotifications] = useState<GetNotificationsResponse | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const createNotification = useCallback(async (data: CreateNotificationProps): Promise<NotificationResponse | null> => {
-    setLoading(true);
-    setError(null);
+  const createNotification = useCallback(async (data: CreateNotificationProps): Promise<NotificationResponse> => {
     try {
       const formData = new FormData();
       formData.append('title', data.title);
@@ -38,33 +34,29 @@ export const useNotifications = () => {
       if (response.status === 200 || response.status === 201) {
         return response.data;
       }
-      return null;
+      throw new ApiError(response.status!, 'An unexpected error occurred', response.data);
     } catch (error) {
       if (error instanceof AxiosError) {
         const { status, data } = error.response || {};
         switch (status) {
           case 400:
-            setError('Bad Request: Invalid data provided');
-            break;
+            throw new ApiError(status, 'Bad Request: Invalid data provided', data);
           case 500:
-            setError('Internal Server Error');
-            break;
+            throw new ApiError(status, 'Internal Server Error', data);
           default:
-            setError('An unexpected error occurred');
-            break;
+            throw new ApiError(status!, 'An unexpected error occurred', data);
         }
       } else {
-        setError('An unexpected error occurred');
+        throw new ApiError(500, 'An unexpected error occurred', error);
       }
-      return null;
+
     } finally {
-      setLoading(false);
+
     }
   }, []);
 
-  const deleteNotification = useCallback(async ({ id }: DeleteNotificationProps): Promise<DeleteNotificationResponse | null> => {
-    setLoading(true);
-    setError(null);
+  const deleteNotification = useCallback(async ({ id }: DeleteNotificationProps): Promise<DeleteNotificationResponse> => {
+
     try {
       const response = await axiosInstance.delete<DeleteNotificationResponse>('/v1/notification/delete-notification', {
         data: { id },
@@ -73,105 +65,88 @@ export const useNotifications = () => {
       if (response.status === 200 || response.status === 201) {
         return response.data;
       }
-      return null;
+      throw new ApiError(response.status!, 'An unexpected error occurred', response.data);
     } catch (error) {
       if (error instanceof AxiosError) {
         const { status, data } = error.response || {};
         switch (status) {
           case 400:
-            setError('Bad Request: Invalid data provided');
-            break;
+            throw new ApiError(status, 'Bad Request: Invalid data provided', data);
           case 500:
-            setError('Internal Server Error');
-            break;
+            throw new ApiError(status, 'Internal Server Error', data);
           default:
-            setError('An unexpected error occurred');
-            break;
+            throw new ApiError(status!, 'An unexpected error occurred', data);
         }
       } else {
-        setError('An unexpected error occurred');
+        throw new ApiError(500, 'An unexpected error occurred', error);
       }
-      return null;
+
     } finally {
-      setLoading(false);
+
     }
   }, []);
 
-  const getNotifications = useCallback(async (data: GetNotificationsProps): Promise<GetNotificationsResponse | null> => {
-    setLoading(true);
-    setError(null);
+  const getNotifications = useCallback(async (data: GetNotificationsProps): Promise<GetNotificationsResponse> => {
+
     try {
       const response = await axiosInstance.get<GetNotificationsResponse>('/v1/notification/all', {
         params: data,
       });
 
       if (response.status === 200 || response.status === 201) {
-        setNotifications(response.data);
         return response.data;
       }
-      return null;
+      throw new ApiError(response.status!, 'An unexpected error occurred', response.data);
     } catch (error) {
       if (error instanceof AxiosError) {
         const { status, data } = error.response || {};
         switch (status) {
           case 400:
-            setError('Bad Request: Invalid query parameters');
-            break;
+            throw new ApiError(status, 'Bad Request: Invalid data provided', data);
           case 500:
-            setError('Internal Server Error');
-            break;
+            throw new ApiError(status, 'Internal Server Error', data);
           default:
-            setError('An unexpected error occurred');
-            break;
+            throw new ApiError(status!, 'An unexpected error occurred', data);
         }
       } else {
-        setError('An unexpected error occurred');
+        throw new ApiError(500, 'An unexpected error occurred', error);
       }
-      return null;
     } finally {
-      setLoading(false);
     }
   }, []);
 
-  const addGroupToNotification = useCallback(async (data: AddGroupToNotificationProps): Promise<AddGroupToNotificationResponse | null> => {
-    setLoading(true);
-    setError(null);
+  const addGroupToNotification = useCallback(async (data: AddGroupToNotificationProps): Promise<AddGroupToNotificationResponse> => {
+
     try {
       const response = await axiosInstance.post<AddGroupToNotificationResponse>('/v1/notification/add-group', data);
 
       if (response.status === 200 || response.status === 201) {
+        console.log(response.data);
         return response.data;
       }
-      return null;
+      throw new ApiError(response.status!, 'An unexpected error occurred', response.data);
     } catch (error) {
       if (error instanceof AxiosError) {
         const { status, data } = error.response || {};
         switch (status) {
           case 400:
-            setError('Bad Request: Invalid data provided');
-            break;
+            throw new ApiError(status, 'Bad Request: Invalid data provided', data);
           case 404:
-            setError('Not Found: Notification or Group not found');
-            break;
+            throw new ApiError(status, 'Not Found: Notification or Group not found', data);
           case 500:
-            setError('Internal Server Error');
-            break;
+            throw new ApiError(status, 'Internal Server Error', data);
           default:
-            setError('An unexpected error occurred');
-            break;
+            throw new ApiError(status!, 'An unexpected error occurred', data);
         }
       } else {
-        setError('An unexpected error occurred');
+        throw new ApiError(500, 'An unexpected error occurred', error);
       }
-      return null;
     } finally {
-      setLoading(false);
+
     }
   }, []);
 
-  const removeGroupFromNotification = useCallback(async (data: RemoveGroupFromNotificationProps): Promise<RemoveGroupFromNotificationResponse | null> => {
-    setLoading(true);
-    setError(null);
+  const removeGroupFromNotification = useCallback(async (data: RemoveGroupFromNotificationProps): Promise<RemoveGroupFromNotificationResponse> => {
     try {
       const response = await axiosInstance.delete<RemoveGroupFromNotificationResponse>('/v1/notification/remove-group', {
         data,
@@ -180,73 +155,65 @@ export const useNotifications = () => {
       if (response.status === 200 || response.status === 201) {
         return response.data;
       }
-      return null;
+      throw new ApiError(response.status!, 'An unexpected error occurred', response.data);
     } catch (error) {
       if (error instanceof AxiosError) {
         const { status, data } = error.response || {};
         switch (status) {
           case 400:
-            setError('Bad Request: Invalid data provided');
-            break;
+            throw new ApiError(status, 'Bad Request: Invalid data provided', data);
           case 404:
-            setError('Not Found: Notification or Group not found');
-            break;
+            throw new ApiError(status, 'Not Found: Notification or Group not found', data);
           case 500:
-            setError('Internal Server Error');
-            break;
+            throw new ApiError(status, 'Internal Server Error', data);
           default:
-            setError('An unexpected error occurred');
-            break;
+            throw new ApiError(status!, 'An unexpected error occurred', data);
         }
       } else {
-        setError('An unexpected error occurred');
+        throw new ApiError(500, 'An unexpected error occurred', error);
       }
-      return null;
+
     } finally {
-      setLoading(false);
     }
   }, []);
 
-  const getAssignedNotifications = useCallback(async (data: GetNotificationsProps): Promise<GetNotificationsResponse | null> => {
-    setLoading(true);
-    setError(null);
+  const getAssignedNotifications = useCallback(async (data: GetNotificationsProps): Promise<GetNotificationsResponse> => {
+
     try {
       const response = await axiosInstance.get<GetNotificationsResponse>(
         `/v1/notification/assigned?page=${data.page}&pageSize=${data.pageSize}&sortBy=${data.sortBy}&order=${data.order}`
       );
 
       if (response.status === 200 || response.status === 201) {
-        setNotifications(response.data);
+
         return response.data;
       }
-      return null;
+
+      throw new ApiError(response.status!, 'An unexpected error occurred', response.data);
+
     } catch (error) {
       if (error instanceof AxiosError) {
         const { status, data } = error.response || {};
         switch (status) {
           case 400:
-            setError('Bad Request: Invalid query parameters');
-            break;
+            throw new ApiError(status, 'Bad Request: Invalid data provided', data);
+          case 404:
+            throw new ApiError(status, 'Not Found: Notification or Group not found', data);
           case 500:
-            setError('Internal Server Error');
-            break;
+            throw new ApiError(status, 'Internal Server Error', data);
           default:
-            setError('An unexpected error occurred');
-            break;
+            throw new ApiError(status!, 'An unexpected error occurred', data);
         }
       } else {
-        setError('An unexpected error occurred');
+        throw new ApiError(500, 'An unexpected error occurred', error);
       }
-      return null;
+
     } finally {
-      setLoading(false);
+
     }
   }, []);
 
   return {
-    notifications,
-    loading,
-    error,
     createNotification,
     deleteNotification,
     getNotifications,

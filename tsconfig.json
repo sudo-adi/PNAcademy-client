@@ -32,7 +32,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/lib/stores/manage-groups-store"  ],
   "exclude": [
     "node_modules"
   ]

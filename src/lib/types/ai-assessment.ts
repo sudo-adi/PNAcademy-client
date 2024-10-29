@@ -40,3 +40,34 @@ export interface AiSection {
   questions: AiQuestion[];
 
 }
+
+// Interfaces for the payload and response types
+export interface AssessmentOption {
+  description: string;
+  isCorrect: boolean;
+}
+
+export interface AssessmentQuestion {
+  description: string;
+  section: number;
+  options: AssessmentOption[];
+}
+
+export interface SaveAiGeneratedAssessmentProps {
+  name: string;
+  description: string;
+  is_active: boolean;
+  start_at: string; // ISO date string
+  end_at: string; // ISO date string
+  duration: number; // in milliseconds
+  created_by: string; // UUID
+  marks: number;
+  questions: AssessmentQuestion[];
+}
+
+export interface SaveAiGeneratedAssessmentResponse {
+  message: string;
+  data: {
+    id: string; // UUID of the saved assessment
+  };
+}

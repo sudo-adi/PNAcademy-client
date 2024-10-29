@@ -1,33 +1,31 @@
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import useTabStore from '@/lib/stores/manage-assessment-store/tab-store'
-import { Archive, Search, Sparkles } from 'lucide-react'
-import React, { useCallback, useEffect, useState } from 'react'
-import AllTabContent from './components/tab-content/all-tab-content'
-import OnGoingTabContent from './components/tab-content/ongoing-tab-content'
-import ScheduledTabContent from './components/tab-content/scheduled-tab-content'
-import PreviousTabContent from './components/tab-content/previous-tab-content'
-import CreateAssessmentDialog from './components/dialog-box/create-assessment-dialog'
-import DraftsTabContent from './components/tab-content/drafts-tab-content'
-import { useRouter } from 'next/navigation'
-import { useAssessment } from './hooks/useAssessment'
-import { Assessment } from '@/lib/types/assessmentTypes'
-import { ApiError } from '@/lib/api/apiError'
-import useAssessmentsTableStore from '@/lib/stores/manage-assessment-store/assessments-table'
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useTabStore from "@/lib/stores/manage-assessment-store/tab-store";
+import { Archive, Loader, Search, Sparkles } from "lucide-react";
+import React, { useCallback, useEffect, useState } from "react";
+import AllTabContent from "./components/tab-content/all-tab-content";
+import OnGoingTabContent from "./components/tab-content/ongoing-tab-content";
+import ScheduledTabContent from "./components/tab-content/scheduled-tab-content";
+import PreviousTabContent from "./components/tab-content/previous-tab-content";
+import CreateAssessmentDialog from "./components/dialog-box/create-assessment-dialog";
+import DraftsTabContent from "./components/tab-content/drafts-tab-content";
+import { useRouter } from "next/navigation";
+import { useAssessment } from "./hooks/useAssessment";
+import { Assessment } from "@/lib/types/assessmentTypes";
+import { ApiError } from "@/lib/api/apiError";
+import useAssessmentsTableStore from "@/lib/stores/manage-assessment-store/assessments-table";
 
 const ManageAssessments = () => {
-
   // all hooks here
-  const {
-    fetchAssessments,
-  } = useAssessment();
+  const { fetchAssessments } = useAssessment();
   const router = useRouter();
 
   // global states here
   const { activeTabIndex, setActiveTabIndex } = useTabStore();
-  const { activePageIndex, sortBy, order, setOrder, setSortBy, } = useAssessmentsTableStore();
+  const { activePageIndex, sortBy, order, setOrder, setSortBy } =
+    useAssessmentsTableStore();
 
   //  local states here
   const [allAssessments, setAllAssessments] = useState<Assessment[]>([]);
@@ -35,9 +33,13 @@ const ManageAssessments = () => {
 
   // loading states here
   const [assessmentLoading, setAssessmentLoading] = useState<boolean>(true);
+  const [redirectingCreateWithAi, setRedirectingCreateWithAi] =
+    useState<boolean>(false);
 
   // error states here
-  const [assessmentsFetchError, setAssessmentsFetchError] = useState<ApiError | Error>();
+  const [assessmentsFetchError, setAssessmentsFetchError] = useState<
+    ApiError | Error
+  >();
 
   // local vars here
 
@@ -47,11 +49,11 @@ const ManageAssessments = () => {
       page: activePageIndex ? activePageIndex : 1,
       pageSize: 999,
       sortBy,
-      order
-    }
+      order,
+    };
     try {
-      setAssessmentLoading(true)
-      console.log("there u go", activePageIndex)
+      setAssessmentLoading(true);
+      console.log("there u go", activePageIndex);
       const response = await fetchAssessments(payload);
       setAllAssessments(response.assesments);
       setTotalPages(response.totalPages);
@@ -62,7 +64,7 @@ const ManageAssessments = () => {
         setAssessmentsFetchError(err as Error);
       }
     } finally {
-      setAssessmentLoading(false)
+      setAssessmentLoading(false);
     }
   }, [activePageIndex, sortBy, order]);
 
@@ -72,10 +74,19 @@ const ManageAssessments = () => {
   };
   const handleToggleSorting = (field: keyof Assessment) => {
     if (sortBy === field) {
-      setOrder(order === 'ASC' ? 'DESC' : 'ASC');
+      setOrder(order === "ASC" ? "DESC" : "ASC");
     } else {
       setSortBy(field);
-      setOrder('ASC');
+      setOrder("ASC");
+    }
+  };
+
+  const handleNavigateToCreateWithAi = () => {
+    try {
+      setRedirectingCreateWithAi(true);
+      router.push("/ai-create");
+    } catch (err) {
+      console.log("Error redirecting to create with ai", err);
     }
   };
 
@@ -87,7 +98,7 @@ const ManageAssessments = () => {
     totalPages: totalPages,
     refreshAssessments: handleRefreshAssessments,
     toggleSorting: handleToggleSorting,
-  }
+  };
 
   // all useEffects here
   useEffect(() => {
@@ -95,72 +106,89 @@ const ManageAssessments = () => {
   }, [fetchAssessmentsData]);
 
   return (
-    <div className='flex flex-col gap-2'>
-      <Card className='flex flex-row w-full p-2 justify-between items-center border-dashed gap-2'>
+    <div className="flex flex-col gap-2">
+      <Card className="flex flex-row w-full p-2 justify-between items-center border-dashed gap-2">
         <div className="flex flex-row gap-2">
           <CreateAssessmentDialog />
           <Button
-            onClick={() => router.push('/ai-create')}
-            variant="link" className='hover:no-underline border-primary border'
+            onClick={handleNavigateToCreateWithAi}
+            variant="link"
+            className="hover:no-underline border-primary border"
+            disabled={redirectingCreateWithAi}
           >
-            <Sparkles className='h-4 w-4 mr-2' />
-            Create With Ai
+            {redirectingCreateWithAi ? (
+              <div className="flex flex-row items-center justify-center">
+                <Loader className="h-4 w-4 mr-2 animate-spin" />
+                Create With Ai
+              </div>
+            ) : (
+              <div className="flex flex-row items-center justify-center">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Create With Ai
+              </div>
+            )}
           </Button>
         </div>
         <div className="flex w-full max-w-sm items-center space-x-2">
-          <Input type="email" placeholder="Search User with email, id or name..." />
-          <Button type="submit" className='flex items-center justify-center  gap-1'>
-            <Search className='h-4 w-4' />
+          <Input
+            type="email"
+            placeholder="Search User with email, id or name..."
+          />
+          <Button
+            type="submit"
+            className="flex items-center justify-center  gap-1"
+          >
+            <Search className="h-4 w-4" />
             Search
           </Button>
         </div>
       </Card>
-      <Tabs defaultValue={activeTabIndex.toString()} className="flex flex-col w-full items-center">
+      <Tabs
+        defaultValue={activeTabIndex.toString()}
+        className="flex flex-col w-full items-center"
+      >
         <div className="flex items-center justify-between flex-row w-full ">
           <TabsList className="grid grid-cols-4">
-            <TabsTrigger value="0" onClick={() => setActiveTabIndex(0)}>All</TabsTrigger>
-            <TabsTrigger value="1" onClick={() => setActiveTabIndex(1)}>OnGoing</TabsTrigger>
-            <TabsTrigger value="2" onClick={() => setActiveTabIndex(2)}>Scheduled</TabsTrigger>
-            <TabsTrigger value="3" onClick={() => setActiveTabIndex(3)}>Previous</TabsTrigger>
+            <TabsTrigger value="0" onClick={() => setActiveTabIndex(0)}>
+              All
+            </TabsTrigger>
+            <TabsTrigger value="1" onClick={() => setActiveTabIndex(1)}>
+              OnGoing
+            </TabsTrigger>
+            <TabsTrigger value="2" onClick={() => setActiveTabIndex(2)}>
+              Scheduled
+            </TabsTrigger>
+            <TabsTrigger value="3" onClick={() => setActiveTabIndex(3)}>
+              Previous
+            </TabsTrigger>
           </TabsList>
           <TabsList className="grid grid-cols-1">
-            <TabsTrigger value='4' onClick={() => setActiveTabIndex(4)}>
-              <Archive className='h-4 w-4 mr-2' />
+            <TabsTrigger value="4" onClick={() => setActiveTabIndex(4)}>
+              <Archive className="h-4 w-4 mr-2" />
               Drafts
             </TabsTrigger>
           </TabsList>
         </div>
         <div className="w-full">
           <TabsContent value="0">
-            <AllTabContent
-              {...tabConfig}
-            />
+            <AllTabContent {...tabConfig} />
           </TabsContent>
           <TabsContent value="1">
-            <OnGoingTabContent
-              {...tabConfig}
-            />
+            <OnGoingTabContent {...tabConfig} />
           </TabsContent>
-          <TabsContent value="2" >
-            <ScheduledTabContent
-              {...tabConfig}
-            />
+          <TabsContent value="2">
+            <ScheduledTabContent {...tabConfig} />
           </TabsContent>
-          <TabsContent value="3" >
-            <PreviousTabContent
-              {...tabConfig}
-            />
+          <TabsContent value="3">
+            <PreviousTabContent {...tabConfig} />
           </TabsContent>
-          <TabsContent value="4" >
-            <DraftsTabContent
-              {...tabConfig}
-            />
+          <TabsContent value="4">
+            <DraftsTabContent {...tabConfig} />
           </TabsContent>
         </div>
-      </Tabs >
+      </Tabs>
     </div>
+  );
+};
 
-  )
-}
-
-export default ManageAssessments
+export default ManageAssessments;

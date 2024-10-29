@@ -1,13 +1,12 @@
-import { Card } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import React, { use, useCallback, useEffect, useState } from 'react'
-import useAssessmentsTableStore from '@/lib/stores/manage-assessment-store/assessments-table'
-import { Assessment } from '@/lib/types/assessmentTypes'
-import { ApiError } from '@/lib/api/apiError'
-import Row from '../table/row'
-import Schema from '../table/schema'
-import { Button } from '@/components/ui/button'
-
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import React, { use, useCallback, useEffect, useState } from "react";
+import useAssessmentsTableStore from "@/lib/stores/manage-assessment-store/assessments-table";
+import { Assessment } from "@/lib/types/assessmentTypes";
+import { ApiError } from "@/lib/api/apiError";
+import Row from "../table/row";
+import Schema from "../table/schema";
+import { Button } from "@/components/ui/button";
 
 interface AllTabContentProps {
   assessments: Assessment[];
@@ -17,9 +16,6 @@ interface AllTabContentProps {
   refreshAssessments: () => void;
   totalPages: number;
 }
-
-
-
 
 const PaginationHandlers = ({ totalPages }: { totalPages: number }) => {
   const { activePageIndex, setActivePageIndex } = useAssessmentsTableStore();
@@ -45,36 +41,51 @@ const PaginationHandlers = ({ totalPages }: { totalPages: number }) => {
 
   return {
     handleNavigateToNextPage,
-    handleNavigateToPreviousPage
+    handleNavigateToPreviousPage,
   };
 };
 
-
-const AllTabContent: React.FC<AllTabContentProps> = ({ assessments, loadingAssessments, errorAssessments, toggleSorting, refreshAssessments, totalPages }) => {
+const AllTabContent: React.FC<AllTabContentProps> = ({
+  assessments,
+  loadingAssessments,
+  errorAssessments,
+  toggleSorting,
+  refreshAssessments,
+  totalPages,
+}) => {
   // all hooks here
-  const { handleNavigateToNextPage, handleNavigateToPreviousPage } = PaginationHandlers({ totalPages });
+  const { handleNavigateToNextPage, handleNavigateToPreviousPage } =
+    PaginationHandlers({ totalPages });
 
   // global states here
-  const { activePageIndex, sortBy, order, setActivePageIndex } = useAssessmentsTableStore();
+  const { activePageIndex, sortBy, order, setActivePageIndex } =
+    useAssessmentsTableStore();
 
   // local states here
-  const [selectedAssessments, setSelectedAssessments] = useState<Set<string>>(new Set());
+  const [selectedAssessments, setSelectedAssessments] = useState<Set<string>>(
+    new Set()
+  );
 
   // local vars here
-  const allAssessments: Assessment[] = assessments.filter(assessment => assessment.is_active);
+  const allAssessments: Assessment[] = assessments.filter(
+    (assessment) => assessment.is_active
+  );
   const loading: boolean = loadingAssessments;
   const error: ApiError | Error | undefined = errorAssessments;
   const handleRefreshAssessments = refreshAssessments;
   const handleToggleSorting = toggleSorting;
-  const allSelected: boolean = allAssessments.length > 0 && selectedAssessments.size === allAssessments.length;
+  const allSelected: boolean =
+    allAssessments.length > 0 &&
+    selectedAssessments.size === allAssessments.length;
 
   // all functions here
-
 
   // all event handlers here
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedAssessments(new Set(allAssessments.map(assessment => assessment.id)));
+      setSelectedAssessments(
+        new Set(allAssessments.map((assessment) => assessment.id))
+      );
     } else {
       setSelectedAssessments(new Set());
     }
@@ -96,16 +107,16 @@ const AllTabContent: React.FC<AllTabContentProps> = ({ assessments, loadingAsses
   }, [toggleSorting]);
 
   useEffect(() => {
-    console.log('error ye hai', error)
+    console.log("error ye hai", error);
   }, [error]);
 
   useEffect(() => {
-    console.log('activePageIndex', activePageIndex)
+    console.log("activePageIndex", activePageIndex);
   }, [activePageIndex]);
 
   return (
     <>
-      <Card className='my-2 h-[calc(100vh-17rem)] w-full flex flex-col'>
+      <Card className="my-2 h-[calc(100vh-17rem)] w-full flex flex-col">
         <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
           <div className="absolute inset-0 overflow-y-scroll">
             <table className="w-full">
@@ -119,7 +130,7 @@ const AllTabContent: React.FC<AllTabContentProps> = ({ assessments, loadingAsses
                 />
               </thead>
               <tbody>
-                {allAssessments.map(assessment => (
+                {allAssessments.map((assessment) => (
                   <Row
                     key={assessment.id}
                     assessment={assessment}
@@ -135,9 +146,7 @@ const AllTabContent: React.FC<AllTabContentProps> = ({ assessments, loadingAsses
         </div>
       </Card>
       <div className="flex h-[calc(3rem-6px)] items-center justify-between gap-2">
-        <Label>
-          {allAssessments.length} Assessments
-        </Label>
+        <Label>{allAssessments.length} Assessments</Label>
         {/* <div className="flex flex-row gap-2 items-center justify-center text-xs font-bold">
           <div className="flex p-2 rounded-xl border">
             {activePageIndex + 1} / {totalPages}
@@ -151,7 +160,7 @@ const AllTabContent: React.FC<AllTabContentProps> = ({ assessments, loadingAsses
         </div> */}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default AllTabContent
+export default AllTabContent;

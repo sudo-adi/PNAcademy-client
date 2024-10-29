@@ -4,19 +4,36 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { Assessment, GetAssessmentByIdData, UpdateAssessmentProps } from "@/lib/types/assessmentTypes";
+import {
+  Assessment,
+  GetAssessmentByIdData,
+  UpdateAssessmentProps,
+} from "@/lib/types/assessmentTypes";
 
 interface SideBarEndsAtDateTimePicker {
   assessment: Assessment;
   patchAssessment: (data: UpdateAssessmentProps) => Promise<Assessment>;
 }
 
-const SideBarEndsAtDateTimePicker: React.FC<SideBarEndsAtDateTimePicker> = ({ assessment, patchAssessment }) => {
-  const [endAt, setEndAt] = useState<string>()
+const SideBarEndsAtDateTimePicker: React.FC<SideBarEndsAtDateTimePicker> = ({
+  assessment,
+  patchAssessment,
+}) => {
+  const [endAt, setEndAt] = useState<string>();
   const [date, setDate] = React.useState<Date>(new Date());
   const [hour, setHour] = React.useState<string>("");
   const [minute, setMinute] = React.useState<string>("");
@@ -35,7 +52,12 @@ const SideBarEndsAtDateTimePicker: React.FC<SideBarEndsAtDateTimePicker> = ({ as
     setPeriod(currentPeriod);
 
     // Set initial startAt to current date and time
-    updateDateTime(now, hour12.toString(), currentMinute.toString(), currentPeriod);
+    updateDateTime(
+      now,
+      hour12.toString(),
+      currentMinute.toString(),
+      currentPeriod
+    );
   }, []);
 
   // Handle date selection from the calendar
@@ -52,8 +74,12 @@ const SideBarEndsAtDateTimePicker: React.FC<SideBarEndsAtDateTimePicker> = ({ as
     selectedMinute: string,
     selectedPeriod: string
   ) => {
-    const hour12 = selectedHour ? parseInt(selectedHour) : new Date().getHours() % 12 || 12;
-    const minuteValue = selectedMinute ? parseInt(selectedMinute) : new Date().getMinutes();
+    const hour12 = selectedHour
+      ? parseInt(selectedHour)
+      : new Date().getHours() % 12 || 12;
+    const minuteValue = selectedMinute
+      ? parseInt(selectedMinute)
+      : new Date().getMinutes();
     const hour24 = selectedPeriod === "PM" ? (hour12 % 12) + 12 : hour12 % 12;
 
     const newDateTime = new Date(
@@ -77,14 +103,19 @@ const SideBarEndsAtDateTimePicker: React.FC<SideBarEndsAtDateTimePicker> = ({ as
         end_at: isoString,
         duration: assessment.duration,
       };
-      patchAssessment(updatedData).catch((err) => console.error('Failed to update end_at:', err));
+      patchAssessment(updatedData).catch((err) =>
+        console.error("Failed to update end_at:", err)
+      );
     } else {
-      console.error('Invalid date or time value.');
+      console.error("Invalid date or time value.");
     }
   };
 
   // Handle time change and update the corresponding state
-  const handleTimeChange = (type: "hour" | "minute" | "period", value: string) => {
+  const handleTimeChange = (
+    type: "hour" | "minute" | "period",
+    value: string
+  ) => {
     if (type === "hour") {
       setHour(value);
     } else if (type === "minute") {
@@ -94,7 +125,12 @@ const SideBarEndsAtDateTimePicker: React.FC<SideBarEndsAtDateTimePicker> = ({ as
     }
 
     // Update date-time whenever time changes
-    updateDateTime(date, type === "hour" ? value : hour, type === "minute" ? value : minute, type === "period" ? value : period);
+    updateDateTime(
+      date,
+      type === "hour" ? value : hour,
+      type === "minute" ? value : minute,
+      type === "period" ? value : period
+    );
     console.log(endAt);
   };
 
@@ -112,7 +148,11 @@ const SideBarEndsAtDateTimePicker: React.FC<SideBarEndsAtDateTimePicker> = ({ as
               )}
             >
               <CalendarIcon className="mr-2 h-3 w-3" />
-              {endAt ? format(new Date(endAt), "PPP") : <span>Pick a date</span>}
+              {endAt ? (
+                format(new Date(endAt), "PPP")
+              ) : (
+                <span>Pick a date</span>
+              )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
@@ -125,36 +165,58 @@ const SideBarEndsAtDateTimePicker: React.FC<SideBarEndsAtDateTimePicker> = ({ as
             />
           </PopoverContent>
         </Popover>
-        <div className="flex felx-row items-center w-full gap-2 text-xs">
-          <Input
-            className="w-full text-xs"
-            type="number"
-            min="1"
-            max="12"
-            value={hour}
-            onChange={(e) => handleTimeChange("hour", e.target.value)}
-            placeholder="HH"
-          />
-          :
-          <Input
-            className="w-full text-xs"
-            type="number"
-            min="0"
-            max="59"
-            value={minute}
-            onChange={(e) => handleTimeChange("minute", e.target.value)}
-            placeholder="MM"
-          />
-          :
-          <Select value={period} onValueChange={(value) => handleTimeChange("period", value)}>
-            <SelectTrigger className="w-full text-xs ">
-              <SelectValue placeholder="AM/PM" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="AM">AM</SelectItem>
-              <SelectItem value="PM">PM</SelectItem>
-            </SelectContent>
-          </Select>
+
+        <div className="flex flex-col lg:flex-row items-center w-full gap-2">
+          <div className="flex flex-row items-center justify-center w-full">
+            <div className="flex flex-col items-start justify-center w-full">
+              <div className="flex text-primary-foreground p-1 text-[10px] w-full">
+                HH
+              </div>
+              <Input
+                className="w-full text-xs"
+                type="number"
+                min="1"
+                max="12"
+                value={hour}
+                onChange={(e) => handleTimeChange("hour", e.target.value)}
+                placeholder="HH"
+              />
+            </div>
+            <div className="flex items-center justify-center p-2 h-full pt-7">
+              :
+            </div>
+            <div className="flex flex-col items-start justify-center w-full">
+              <div className="flex text-primary-foreground p-1 text-[10px]">
+                MM
+              </div>
+              <Input
+                className="w-full text-xs"
+                type="number"
+                min="0"
+                max="59"
+                value={minute}
+                onChange={(e) => handleTimeChange("minute", e.target.value)}
+                placeholder="MM"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col items-start w-full">
+            <div className="flex text-primary-foreground p-1 text-[10px]">
+              AM/PM
+            </div>
+            <Select
+              value={period}
+              onValueChange={(value) => handleTimeChange("period", value)}
+            >
+              <SelectTrigger className="w-full text-xs ">
+                <SelectValue placeholder="AM/PM" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="AM">AM</SelectItem>
+                <SelectItem value="PM">PM</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
     </>

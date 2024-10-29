@@ -1,17 +1,19 @@
-import { Button } from '@/components/ui/button'
-import { ToastAction } from '@/components/ui/toast'
-import { toast } from '@/components/ui/use-toast'
-import { Assessment, UpdateAssessmentProps } from '@/lib/types/assessmentTypes'
-import { Loader, Radio, Timer, Upload } from 'lucide-react'
-import React, { useState } from 'react'
+import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
+import { toast } from "@/components/ui/use-toast";
+import { Assessment, UpdateAssessmentProps } from "@/lib/types/assessmentTypes";
+import { Loader, Radio, Timer, Upload } from "lucide-react";
+import React, { useState } from "react";
 
 interface SubHeaderProps {
   assessment: Assessment;
   patchAssessment: (data: UpdateAssessmentProps) => Promise<Assessment>;
 }
 
-const SubHeader: React.FC<SubHeaderProps> = ({ patchAssessment, assessment }) => {
-
+const SubHeader: React.FC<SubHeaderProps> = ({
+  patchAssessment,
+  assessment,
+}) => {
   // local states here
   const [drafting, setDrafting] = useState<boolean>(false);
   const [publishing, setPublishing] = useState<boolean>(false);
@@ -69,27 +71,29 @@ const SubHeader: React.FC<SubHeaderProps> = ({ patchAssessment, assessment }) =>
 
   return (
     <div className="flex flex-row justify-evenly gap-2 h-14 items-center border-t border px-4 lg:h-[60px] lg:px-6">
-      <Button variant={isPublished ? "default" : "secondary"} className="w-full" onClick={handleDraft}>
-        {drafting ? <Loader className="h-4 w-4 mr-2 animate-spin" /> : <Timer className="h-4 w-4 mr-2" />}
-        Draft
-      </Button>
-      <Button className="w-full"
-        onClick={handlePublish}
-        variant={isPublished ? "secondary" : "default"}
-      >
-        {isPublished ?
-          <>
-            {publishing ? <Loader className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
-            Update
-          </> :
-          <>
-            {publishing ? <Loader className="h-4 w-4 mr-2 animate-spin" /> : <Radio className="h-4 w-4 mr-2" />}
-            Publish
-          </>
-        }
-      </Button>
-    </div>
-  )
-}
+      {isPublished && (
+        <Button className="w-full" onClick={handleDraft}>
+          {drafting ? (
+            <Loader className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Timer className="h-4 w-4 mr-2" />
+          )}
+          Draft
+        </Button>
+      )}
 
-export default SubHeader
+      {!isPublished && (
+        <Button className="w-full" onClick={handlePublish}>
+          {publishing ? (
+            <Loader className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <Radio className="h-4 w-4 mr-2" />
+          )}
+          Publish
+        </Button>
+      )}
+    </div>
+  );
+};
+
+export default SubHeader;

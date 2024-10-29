@@ -1,11 +1,11 @@
-import { Card } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import React, { useEffect, useState } from 'react'
-import useAssessmentsTableStore from '@/lib/stores/manage-assessment-store/assessments-table'
-import { Assessment } from '@/lib/types/assessmentTypes'
-import { ApiError } from '@/lib/api/apiError'
-import Row from '../table/drafts-row'
-import Schema from '../table/drafts-schema'
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import React, { useEffect, useState } from "react";
+import useAssessmentsTableStore from "@/lib/stores/manage-assessment-store/assessments-table";
+import { Assessment } from "@/lib/types/assessmentTypes";
+import { ApiError } from "@/lib/api/apiError";
+import Row from "../table/drafts-row";
+import Schema from "../table/drafts-schema";
 
 interface DraftsTabContentProps {
   assessments: Assessment[];
@@ -15,15 +15,22 @@ interface DraftsTabContentProps {
   refreshAssessments: () => void;
 }
 
-const DraftsTabContent: React.FC<DraftsTabContentProps> = ({ assessments, loadingAssessments, errorAssessments, toggleSorting, refreshAssessments }) => {
-
+const DraftsTabContent: React.FC<DraftsTabContentProps> = ({
+  assessments,
+  loadingAssessments,
+  errorAssessments,
+  toggleSorting,
+  refreshAssessments,
+}) => {
   // all hooks here
 
   // global states here
   const { sortBy, order } = useAssessmentsTableStore();
 
   // local states here
-  const [selectedAssessments, setSelectedAssessments] = useState<Set<string>>(new Set());
+  const [selectedAssessments, setSelectedAssessments] = useState<Set<string>>(
+    new Set()
+  );
 
   // local vars here
   const allAssessments: Assessment[] = assessments;
@@ -31,16 +38,21 @@ const DraftsTabContent: React.FC<DraftsTabContentProps> = ({ assessments, loadin
   const error: ApiError | Error | undefined = errorAssessments;
   const handleRefreshAssessments = refreshAssessments;
   const handleToggleSorting = toggleSorting;
-  const allSelected: boolean = allAssessments.length > 0 && selectedAssessments.size === allAssessments.length;
-  const draftedAssessments: Assessment[] = allAssessments.filter(assessment => assessment.is_active === false);
+  const allSelected: boolean =
+    allAssessments.length > 0 &&
+    selectedAssessments.size === allAssessments.length;
+  const draftedAssessments: Assessment[] = allAssessments.filter(
+    (assessment) => assessment.is_active === false
+  );
 
   // all functions here
-
 
   // all event handlers here
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedAssessments(new Set(allAssessments.map(assessment => assessment.id)));
+      setSelectedAssessments(
+        new Set(allAssessments.map((assessment) => assessment.id))
+      );
     } else {
       setSelectedAssessments(new Set());
     }
@@ -61,10 +73,9 @@ const DraftsTabContent: React.FC<DraftsTabContentProps> = ({ assessments, loadin
     setSelectedAssessments(new Set());
   }, [toggleSorting]);
 
-
   return (
     <>
-      <Card className='my-2 h-[calc(100vh-17rem)] w-full flex flex-col'>
+      <Card className="my-2 h-[calc(100vh-17rem)] w-full flex flex-col">
         <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
           <div className="absolute inset-0 overflow-y-scroll">
             <table className="w-full">
@@ -78,7 +89,7 @@ const DraftsTabContent: React.FC<DraftsTabContentProps> = ({ assessments, loadin
                 />
               </thead>
               <tbody>
-                {draftedAssessments.map(assessment => (
+                {draftedAssessments.map((assessment) => (
                   <Row
                     key={assessment.id}
                     assessment={assessment}
@@ -94,12 +105,12 @@ const DraftsTabContent: React.FC<DraftsTabContentProps> = ({ assessments, loadin
         </div>
       </Card>
       <div className="flex h-[calc(3rem-6px)] items-center justify-between gap-2">
-        <Label className='text-[10px]'>
-          <strong>{draftedAssessments.length}</strong>{" "}Assessments
+        <Label className="text-[10px]">
+          <strong>{draftedAssessments.length}</strong> Assessments
         </Label>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default DraftsTabContent
+export default DraftsTabContent;

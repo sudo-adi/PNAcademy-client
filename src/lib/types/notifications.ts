@@ -36,18 +36,20 @@ export interface GetNotificationsProps {
   order: 'ASC' | 'DESC';
 }
 
+export interface SingleNotification {
+  id: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  image_url?: string;
+  file_url?: string;
+}
+
 export interface GetNotificationsResponse {
   message: string;
   data: {
-    notifications: {
-      id: string;
-      title: string;
-      description: string;
-      createdAt: string;
-      updatedAt: string;
-      image_url?: string;
-      file_url?: string;
-    }[];
+    notifications: SingleNotification[];
     totalPages: number;
   };
 }

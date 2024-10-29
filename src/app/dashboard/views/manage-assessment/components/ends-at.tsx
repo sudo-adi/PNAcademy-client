@@ -4,10 +4,20 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import useCreateAssessmentDetailsStore from "@/lib/stores/manage-assessment-store/assessment-details";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const EndsAtDateTimePicker = () => {
   const { endAt, setEndAt } = useCreateAssessmentDetailsStore();
@@ -32,7 +42,12 @@ const EndsAtDateTimePicker = () => {
     setPeriod(currentPeriod);
 
     // Set initial startAt to current date and time
-    updateDateTime(now, hour12.toString(), currentMinute.toString(), currentPeriod);
+    updateDateTime(
+      now,
+      hour12.toString(),
+      currentMinute.toString(),
+      currentPeriod
+    );
   }, []);
 
   // Handle date selection from the calendar
@@ -50,8 +65,12 @@ const EndsAtDateTimePicker = () => {
     selectedMinute: string,
     selectedPeriod: string
   ) => {
-    const hour12 = selectedHour ? parseInt(selectedHour) : new Date().getHours() % 12 || 12;
-    const minuteValue = selectedMinute ? parseInt(selectedMinute) : new Date().getMinutes();
+    const hour12 = selectedHour
+      ? parseInt(selectedHour)
+      : new Date().getHours() % 12 || 12;
+    const minuteValue = selectedMinute
+      ? parseInt(selectedMinute)
+      : new Date().getMinutes();
     const hour24 = selectedPeriod === "PM" ? (hour12 % 12) + 12 : hour12 % 12;
 
     const newDateTime = new Date(
@@ -70,7 +89,10 @@ const EndsAtDateTimePicker = () => {
   };
 
   // Handle time change and update the corresponding state
-  const handleTimeChange = (type: "hour" | "minute" | "period", value: string) => {
+  const handleTimeChange = (
+    type: "hour" | "minute" | "period",
+    value: string
+  ) => {
     if (type === "hour") {
       setHour(value);
     } else if (type === "minute") {
@@ -80,13 +102,18 @@ const EndsAtDateTimePicker = () => {
     }
 
     // Update date-time whenever time changes
-    updateDateTime(date, type === "hour" ? value : hour, type === "minute" ? value : minute, type === "period" ? value : period);
+    updateDateTime(
+      date,
+      type === "hour" ? value : hour,
+      type === "minute" ? value : minute,
+      type === "period" ? value : period
+    );
     console.log(endAt);
   };
 
   return (
     <>
-      <p className="p-2">Starts At:</p>
+      <p className="p-2">Ends At:</p>
       <div className="flex flex-row items-center justify-start gap-2">
         <Popover>
           <PopoverTrigger asChild>
@@ -98,7 +125,11 @@ const EndsAtDateTimePicker = () => {
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {endAt ? format(new Date(endAt), "PPP") : <span>Pick a date</span>}
+              {endAt ? (
+                format(new Date(endAt), "PPP")
+              ) : (
+                <span>Pick a date</span>
+              )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0">
@@ -129,7 +160,10 @@ const EndsAtDateTimePicker = () => {
           onChange={(e) => handleTimeChange("minute", e.target.value)}
           placeholder="MM"
         />
-        <Select value={period} onValueChange={(value) => handleTimeChange("period", value)}>
+        <Select
+          value={period}
+          onValueChange={(value) => handleTimeChange("period", value)}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="AM/PM" />
           </SelectTrigger>

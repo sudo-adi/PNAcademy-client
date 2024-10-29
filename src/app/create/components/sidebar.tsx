@@ -1,17 +1,17 @@
-"use client"
-import React, { useEffect, useState } from 'react'
-import SubHeader from './sub-header'
-import { Input } from '@/components/ui/input'
-import { Label } from '@radix-ui/react-label'
-import { Textarea } from '@/components/ui/textarea'
-import { useAssessment } from '@/app/dashboard/views/manage-assessment/hooks/useAssessment'
-import { Loader2 } from 'lucide-react'
-import { Assessment, UpdateAssessmentProps } from '@/lib/types/assessmentTypes'
-import { Card, CardContent } from '@/components/ui/card'
-import SideBarStartAtDateTimePicker from './sidebar-start-at'
-import SideBarEndsAtDateTimePicker from './sidebar-end-at'
-import SideBarAssessmentDuration from './sidebar-duration'
-import AssignedGroupsCard from './assign-groups'
+"use client";
+import React, { useEffect, useState } from "react";
+import SubHeader from "./sub-header";
+import { Input } from "@/components/ui/input";
+import { Label } from "@radix-ui/react-label";
+import { Textarea } from "@/components/ui/textarea";
+import { useAssessment } from "@/app/dashboard/views/manage-assessment/hooks/useAssessment";
+import { Loader2 } from "lucide-react";
+import { Assessment, UpdateAssessmentProps } from "@/lib/types/assessmentTypes";
+import { Card, CardContent } from "@/components/ui/card";
+import SideBarStartAtDateTimePicker from "./sidebar-start-at";
+import SideBarEndsAtDateTimePicker from "./sidebar-end-at";
+import SideBarAssessmentDuration from "./sidebar-duration";
+import AssignedGroupsCard from "./assign-groups";
 
 interface FormInputProps {
   label: string;
@@ -21,14 +21,24 @@ interface FormInputProps {
   onBlur?: () => void;
 }
 
-const FormInput: React.FC<FormInputProps> = ({ label, placeholder, onChange, value, onBlur }) => (
+const FormInput: React.FC<FormInputProps> = ({
+  label,
+  placeholder,
+  onChange,
+  value,
+  onBlur,
+}) => (
   <div>
-    <Label className='p-2'>
-      {label}
-    </Label>
-    <Input placeholder={placeholder} onChange={onChange} value={value} onBlur={onBlur} className='text-xs' />
+    <Label className="p-2">{label}</Label>
+    <Input
+      placeholder={placeholder}
+      onChange={onChange}
+      value={value}
+      onBlur={onBlur}
+      className="text-xs"
+    />
   </div>
-)
+);
 
 interface FormTextareaProps {
   label: string;
@@ -38,20 +48,29 @@ interface FormTextareaProps {
   onBlur?: () => void;
 }
 
-const FormTextarea: React.FC<FormTextareaProps> = ({ label, placeholder, onChange, value, onBlur }) => (
+const FormTextarea: React.FC<FormTextareaProps> = ({
+  label,
+  placeholder,
+  onChange,
+  value,
+  onBlur,
+}) => (
   <div>
-    <Label className='p-2'>
-      {label}
-    </Label>
-    <Textarea placeholder={placeholder} onChange={onChange} value={value} onBlur={onBlur} className='text-xs max-h-[10rem]' />
+    <Label className="p-2">{label}</Label>
+    <Textarea
+      placeholder={placeholder}
+      onChange={onChange}
+      value={value}
+      onBlur={onBlur}
+      className="text-xs max-h-[10rem]"
+    />
   </div>
-)
+);
 
 interface SideBarProps {
-  assessmentId: string
+  assessmentId: string;
 }
 const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
-
   // all hooks here
   const { fetchAssessmentById, patchAssessment } = useAssessment();
 
@@ -59,17 +78,16 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
 
   // local states here
   const [assessment, setAssessment] = useState<Assessment>();
-  const [assessmentName, setAssessmentName] = useState('');
-  const [assessmentDescription, setAssessmentDescription] = useState<string>('');
-  const [startsAt, setStartsAt] = useState<string>('');
-  const [endsAt, setEndsAt] = useState<string>('');
+  const [assessmentName, setAssessmentName] = useState("");
+  const [assessmentDescription, setAssessmentDescription] =
+    useState<string>("");
+  const [startsAt, setStartsAt] = useState<string>("");
+  const [endsAt, setEndsAt] = useState<string>("");
   const [duration, setDuration] = useState<number>(0);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   // functions here
-
-
 
   // handlers here
   const handleBlur = () => {
@@ -87,9 +105,7 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
       const updateAndSetAssessment = async () => {
         try {
           await patchAssessment(data);
-        } catch (err) {
-
-        }
+        } catch (err) {}
       };
       updateAndSetAssessment();
     }
@@ -103,7 +119,6 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
         const response = await fetchAssessmentById({ id: assessmentId });
         setAssessment(response);
       } catch (error) {
-
       } finally {
         setLoading(false);
       }
@@ -124,19 +139,18 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
         setDuration(assessment.duration);
         setIsActive(assessment.is_active);
       }
-    }
+    };
     initializeSideBar();
   }, [assessment]);
 
-
   return (
-    <div className="flex h-[100vh] flex-col gap-2 border-l w-full overflow-hidden ">
-      {loading ?
-        (<div className="flex h-screen w-full items-center justify-center">
+    <div className="flex h-[100vh]  flex-col gap-2 border-l w-full overflow-hidden ">
+      {loading ? (
+        <div className="flex h-screen w-full items-center justify-center">
           <Loader2 className="w-12 h-12 animate-spin" />
-        </div>)
-        :
-        (<>
+        </div>
+      ) : (
+        <>
           <div className="flex h-[calc(100vh)] flex-col gap-4 p-4 w-full text-xs overflow-y-scroll scrollbar-none">
             <FormInput
               label="Assessment Name:"
@@ -174,7 +188,6 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
                       />
                     </>
                   )}
-
                 </CardContent>
               </Card>
             </div>
@@ -182,10 +195,14 @@ const SideBar: React.FC<SideBarProps> = ({ assessmentId }) => {
           </div>
           <div className="items-center">
             {assessment && (
-              <SubHeader patchAssessment={patchAssessment} assessment={assessment} />
+              <SubHeader
+                patchAssessment={patchAssessment}
+                assessment={assessment}
+              />
             )}
           </div>
-        </>)}
+        </>
+      )}
     </div>
   );
 };
