@@ -6,17 +6,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableHead, TableRow } from "@/components/ui/table";
 import { Bell, Calendar, Eye, Trash2 } from "lucide-react";
 import React from "react";
-import DeleteNotificationDialog from "../../../manage-notifications/components/delete-notification-dialog";
 import ViewNotificationDialog from "../dialog-box/view-notification-dialog";
-import CreateNotificationDialog from "../../../manage-notifications/components/create-notification-dialog";
 
 const AllTabContent = () => {
   return (
     <>
       <Card className="flex flex-row w-full p-2 justify-between border-dashed">
-        <div className="flex gap-2">
-          <CreateNotificationDialog />
-        </div>
+        <div className="flex gap-2">{/* <CreateNotificationDialog /> */}</div>
         <div className="flex gap-2"></div>
       </Card>
       <Card className="my-2 h-[calc(100vh-18rem)] flex flex-col">
@@ -107,9 +103,7 @@ const Row = () => {
       <TableCell>
         <ViewNotificationDialog />
       </TableCell>
-      <TableCell>
-        <DeleteNotificationDialog />
-      </TableCell>
+      <TableCell>{/* <DeleteNotificationDialog /> */}</TableCell>
     </TableRow>
   );
 };

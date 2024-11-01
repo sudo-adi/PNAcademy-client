@@ -17,10 +17,9 @@ interface Actions {
 }
 
 const useUserTableStore = create<State & Actions>()(
-  persist(
     (set) => ({
       activePageIndex: 1,
-      displayNumberOfRows: 10,
+      displayNumberOfRows: 999,
       sortBy: "first_name" as "first_name",
       order: "ASC" as "ASC",
       setActivePageIndex: (index) => set({ activePageIndex: index }),
@@ -30,11 +29,7 @@ const useUserTableStore = create<State & Actions>()(
       setSortBy: (sortBy) => set({ sortBy }),
       setOrder: (order) => set({ order }),
     }),
-    {
-      name: 'userTableState', // Key for local storage
-      // Default storage is used (localStorage in the browser)
-    }
-  )
+
 );
 
 export default useUserTableStore;

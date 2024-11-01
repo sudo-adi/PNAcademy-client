@@ -47,13 +47,14 @@ export const useAICreate = () => {
   };
 
   // Function to save AI-generated assessment
-  const saveAssessment = async (data: SaveAiGeneratedAssessmentProps) => {
+  const saveAssessment = async (data: SaveAiGeneratedAssessmentProps): Promise<string> => {
     setLoading(true);
     try {
       const response: SaveAiGeneratedAssessmentResponse = await saveAiGeneratedAssessment(data);
       if (response) {
-        return response;
+        return response.data.assessmentId;
       }
+      throw new ApiError(500, 'An error occurred while saving the assessment', response);
     } catch (err) {
       if (err instanceof ApiError) {
         throw err;

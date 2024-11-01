@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useTabStore from "@/lib/stores/manage-assessment-store/tab-store";
-import { Archive, Loader, Search, Sparkles } from "lucide-react";
+import { Archive, Loader, Search, Sparkles, Trash2 } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
 import AllTabContent from "./components/tab-content/all-tab-content";
 import OnGoingTabContent from "./components/tab-content/ongoing-tab-content";
@@ -16,6 +16,7 @@ import { useAssessment } from "./hooks/useAssessment";
 import { Assessment } from "@/lib/types/assessmentTypes";
 import { ApiError } from "@/lib/api/apiError";
 import useAssessmentsTableStore from "@/lib/stores/manage-assessment-store/assessments-table";
+import MultiDeleteDialog from "./components/dialog-box/multi-delete-dialog";
 
 const ManageAssessments = () => {
   // all hooks here
@@ -30,6 +31,12 @@ const ManageAssessments = () => {
   //  local states here
   const [allAssessments, setAllAssessments] = useState<Assessment[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [deleteButtonVisible, setDeleteButtonVisible] =
+    useState<boolean>(false);
+  const [deleteButtonLoading, setDeleteButtonLoading] =
+    useState<boolean>(false);
+  const [deleteButtonDialogVisible, setDeleteButtonDialogVisible] =
+    useState<boolean>(false);
 
   // loading states here
   const [assessmentLoading, setAssessmentLoading] = useState<boolean>(true);
@@ -47,7 +54,7 @@ const ManageAssessments = () => {
   const fetchAssessmentsData = useCallback(async () => {
     const payload = {
       page: activePageIndex ? activePageIndex : 1,
-      pageSize: 999,
+      pageSize: 9999,
       sortBy,
       order,
     };
@@ -90,14 +97,23 @@ const ManageAssessments = () => {
     }
   };
 
+  // implement later
+  const handlMultiDeleteAssesment = () => {
+    setDeleteButtonDialogVisible(true);
+  };
+
   // configs for all tabs
   const tabConfig = {
     assessments: allAssessments,
     loadingAssessments: assessmentLoading,
     errorAssessments: assessmentsFetchError,
     totalPages: totalPages,
+    deleteButtonVisible,
+    deleteButtonLoading,
+    deleteButtonDialogVisible,
     refreshAssessments: handleRefreshAssessments,
     toggleSorting: handleToggleSorting,
+    handleMultiDeleteAssessment: handlMultiDeleteAssesment,
   };
 
   // all useEffects here
@@ -129,7 +145,7 @@ const ManageAssessments = () => {
             )}
           </Button>
         </div>
-        <div className="flex w-full max-w-sm items-center space-x-2">
+        {/* <div className="flex w-full max-w-sm items-center space-x-2">
           <Input
             type="email"
             placeholder="Search User with email, id or name..."
@@ -141,27 +157,31 @@ const ManageAssessments = () => {
             <Search className="h-4 w-4" />
             Search
           </Button>
-        </div>
+        </div> */}
       </Card>
       <Tabs
         defaultValue={activeTabIndex.toString()}
         className="flex flex-col w-full items-center"
       >
         <div className="flex items-center justify-between flex-row w-full ">
-          <TabsList className="grid grid-cols-4">
-            <TabsTrigger value="0" onClick={() => setActiveTabIndex(0)}>
-              All
-            </TabsTrigger>
-            <TabsTrigger value="1" onClick={() => setActiveTabIndex(1)}>
-              OnGoing
-            </TabsTrigger>
-            <TabsTrigger value="2" onClick={() => setActiveTabIndex(2)}>
-              Scheduled
-            </TabsTrigger>
-            <TabsTrigger value="3" onClick={() => setActiveTabIndex(3)}>
-              Previous
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex gap-2">
+            <TabsList className="grid grid-cols-4">
+              <TabsTrigger value="0" onClick={() => setActiveTabIndex(0)}>
+                All
+              </TabsTrigger>
+              <TabsTrigger value="1" onClick={() => setActiveTabIndex(1)}>
+                OnGoing
+              </TabsTrigger>
+              <TabsTrigger value="2" onClick={() => setActiveTabIndex(2)}>
+                Scheduled
+              </TabsTrigger>
+              <TabsTrigger value="3" onClick={() => setActiveTabIndex(3)}>
+                Previous
+              </TabsTrigger>
+            </TabsList>
+
+            {/* <MultiDeleteDialog /> */}
+          </div>
           <TabsList className="grid grid-cols-1">
             <TabsTrigger value="4" onClick={() => setActiveTabIndex(4)}>
               <Archive className="h-4 w-4 mr-2" />
@@ -169,6 +189,7 @@ const ManageAssessments = () => {
             </TabsTrigger>
           </TabsList>
         </div>
+
         <div className="w-full">
           <TabsContent value="0">
             <AllTabContent {...tabConfig} />

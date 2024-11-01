@@ -8,7 +8,7 @@ interface State {
   isFullScreen: boolean;
   assessmentIsActive: boolean;
   serverTime: string;
-  startAt: string;
+  started_at: string;
   duration: number;
   timer: number;
   totalSections: number;
@@ -23,7 +23,7 @@ interface Actions {
   setIsFullScreen: (value: boolean) => void;
   setAssessmentIsActive: (value: boolean) => void;
   setServerTime: (value: string) => void;
-  setStartAt: (value: string) => void;
+  setstarted_at: (value: string) => void;
   setDuration: (value: number) => void;
   setTimer: (value: number) => void;
   setTotalSections: (value: number) => void;
@@ -40,7 +40,7 @@ const useAttemptAssessmentsStore = create<State & Actions>()(
       isFullScreen: false,
       assessmentIsActive: false,
       serverTime: '',
-      startAt: '',
+      started_at: '',
       duration: 0,
       timer: 0,
       totalSections: 0,
@@ -52,7 +52,7 @@ const useAttemptAssessmentsStore = create<State & Actions>()(
       setIsFullScreen: (value) => set(() => ({ isFullScreen: value })),
       setAssessmentIsActive: (value) => set(() => ({ assessmentIsActive: value })),
       setServerTime: (value) => set(() => ({ serverTime: value })),
-      setStartAt: (value) => set(() => ({ startAt: value })),
+      setstarted_at: (value) => set(() => ({ started_at: value })),
       setDuration: (value) => set(() => ({ duration: value })),
       setTimer: (value) => set(() => ({ timer: value })),
       setTotalSections: (value) => set(() => ({ totalSections: value })),

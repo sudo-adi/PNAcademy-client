@@ -64,7 +64,7 @@ export interface GetAssessmentTimeDetailsResponse {
   data: {
     duration: number;
     server_time: string;
-    start_at: string;
+    started_at: string;
   };
 }
 

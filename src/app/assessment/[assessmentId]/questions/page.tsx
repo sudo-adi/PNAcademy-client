@@ -18,6 +18,12 @@ import {
   AttemptQuestionProps,
 } from "@/lib/types/attemptionTypes";
 import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import TimerComponent from "../components/timer";
+import useTimerStore from "@/lib/stores/attempt-assessment/timer-store";
+import { millisecondsToSeconds } from "date-fns";
+import { ToastAction } from "@/components/ui/toast";
+import { toast } from "@/components/ui/use-toast";
 
 interface AssessmentProps {
   params: {
@@ -27,7 +33,13 @@ interface AssessmentProps {
 
 const Assessment: React.FC<AssessmentProps> = ({ params }) => {
   // all hooks here
-  const { startQuestion, startSection, startAssessment } = useAttemption();
+  const {
+    startQuestion,
+    startSection,
+    startAssessment,
+    stopAssessment,
+    fetchAssessmentTimeDetails,
+  } = useAttemption();
   const router = useRouter();
 
   const [fontSize, setFontSize] = useState(16);
@@ -42,6 +54,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
     setCurrentSectionId,
     setCurrentQuestionIndex,
   } = useAttemptAssessmentsStore();
+  const { timeLeft, startTimer, resetTimer, setTimeLeft } = useTimerStore();
 
   // local states here
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
@@ -75,6 +88,21 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
       return sectionToStart;
     } catch (err) {
       throw Error("Error starting assessment");
+    }
+  };
+
+  const fetchTimeDetails = async () => {
+    try {
+      const response = await fetchAssessmentTimeDetails({
+        id: params.assessmentId,
+      });
+      const startTime = new Date(response.started_at).getTime();
+      const serverTime = new Date(response.server_time).getTime();
+      const duration = response.duration;
+      const remainingTime = duration - (serverTime - startTime);
+      setTimeLeft(millisecondsToSeconds(remainingTime));
+    } catch (err) {
+      console.error("Error fetching time details:", err);
     }
   };
 
@@ -148,13 +176,59 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
 
   const handleGoBackToOverview = () => {
     // navigate to overview page
-    router.push(`/assessment/${assessmentId}/overview`);
+    router.push(`/assessment/${assessmentId}`);
   };
+
+  const handleClearSelectedOption = async () => {};
 
   // Initial Setup
   useEffect(() => {
     initializeAssessment();
+    fetchTimeDetails();
+    startTimer();
   }, [initializeAssessment]);
+
+  const handleSubmitAssessment = async () => {
+    try {
+      await stopAssessment({
+        assessmentId: params.assessmentId,
+      });
+      toast({
+        title: "Assessment submitted",
+        description: "Assessment has been submitted successfully",
+        action: <ToastAction altText="success">Ok</ToastAction>,
+      });
+      router.push("/dashboard");
+    } catch (err: any) {
+      if (err.status === 400) {
+        toast({
+          title: "Incomplete assessment",
+          description:
+            "AAll sections must be completed before ending the assessment",
+          action: <ToastAction altText="error">Ok</ToastAction>,
+        });
+      } else if (err.status === 404) {
+        toast({
+          title: "Assessment not found",
+          description: "Assessment not found",
+          action: <ToastAction altText="error">Ok</ToastAction>,
+        });
+        router.push("/dashboard");
+      } else {
+        toast({
+          title: "Error submitting assessment",
+          description: "Something went wrong while submitting the assessment",
+          action: <ToastAction altText="error">Ok</ToastAction>,
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      handleSubmitAssessment();
+    }
+  }, [timeLeft]);
 
   // Render loading state if no questions are available
   if (!activeSectionQuestions.length) {
@@ -166,10 +240,17 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
   }
   return (
     <>
-      <main className="overflow-hidden hidden lg:block">
+      <main className="overflow-hidden hidden md:block">
         <div className="flex w-full h-[4rem] border-b justify-between">
           <div className="flex items-center justify-center p-6">
-            <span className="font-semibold text-muted-foreground"></span>
+            <span className="font-semibold text-muted-foreground">
+              <button
+                className="text-[10px] border p-2 text-xs rounded-[8px] hover:bg-secondary flex items-center justify-center"
+                onClick={() => router.back()}
+              >
+                <ArrowLeft className="h-3 w-3" />
+              </button>
+            </span>
           </div>
           <div className="flex items-center justify-center p-6">
             <Badge variant={"outline"}>Section {currentSectionId}</Badge>
@@ -179,7 +260,9 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
               <span className="font-semibold">50</span>
             </div>
             <div className="flex items-center justify-center p-6 border-dashed-2 border-l">
-              <span className="font-semibold">20:19</span>
+              <span className="font-semibold">
+                <TimerComponent />
+              </span>
             </div>
           </div>
         </div>
@@ -206,7 +289,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
             direction="horizontal"
             className="h-full w-full border"
           >
-            <ResizablePanel defaultSize={50}>
+            <ResizablePanel minSize={30} defaultSize={40}>
               <div className="flex p-8 flex-col gap-4">
                 <div className="flex">
                   <Badge>Question {currentQuestionIndex + 1}</Badge>
@@ -217,7 +300,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel defaultSize={50}>
+            <ResizablePanel minSize={30}>
               <div className="flex flex-col w-full h-full overflow-hidden overflow-y-scroll p-8 gap-8">
                 <div className="flex">
                   <Badge>Options</Badge>

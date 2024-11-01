@@ -113,7 +113,6 @@ const CreateAssessmentDialog = () => {
         });
       }
     } finally {
-      setLoading(false);
     }
     reset();
   };

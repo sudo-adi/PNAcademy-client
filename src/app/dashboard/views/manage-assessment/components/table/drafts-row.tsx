@@ -97,14 +97,14 @@ const Row: React.FC<RowProps> = ({
 
   return (
     <TableRow>
-      <TableCell className="hidden sm:table-cell">
+      {/* <TableCell className="hidden sm:table-cell">
         <Checkbox
           checked={selected}
           onCheckedChange={(checked) =>
             onSelectAssessment(assessment.id, checked as boolean)
           }
         />
-      </TableCell>
+      </TableCell> */}
       <TableCell className="font-medium text-left">
         <div className="flex flex-col gap-2">
           <div className="flex flex-row gap-2 text-xs items-center">

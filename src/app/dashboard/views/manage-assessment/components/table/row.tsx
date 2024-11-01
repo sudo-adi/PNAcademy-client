@@ -21,6 +21,7 @@ import {
   Edit,
   Eye,
   Link,
+  Loader,
   Trash2,
   Trash2Icon,
   Wand,
@@ -37,6 +38,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useState } from "react";
 
 interface RowProps {
   assessment: Assessment;
@@ -70,6 +72,9 @@ const Row: React.FC<RowProps> = ({
   const { removeAssessment } = useAssessment();
   const router = useRouter();
 
+  // local states here
+  const [isDleting, setIsDeleting] = useState(false);
+
   // local vars here
   const isLive =
     assessment.start_at &&
@@ -97,6 +102,7 @@ const Row: React.FC<RowProps> = ({
 
   const handleDeleteAssessment = async (assessmentId: string) => {
     try {
+      setIsDeleting(true);
       const response = await removeAssessment({ id: assessmentId });
       if (response) {
         toast({
@@ -119,24 +125,29 @@ const Row: React.FC<RowProps> = ({
       });
     } finally {
       refreshAssessments();
+      setIsDeleting(false);
     }
   };
 
   const statusColor = useStatusIndicator(assessment);
   return (
     <TableRow>
-      <TableCell className="hidden sm:table-cell">
+      {/* <TableCell className="hidden sm:table-cell">
         <Checkbox
           checked={selected}
           onCheckedChange={(checked) =>
             onSelectAssessment(assessment.id, checked as boolean)
           }
         />
-      </TableCell>
+      </TableCell> */}
       <TableCell className="font-medium text-left">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row gap-2 text-xs items-center">
-            {loading ? <Skeleton className="w-32 h-4" /> : assessment.name}
+          <div className="flex flex-row gap-2 text-xs items-center ">
+            {loading ? (
+              <Skeleton className="w-32 h-4" />
+            ) : (
+              <p className="line-clamp-2"> {assessment.name}</p>
+            )}
           </div>
           <div className="flex">
             <button
@@ -256,10 +267,19 @@ const Row: React.FC<RowProps> = ({
                         <Button
                           type="submit"
                           variant="destructive"
+                          disabled={isDleting}
                           onClick={() => handleDeleteAssessment(assessment.id)}
                         >
-                          <Trash2Icon className="mr-2 h-4 w-4" />
-                          Delete
+                          {isDleting ? (
+                            <>
+                              <Loader className="h-4 w-4 animate-spin" />
+                            </>
+                          ) : (
+                            <>
+                              <Trash2Icon className="h-4 w-4 mr-2" />
+                              Delete
+                            </>
+                          )}
                         </Button>
                       </DialogFooter>
                     </DialogContent>

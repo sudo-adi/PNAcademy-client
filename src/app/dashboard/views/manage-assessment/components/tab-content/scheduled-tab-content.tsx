@@ -1,12 +1,11 @@
-import { Card } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import React, { useEffect, useState } from 'react'
-import useAssessmentsTableStore from '@/lib/stores/manage-assessment-store/assessments-table'
-import { Assessment } from '@/lib/types/assessmentTypes'
-import { ApiError } from '@/lib/api/apiError'
-import Row from '../table/row'
-import Schema from '../table/schema'
-
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import React, { useEffect, useState } from "react";
+import useAssessmentsTableStore from "@/lib/stores/manage-assessment-store/assessments-table";
+import { Assessment } from "@/lib/types/assessmentTypes";
+import { ApiError } from "@/lib/api/apiError";
+import Row from "../table/row";
+import Schema from "../table/schema";
 
 interface ScheduledTabContentProps {
   assessments: Assessment[];
@@ -16,15 +15,22 @@ interface ScheduledTabContentProps {
   refreshAssessments: () => void;
 }
 
-const ScheduledTabContent: React.FC<ScheduledTabContentProps> = ({ assessments, loadingAssessments, errorAssessments, toggleSorting, refreshAssessments }) => {
+const ScheduledTabContent: React.FC<ScheduledTabContentProps> = ({
+  assessments,
+  loadingAssessments,
+  errorAssessments,
+  toggleSorting,
+  refreshAssessments,
+}) => {
   // all hooks here
-
 
   // global states here
   const { sortBy, order } = useAssessmentsTableStore();
 
   // local states here
-  const [selectedAssessments, setSelectedAssessments] = useState<Set<string>>(new Set());
+  const [selectedAssessments, setSelectedAssessments] = useState<Set<string>>(
+    new Set()
+  );
 
   // local vars here
   const allAssessments: Assessment[] = assessments;
@@ -32,16 +38,25 @@ const ScheduledTabContent: React.FC<ScheduledTabContentProps> = ({ assessments, 
   const error: ApiError | Error | undefined = errorAssessments;
   const handleRefreshAssessments = refreshAssessments;
   const handleToggleSorting = toggleSorting;
-  const allSelected: boolean = allAssessments.length > 0 && selectedAssessments.size === allAssessments.length;
-  const scheduledAssessments: Assessment[] = allAssessments.filter(assessment => assessment.is_active && assessment.start_at && assessment.end_at && new Date(assessment.start_at) > new Date());
+  const allSelected: boolean =
+    allAssessments.length > 0 &&
+    selectedAssessments.size === allAssessments.length;
+  const scheduledAssessments: Assessment[] = allAssessments.filter(
+    (assessment) =>
+      assessment.is_active &&
+      assessment.start_at &&
+      assessment.end_at &&
+      new Date(assessment.start_at) > new Date()
+  );
 
   // all functions here
-
 
   // all event handlers here
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedAssessments(new Set(allAssessments.map(assessment => assessment.id)));
+      setSelectedAssessments(
+        new Set(allAssessments.map((assessment) => assessment.id))
+      );
     } else {
       setSelectedAssessments(new Set());
     }
@@ -62,12 +77,10 @@ const ScheduledTabContent: React.FC<ScheduledTabContentProps> = ({ assessments, 
     setSelectedAssessments(new Set());
   }, [toggleSorting]);
 
-  useEffect(() => {
-
-  }, [error])
+  useEffect(() => {}, [error]);
   return (
     <>
-      <Card className='my-2 h-[calc(100vh-17rem)] w-full flex flex-col'>
+      <Card className="my-2 h-[calc(100vh-17rem)] w-full flex flex-col">
         <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
           <div className="absolute inset-0 overflow-y-scroll">
             <table className="w-full">
@@ -81,7 +94,7 @@ const ScheduledTabContent: React.FC<ScheduledTabContentProps> = ({ assessments, 
                 />
               </thead>
               <tbody>
-                {scheduledAssessments.map(assessment => (
+                {scheduledAssessments.map((assessment) => (
                   <Row
                     key={assessment.id}
                     assessment={assessment}
@@ -97,13 +110,12 @@ const ScheduledTabContent: React.FC<ScheduledTabContentProps> = ({ assessments, 
         </div>
       </Card>
       <div className="flex h-[calc(3rem-6px)] items-center justify-between gap-2">
-        <Label className='text-[10px]'>
-          Showing <strong>{scheduledAssessments.length}</strong>{" "}Assessments
+        <Label className="text-[10px]">
+          <strong>{scheduledAssessments.length}</strong> Assessments
         </Label>
       </div>
     </>
-  )
-}
+  );
+};
 
-
-export default ScheduledTabContent
+export default ScheduledTabContent;

@@ -1,40 +1,60 @@
 "use client";
-import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
-import { Loader2, UserPlus } from 'lucide-react';
-import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRoles } from '../../hooks/useRoles';
-import { ApiError } from '@/lib/api/apiError';
-import { useUsers } from '../../hooks/useUsers';
-import { Card } from '@/components/ui/card';
-import { Role } from '@/lib/types/roleTypes';
-import { SingleUser } from '@/lib/types/userTypes';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { formatDateInIST } from '@/lib/helpers/time-converter';
+import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Loader2, UserPlus } from "lucide-react";
+import React from "react";
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRoles } from "../../hooks/useRoles";
+import { ApiError } from "@/lib/api/apiError";
+import { useUsers } from "../../hooks/useUsers";
+import { Card } from "@/components/ui/card";
+import { Role } from "@/lib/types/roleTypes";
+import { SingleUser } from "@/lib/types/userTypes";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { formatDateInIST } from "@/lib/helpers/time-converter";
+import { set } from "lodash";
 
 // Define schema using zod
 const schema = z.object({
-  firstName: z.string().min(2, 'First name is required'),
-  lastName: z.string().min(2, 'Last name is required'),
-  email: z.string().email('Invalid email address'),
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters long')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number')
-    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
-  phone: z.string()
-    .length(10, 'Phone number must be exactly 10 digits long')
-    .regex(/^\d{10}$/, 'Phone number must be numeric'),
-  roleId: z.string().min(1, 'Role is required'),
+  firstName: z.string().min(2, "First name is required"),
+  lastName: z.string().min(2, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(
+      /[^A-Za-z0-9]/,
+      "Password must contain at least one special character"
+    ),
+  phone: z
+    .string()
+    .length(10, "Phone number must be exactly 10 digits long")
+    .regex(/^\d{10}$/, "Phone number must be numeric"),
+  roleId: z.string().min(1, "Role is required"),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -42,21 +62,27 @@ interface CreateUserDialogProps {
   refreshUsers: () => void;
 }
 
-
-const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => {
-
+const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
+  refreshUsers,
+}) => {
   // all hooks here
-  const { fetchRoles, } = useRoles();
+  const { fetchRoles } = useRoles();
   const { addUser } = useUsers();
-  const { control, handleSubmit, formState: { errors }, reset, watch } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      phone: '',
-      roleId: '',
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      phone: "",
+      roleId: "",
     },
   });
 
@@ -81,17 +107,19 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
   // local functions here
   const onSubmit = async (data: FormData) => {
     try {
-      setCreatingUser(true)
+      setCreateError(null);
+      setCreatedUser(undefined);
+      setCreatingUser(true);
       setStatusDialogOpen(true);
       reset();
       const res = await addUser(data);
-      setCreatedUser(res)
+      setCreatedUser(res);
       refreshUsers();
     } catch (err) {
       if (err instanceof ApiError) {
         setCreateError(err);
       } else {
-        setCreateError(new ApiError(500, 'An unexpected error occurred', err));
+        setCreateError(new ApiError(500, "An unexpected error occurred", err));
       }
     } finally {
       setCreatingUser(false);
@@ -101,14 +129,12 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
   const fetchRolesData = useCallback(async () => {
     try {
       setLoadingRoles(true);
-      const response = await fetchRoles(
-        {
-          page: 1,
-          pageSize: 999,
-          sortBy: "name",
-          order: "ASC"
-        }
-      )
+      const response = await fetchRoles({
+        page: 1,
+        pageSize: 999,
+        sortBy: "name",
+        order: "ASC",
+      });
       console.log(response);
       setRoles(response);
     } catch (err) {
@@ -122,7 +148,6 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
     }
   }, []);
 
-
   // handlers here
   const handleClear = () => {
     reset(); // Clear form values
@@ -135,7 +160,15 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
 
   const formValues = watch();
   useEffect(() => {
-    const isFormValid = !!(formValues.firstName && formValues.lastName && formValues.email && formValues.password && formValues.phone && formValues.roleId && Object.keys(errors).length === 0);
+    const isFormValid = !!(
+      formValues.firstName &&
+      formValues.lastName &&
+      formValues.email &&
+      formValues.password &&
+      formValues.phone &&
+      formValues.roleId &&
+      Object.keys(errors).length === 0
+    );
     setIsFormValid(isFormValid);
   }, [formValues, errors]);
 
@@ -144,7 +177,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="default">
-            <UserPlus className='h-4 w-4 mr-2' />
+            <UserPlus className="h-4 w-4 mr-2" />
             Create
           </Button>
         </DialogTrigger>
@@ -162,14 +195,12 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
                 name="firstName"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    id="firstName"
-                    placeholder="John"
-                    {...field}
-                  />
+                  <Input id="firstName" placeholder="John" {...field} />
                 )}
               />
-              {errors.firstName && <p className="text-red-400">{errors.firstName.message}</p>}
+              {errors.firstName && (
+                <p className="text-red-400">{errors.firstName.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -178,14 +209,12 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
                 name="lastName"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    id="lastName"
-                    placeholder="Doe"
-                    {...field}
-                  />
+                  <Input id="lastName" placeholder="Doe" {...field} />
                 )}
               />
-              {errors.lastName && <p className="text-red-400">{errors.lastName.message}</p>}
+              {errors.lastName && (
+                <p className="text-red-400">{errors.lastName.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -202,7 +231,9 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
                   />
                 )}
               />
-              {errors.email && <p className="text-red-400">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-red-400">{errors.email.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -219,7 +250,9 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
                   />
                 )}
               />
-              {errors.password && <p className="text-red-400">{errors.password.message}</p>}
+              {errors.password && (
+                <p className="text-red-400">{errors.password.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -228,48 +261,47 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
                 name="phone"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    id="phone"
-                    placeholder="98XXXXXX00"
-                    {...field}
-                  />
+                  <Input id="phone" placeholder="98XXXXXX00" {...field} />
                 )}
               />
-              {errors.phone && <p className="text-red-400">{errors.phone.message}</p>}
+              {errors.phone && (
+                <p className="text-red-400">{errors.phone.message}</p>
+              )}
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="roleId">Role</Label>
               {loadingRoles ? (
-
-                <Card className='w-full h-12 flex items-center justify-center'>
+                <Card className="w-full h-12 flex items-center justify-center">
                   <Loader2 className="animate-spin" />
                 </Card>
-              ) : (<Controller
-                name="roleId"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <SelectTrigger>
-                      <div>
-                        {field.value
-                          ? roles.find(role => role.id === field.value)?.name || "Select Role"
-                          : "Select Role"}
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {roles.map(role => (
-                        <SelectItem key={role.id} value={role.id}>
-                          {role.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />)}
-              {errors.roleId && <p className="text-red-400">{errors.roleId.message}</p>}
+              ) : (
+                <Controller
+                  name="roleId"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <div>
+                          {field.value
+                            ? roles.find((role) => role.id === field.value)
+                                ?.name || "Select Role"
+                            : "Select Role"}
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roles.map((role) => (
+                          <SelectItem key={role.id} value={role.id}>
+                            {role.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              )}
+              {errors.roleId && (
+                <p className="text-red-400">{errors.roleId.message}</p>
+              )}
             </div>
 
             <DialogFooter>
@@ -278,58 +310,76 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({ refreshUsers }) => 
                   <DialogClose asChild>
                     <Button variant="outline">Cancel</Button>
                   </DialogClose>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleClear}
-                  >
+                  <Button type="button" variant="outline" onClick={handleClear}>
                     Clear
                   </Button>
                 </div>
-                <Button variant="default" type="submit" disabled={!isFormValid || creatingUser}>
-                  {creatingUser ? <Loader2 className="animate-spin" /> : "Create User"}
+                <Button
+                  variant="default"
+                  type="submit"
+                  disabled={!isFormValid || creatingUser}
+                >
+                  {creatingUser ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    "Create User"
+                  )}
                 </Button>
               </div>
             </DialogFooter>
           </form>
         </DialogContent>
-      </Dialog >
+      </Dialog>
 
       {/* Success Dialog */}
-      < Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen} >
+      <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{creatingUser ? "Creating User" : createError ? 'Error' : 'Success'} </DialogTitle>
+            <DialogTitle>
+              {creatingUser
+                ? "Creating User"
+                : createError
+                ? "Error"
+                : "Success"}{" "}
+            </DialogTitle>
           </DialogHeader>
-          <DialogDescription className='flex flex-row justify-between w-full'>
+          <DialogDescription className="flex flex-row justify-between w-full">
             <div>
-              {creatingUser ?
-                <Loader2 className='h-4 w-4' />
-                : createError ? createError.message
-                  : 'User Created Successfully'}
+              {creatingUser ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : createError ? (
+                createError.message
+              ) : (
+                "User Created Successfully"
+              )}
             </div>
 
-            <Badge>
-              {createdUser?.createdAt ? formatDateInIST(createdUser.createdAt) : ""}
-            </Badge>
-
+            {createdUser && (
+              <Badge>
+                {createdUser?.createdAt
+                  ? formatDateInIST(createdUser.createdAt)
+                  : ""}
+              </Badge>
+            )}
           </DialogDescription>
-          <Card className='flex flex-col gap-2 w-full p-4'>
-            First Name : {createdUser?.first_name}
-            <Separator />
-            Last Name : {createdUser?.last_name}
-            <Separator />
-            Email : {createdUser?.email}
-            <Separator />
-            Phone Number : {createdUser?.phone}
-          </Card>
+          {createdUser && (
+            <Card className="flex flex-col gap-2 w-full p-4">
+              First Name : {createdUser?.first_name}
+              <Separator />
+              Last Name : {createdUser?.last_name}
+              <Separator />
+              Email : {createdUser?.email}
+              <Separator />
+              Phone Number : {createdUser?.phone}
+            </Card>
+          )}
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="default">Close</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
-      </Dialog >
+      </Dialog>
     </>
   );
 };

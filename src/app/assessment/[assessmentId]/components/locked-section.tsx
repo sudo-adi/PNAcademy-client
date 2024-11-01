@@ -16,7 +16,7 @@ const LockedSection: React.FC<LockedSectionProps> = ({ section }) => {
       </div>
       <div className="relative">
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10 backdrop-blur-sm flex-col font-bold gap-4 text-muted-foreground rounded-b-lg">
+        <div className="absolute inset-0 dark:bg-black dark:bg-opacity-50 bg-white bg-opacity-50 flex items-center justify-center z-10 backdrop-blur-sm flex-col font-bold gap-4 text-muted-foreground rounded-b-lg">
           <LockKeyhole className="h-10 w-10" />
           Section Locked
         </div>

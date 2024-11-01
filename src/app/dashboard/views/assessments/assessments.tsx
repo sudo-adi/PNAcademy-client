@@ -9,7 +9,7 @@ import OnGoingTabContent from "./components/tab-content/ongoing-tab-content";
 import ScheduledTabContent from "./components/tab-content/scheduled-tab-content";
 import PreviousTabContent from "./components/tab-content/previous-tab-content";
 import { useAssignedAssessments } from "./hooks/useAssignedAssessments";
-import { Assessment } from "@/lib/types/assessmentTypes";
+import { Assessment, AssignedAssessment } from "@/lib/types/assessmentTypes";
 import { useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
 
@@ -20,7 +20,7 @@ const Assessments = () => {
 
   // all state here
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [assessments, setAssessments] = useState<Assessment[]>([]);
+  const [assessments, setAssessments] = useState<AssignedAssessment[]>([]);
   const [assessmentId, setAssessmentId] = useState<string>("");
   const [isJoining, setIsJoining] = useState(false);
   const [disableJoinButton, setDisableJoinButton] = useState(false);
@@ -31,19 +31,20 @@ const Assessments = () => {
       const assessments = await fetchAssignedAssessments({
         page: 1,
         pageSize: 999,
-        sortBy: "id",
-        order: "ASC",
+        sortBy: "updatedAt",
+        order: "DESC",
       });
       setAssessments(assessments);
     } catch (err) {}
   };
 
   const joinWithAssessmentID = (assessmentId: string) => {
-    router.push(`/assessment/o${assessmentId}/overview`);
+    router.push(`/test/${assessmentId}/`);
   };
 
   const changeAssessmentId = (e: React.ChangeEvent<HTMLInputElement>) => {
     const uuidValue = e.target.value;
+    console.log(uuidValue);
 
     // Regular expression for UUID validation
     const uuidRegex =
@@ -51,6 +52,10 @@ const Assessments = () => {
 
     // Check if the input matches UUID format
     const isValidUUID = uuidRegex.test(uuidValue);
+
+    if (isValidUUID) {
+      setAssessmentId(uuidValue);
+    }
 
     // Enable button only if UUID is valid
     setDisableJoinButton(isValidUUID);
@@ -66,7 +71,9 @@ const Assessments = () => {
       <div className="flex flex-col gap-2 overflow-y-hidden">
         <Card className="flex flex-col lg:flex-row w-full  justify-between items-center border-dashed gap-4 p-4 lg:p-2 overflow-hidden">
           <div className="flex flex-row gap-2">
-            <div className="text-3xl">Hii! Aditya Good Morning</div>
+            <div className="text-3xl">
+              <h1>Assessments</h1>
+            </div>
           </div>
           <div className="flex w-7/10 h-full lg:w-auto items-center space-x-2">
             <Input
@@ -106,7 +113,7 @@ const Assessments = () => {
                 Previous
               </TabsTrigger>
             </TabsList>
-            <div className="flex flex-row w-full  lg:w-auto gap-2">
+            {/* <div className="flex flex-row w-full  lg:w-auto gap-2">
               <Input
                 type="email"
                 className="min-w-[22rem] w-full"
@@ -118,7 +125,7 @@ const Assessments = () => {
               >
                 Search
               </Button>
-            </div>
+            </div> */}
           </div>
           <div className="w-full">
             <TabsContent value="0">

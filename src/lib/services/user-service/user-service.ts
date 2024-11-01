@@ -154,17 +154,15 @@ export const deleteUsers = async (data: DeleteUsersProps): Promise<DeleteUsersRe
   });
 };
 
-// Function to get user info
-export const getUserInfo = async (): Promise<GetUserInfoResponse | null> => {
+export const getUserInfo = async (): Promise<GetUserInfoResponse> => {
   return retry(async () => {
     try {
       const response = await axiosInstance.get<GetUserInfoResponse>('/v1/user/info');
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         return response.data;
-      } else {
-        throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);
       }
+      throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);
     } catch (error) {
       if (error instanceof AxiosError) {
         const { response } = error;
@@ -222,15 +220,16 @@ export const getUsersByGroupId = async (data: GetUsersByGroupIdProps): Promise<G
   });
 };
 
+
 // Function to import users
 export const importUsers = async (data: ImportUsersProps): Promise<ImportUsersResponse> => {
   return retry(async () => {
     try {
       const formData = new FormData();
-      formData.append('users', data.users);
-      formData.append('updateExisiting', data.updateExisting.toString());
+      formData.append('file', data.users);
+      formData.append('updateExisting', data.updateExisting.toString());
 
-      const response = await axiosInstance.post<ImportUsersResponse>('/v1/user/import', formData, {
+      const response = await axiosInstance.post('/v1/user/import', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -238,9 +237,8 @@ export const importUsers = async (data: ImportUsersProps): Promise<ImportUsersRe
 
       if (response.status === 200 || response.status === 201) {
         return response.data;
-      } else {
-        throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);
       }
+      throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);
     } catch (error) {
       if (error instanceof AxiosError) {
         const { response } = error;
@@ -248,18 +246,26 @@ export const importUsers = async (data: ImportUsersProps): Promise<ImportUsersRe
         const errorData = response?.data;
 
         switch (status) {
+          case 400:
+            throw new ApiError(status, 'Bad Request: Invalid file or parameters', errorData);
           case 409:
-            throw new ApiError(status, 'Conflict: Data conflicts', errorData);
+            throw new ApiError(status, 'Conflict: Data conflicts with existing records', errorData);
+          case 413:
+            throw new ApiError(status, 'File too large', errorData);
+          case 415:
+            throw new ApiError(status, 'Unsupported file type', errorData);
           case 500:
             throw new ApiError(status, 'Internal Server Error', errorData);
           default:
             throw new ApiError(status, `HTTP Error: ${status}`, errorData);
         }
-      } else if (error instanceof Error) {
-        throw new ApiError(500, 'An unexpected error occurred', { message: error.message });
-      } else {
-        throw new ApiError(500, 'An unknown error occurred', error);
       }
+
+      if (error instanceof Error) {
+        throw new ApiError(500, 'An unexpected error occurred', { message: error.message });
+      }
+
+      throw new ApiError(500, 'An unknown error occurred', error);
     }
   });
 };

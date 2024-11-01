@@ -1,17 +1,20 @@
-import React from 'react';
-import { Card } from '@/components/ui/card';
-import AssessmentCard from '../cards/assessment-card';
-import { Assessment } from '@/lib/types/assessmentTypes';
+import React from "react";
+import { Card } from "@/components/ui/card";
+import AssessmentCard from "../cards/assessment-card";
+import { Assessment, AssignedAssessment } from "@/lib/types/assessmentTypes";
 
 interface ScheduledTabContentProps {
-  assessments: Assessment[];
+  assessments: AssignedAssessment[];
 }
 
-
-
 const OnGoingTabContent = ({ assessments }: ScheduledTabContentProps) => {
-
-  const ongoingAssessments = assessments.filter(assessment => assessment.start_at && assessment.end_at && new Date(assessment.start_at) < new Date() && new Date(assessment.end_at) > new Date());
+  const ongoingAssessments = assessments.filter(
+    (assessment) =>
+      assessment.start_at &&
+      assessment.end_at &&
+      new Date(assessment.start_at) < new Date() &&
+      new Date(assessment.end_at) > new Date()
+  );
 
   return (
     <Card className="border-dashed h-[calc(100vh-21rem)] md:h-[calc(100vh-14rem)] w-full p-4 overflow-y-auto scrollbar-none bg-transparent">
@@ -20,7 +23,8 @@ const OnGoingTabContent = ({ assessments }: ScheduledTabContentProps) => {
           <AssessmentCard
             assessment={assessment}
             key={assessment.id}
-            state={'o'} />
+            state={"o"}
+          />
         ))}
       </div>
     </Card>

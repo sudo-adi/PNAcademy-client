@@ -146,7 +146,9 @@ const AllTabContent: React.FC<AllTabContentProps> = ({
         </div>
       </Card>
       <div className="flex h-[calc(3rem-6px)] items-center justify-between gap-2">
-        <Label>{allAssessments.length} Assessments</Label>
+        <Label className="text-[10px]">
+          {allAssessments.length} Assessments
+        </Label>
         {/* <div className="flex flex-row gap-2 items-center justify-center text-xs font-bold">
           <div className="flex p-2 rounded-xl border">
             {activePageIndex + 1} / {totalPages}

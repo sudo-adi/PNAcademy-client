@@ -1,39 +1,24 @@
-import { useState } from 'react';
 import { getUserInfo } from '@/lib/services/user-service/user-service'; // Assuming the service is in this path
-import { GetUserInfoResponse } from '@/lib/types/userTypes'; // Define this type based on your response schema
 import { ApiError } from '@/lib/api/apiError';
+import { GetUserInfoResponse, SingleUser } from '@/lib/types/userTypes';
 
 export const useUserInfo = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<ApiError | null>(null);
-  const [userInfo, setUserInfo] = useState<GetUserInfoResponse | null>(null);
-  const fetchUserInfo = async () => {
-    setLoading(true);
-    setError(null);
+  const fetchUserInfo = async (): Promise<SingleUser> => {
     try {
-      const response: any = await getUserInfo();
-      if (response) {
-        console.info('User info retrieved:', response);
+      const response = await getUserInfo();
+      if (!response?.data) {
+        throw new ApiError(500, 'No user data received', response);
       }
-      else {
-        console.error('No user info found');
-      }
+      return response.data;
     } catch (err) {
       if (err instanceof ApiError) {
-        console.log('An error occurred:', err);
-        setError(err);
-      } else {
-        setError(new ApiError(500, 'An unexpected error occurred', err));
+        throw err;
       }
-    } finally {
-      setLoading(false);
+      throw new ApiError(500, 'An unexpected error occurred fetching user info', err);
     }
   };
 
   return {
-    userInfo,
-    loading,
-    error,
     fetchUserInfo,
   };
 };

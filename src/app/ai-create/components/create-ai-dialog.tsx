@@ -19,21 +19,21 @@ import { Loader2, PlusSquare } from "lucide-react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import useCreateAssessmentDetailsStore from "@/lib/stores/manage-assessment-store/assessment-details";
 import { ApiError } from "@/lib/api/apiError";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { useAssessment } from "@/app/dashboard/views/manage-assessment/hooks/useAssessment";
-import StartsAtDateTimePicker from "@/app/dashboard/views/manage-assessment/components/starts-at";
-import EndsAtDateTimePicker from "@/app/dashboard/views/manage-assessment/components/ends-at";
-import AssessmentDuration from "@/app/dashboard/views/manage-assessment/components/duration";
+import { useAICreate } from "../hooks/useAiCreate";
+import useAiAssessmentDetailStore from "@/lib/stores/ai-create/ai-assessment-detail-store";
+import StartsAtDateTimePicker from "./starts-at";
+import EndsAtDateTimePicker from "./ends-at";
+import AssessmentDuration from "./duration";
+import useAiCreateStore from "@/lib/stores/ai-create/create-with-ai";
+import { AiSection } from "@/lib/types/ai-assessment";
 
 const assessmentSchema = z.object({
-  name: z.string().min(1, { message: "Assessment name is required" }),
-  description: z
-    .string()
-    .min(1, { message: "Assessment description is required" }),
+  name: z.string().min(0),
+  description: z.string().min(0),
 });
 
 type AssessmentFormData = z.infer<typeof assessmentSchema>;
@@ -49,20 +49,20 @@ const CreateAiDialog = () => {
     resolver: zodResolver(assessmentSchema),
   });
 
-  const { addAssessment } = useAssessment();
+  const { currentSections, setCurrentSections } = useAiCreateStore();
+
+  const { saveAssessment } = useAICreate();
 
   // global states here
   const {
     assessmentName,
     assessmentDescription,
-    is_active,
-    createdBy,
     startAt,
     endAt,
     duration,
     setAssessmentName,
     setAssessmentDescription,
-  } = useCreateAssessmentDetailsStore();
+  } = useAiAssessmentDetailStore();
 
   // local states here
 
@@ -82,19 +82,39 @@ const CreateAiDialog = () => {
 
   // all functions here
   const onSubmit = async () => {
+    const transformAllQuestions = (currentSections: AiSection[]) => {
+      return currentSections.flatMap((section, sectionIndex) =>
+        section.questions.map((question) => ({
+          description: question.description,
+          marks: section.markPerQuestion,
+          section: sectionIndex + 1,
+          options: question.options.map((option) => ({
+            description: option.description,
+            isCorrect: option.isCorrect,
+          })),
+        }))
+      );
+    };
+    const questions = transformAllQuestions(currentSections);
+    const data = {
+      name: assessmentName,
+      description: assessmentDescription,
+      is_active: false,
+      start_at: startAt,
+      end_at: endAt,
+      duration: duration,
+      questions: questions,
+    };
     try {
       setLoading(true);
-      const data = {
-        name: assessmentName,
-        description: assessmentDescription,
-        is_active: is_active,
-        start_at: startAt,
-        end_at: endAt,
-        duration: duration,
-        created_by: createdBy,
-      };
-      const response = await addAssessment(data);
-      router.push(`/create/${response.id}`);
+      const response: string = await saveAssessment(data);
+      toast({
+        title: "Success",
+        description: "Assessment created successfully",
+        action: <ToastAction altText="success">ok</ToastAction>,
+      });
+      router.push(`/create/${response}`);
+      setCurrentSections([]);
     } catch (err) {
       if (err instanceof ApiError) {
         setCreateAssessmentError(err);
@@ -134,7 +154,14 @@ const CreateAiDialog = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default">
+        <Button
+          variant="default"
+          disabled={
+            !currentSections ||
+            currentSections.length === 0 ||
+            currentSections.some((section) => section.questions.length < 1)
+          }
+        >
           <PlusSquare className="h-4 w-4 mr-2" />
           Create
         </Button>
@@ -194,9 +221,6 @@ const CreateAiDialog = () => {
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button variant="outline" onClick={() => reset()}>
-                  Clear Selection
-                </Button>
               </div>
               <Button
                 disabled={loading || disableCreateAssessment}

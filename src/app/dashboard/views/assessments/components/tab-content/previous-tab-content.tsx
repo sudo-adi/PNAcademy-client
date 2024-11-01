@@ -1,16 +1,17 @@
-import { Card } from '@/components/ui/card';
-import React from 'react';
-import AssessmentCard from '../cards/assessment-card';
-import { Assessment } from '@/lib/types/assessmentTypes';
-
+import { Card } from "@/components/ui/card";
+import React from "react";
+import AssessmentCard from "../cards/assessment-card";
+import { Assessment, AssignedAssessment } from "@/lib/types/assessmentTypes";
 
 interface PreviousTabContentProps {
-  assessments: Assessment[];
+  assessments: AssignedAssessment[];
 }
 
 const PreviousTabContent = ({ assessments }: PreviousTabContentProps) => {
-
-  const previousAssessments = assessments.filter(assessment => assessment.end_at && new Date(assessment.end_at) < new Date());
+  const previousAssessments = assessments.filter(
+    (assessment) =>
+      assessment.end_at && new Date(assessment.end_at) < new Date()
+  );
 
   return (
     <Card className="border-dashed h-[calc(100vh-21rem)] md:h-[calc(100vh-14rem)] w-full p-4 overflow-y-auto scrollbar-none bg-transparent">
@@ -19,7 +20,8 @@ const PreviousTabContent = ({ assessments }: PreviousTabContentProps) => {
           <AssessmentCard
             assessment={assessment}
             key={assessment.id}
-            state={'p'} />
+            state={"p"}
+          />
         ))}
       </div>
     </Card>

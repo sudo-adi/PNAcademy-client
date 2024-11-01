@@ -36,7 +36,7 @@ export interface AiQuestionsResponse {
 export interface AiSection {
   prompt: string;
   difficultyLevel: "easy" | "medium" | "hard" | "";
-  sectionMarks: number;
+  markPerQuestion: number;
   questions: AiQuestion[];
 
 }
@@ -50,6 +50,7 @@ export interface AssessmentOption {
 export interface AssessmentQuestion {
   description: string;
   section: number;
+  marks: number;
   options: AssessmentOption[];
 }
 
@@ -60,14 +61,12 @@ export interface SaveAiGeneratedAssessmentProps {
   start_at: string; // ISO date string
   end_at: string; // ISO date string
   duration: number; // in milliseconds
-  created_by: string; // UUID
-  marks: number;
-  questions: AssessmentQuestion[];
+  questions: AiQuestion[];
 }
 
 export interface SaveAiGeneratedAssessmentResponse {
   message: string;
   data: {
-    id: string; // UUID of the saved assessment
+    assessmentId: string; // UUID of the saved assessment
   };
 }

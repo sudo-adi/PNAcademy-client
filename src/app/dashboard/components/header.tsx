@@ -13,6 +13,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import useStore from "@/lib/stores/nav-store/store";
 import { clearTokens } from "@/lib/utils/tokenManager";
 import {
+  Bell,
   BellPlus,
   CircleUser,
   FileCog,
@@ -32,6 +33,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import Nav from "./nav";
+import { ThemeColorToggle } from "@/components/common/theme-color-sitcher";
 
 const Header = () => {
   const handleLogOut = () => {
@@ -47,6 +49,7 @@ const Header = () => {
     <HeaderTitle title={"Manage Users & Roles"} icon={<UserCog />} />,
     <HeaderTitle title={"Manage Groups"} icon={<Users />} />,
     <HeaderTitle title={"Manage Notifications"} icon={<BellPlus />} />,
+    <HeaderTitle title={"Settings"} icon={<Bell />} />,
     <HeaderTitle title={"Settings"} icon={<Settings />} />,
   ];
   const { activeNavIndex } = useStore();
@@ -65,7 +68,10 @@ const Header = () => {
       </Sheet>
       <div className="w-full flex items-center justify-between">
         <div className="flex">{Title[activeNavIndex]}</div>
-        <ToggleThemeSwitch />
+        <div className="flex flex-row items-center gap-4">
+          <ThemeColorToggle />
+          <ToggleThemeSwitch />
+        </div>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

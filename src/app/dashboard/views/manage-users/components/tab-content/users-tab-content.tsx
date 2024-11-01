@@ -174,12 +174,10 @@ const UsersTabContent: React.FC = () => {
       </Card>
 
       <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
-        <Label className="text-xs">
-          {/* Showing <strong>1-10</strong> of <strong>{fetchedUsersRes?.data.totalPages}</strong> Users */}
-        </Label>
+        <Label className="text-[10px]"> {users.length} users</Label>
         <div className="flex gap-2">
-          <Button variant="outline">Previous</Button>
-          <Button>Next</Button>
+          {/* <Button variant="outline">Previous</Button>
+          <Button>Next</Button> */}
         </div>
       </div>
     </>
@@ -325,7 +323,7 @@ const Row: React.FC<RowProps> = ({
                     variant="outline"
                     className="hover:bg-secondary text-[10px]"
                   >
-                    {user.phone}
+                    {user.phone ?? "No Phone Number"}
                   </Badge>
                 </button>
               </TooltipTrigger>

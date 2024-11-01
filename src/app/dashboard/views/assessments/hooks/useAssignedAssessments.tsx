@@ -1,13 +1,19 @@
-import { GetAssignedAssessmentsProps, GetAssignedAssessmentsResponse, Assessment } from '@/lib/types/assessmentTypes';
-import { ApiError } from '@/lib/api/apiError';
-import { getAssignedAssessments } from '@/lib/services/assessment/assessment-service';
+import {
+  GetAssignedAssessmentsProps,
+  GetAssignedAssessmentsResponse,
+  AssignedAssessment,
+} from "@/lib/types/assessmentTypes";
+import { ApiError } from "@/lib/api/apiError";
+import { getAssignedAssessments } from "@/lib/services/assessment/assessment-service";
 
 export const useAssignedAssessments = () => {
-
   // Function to fetch assigned assessments
-  const fetchAssignedAssessments = async (payload: GetAssignedAssessmentsProps): Promise<Assessment[]> => {
+  const fetchAssignedAssessments = async (
+    payload: GetAssignedAssessmentsProps
+  ): Promise<AssignedAssessment[]> => {
     try {
-      const response: GetAssignedAssessmentsResponse = await getAssignedAssessments(payload);
+      const response: GetAssignedAssessmentsResponse =
+        await getAssignedAssessments(payload);
       if (response.data.assessments) {
         return response.data.assessments;
       } else {
@@ -15,18 +21,16 @@ export const useAssignedAssessments = () => {
       }
     } catch (err) {
       if (err instanceof ApiError) {
-        console.error('API Error:', err.message);
+        console.error("API Error:", err.message);
         throw err;
       } else {
-        console.error('Error:', err);
+        console.error("Error:", err);
         throw err;
       }
     } finally {
       // Cleanup if needed
     }
   };
-
-
 
   return {
     fetchAssignedAssessments,

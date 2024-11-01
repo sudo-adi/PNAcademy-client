@@ -15,8 +15,8 @@ import { Loader } from "lucide-react";
 const LoginPage = () => {
   const { isLoggedIn, handleLogin, error } = useLogin();
   const [loading, setLoading] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -38,14 +38,12 @@ const LoginPage = () => {
       toast({
         title: "Login failed",
         description: `An unexpected error occurred`,
-        action: (
-          <ToastAction altText="Ok">Ok</ToastAction>
-        ),
-      })
+        action: <ToastAction altText="Ok">Ok</ToastAction>,
+      });
+      setLoading(false);
     } finally {
     }
   };
-
 
   return (
     <>
@@ -95,10 +93,12 @@ const LoginPage = () => {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full"
-                    disabled={loading}
-                  >
-                    {loading ? <Loader className="h-4 2-4 animate-spin" /> : 'Login'}
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? (
+                      <Loader className="h-4 2-4 animate-spin" />
+                    ) : (
+                      "Login"
+                    )}
                   </Button>
                   {error && <p className="text-red-500 text-center">{error}</p>}
                 </div>
@@ -109,6 +109,6 @@ const LoginPage = () => {
       </form>
     </>
   );
-}
+};
 
 export default LoginPage;

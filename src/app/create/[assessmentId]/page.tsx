@@ -66,6 +66,7 @@ export default function Create({
     setCurrentSectionIndex,
 
     currentMarks,
+    setCurrentMarks,
   } = useCreateAssessmentStore();
 
   // local states here
@@ -130,7 +131,7 @@ export default function Create({
     const payload: CreateQuestionProps = {
       assessment_id: assessmentId,
       description: "Question...",
-      marks: 0,
+      marks: currentMarks,
       section: currentSectionIndex + 1,
     };
     try {
@@ -414,6 +415,7 @@ export default function Create({
     try {
       setCurrentSectionIndex(index);
       setCurrentQuestionIndex(0);
+
       const updatedAssessment = await fetchAssessmentById({
         id: params.assessmentId,
       });
@@ -512,7 +514,7 @@ export default function Create({
       setAllButtonsDisabled(true);
       setRemoveQuestionLoading(true);
 
-      if (currentSectionData.length <= 1) {
+      if (currentSectionData && currentSectionData.length <= 1) {
         throw new Error(
           "Cannot delete question: at least 1 question should be present in the section"
         );
@@ -573,6 +575,7 @@ export default function Create({
   };
 
   const handleQuestionOnBlur = async () => {
+    console.log("Question On Blur");
     if (
       currentQuestionContent !==
       currentSectionData![currentQuestionIndex].description
@@ -608,15 +611,23 @@ export default function Create({
         const assessment: GetAssessmentByIdData = await fetchAssessmentById({
           id: params.assessmentId,
         });
+        console.log(assessment);
         if (assessment.sections.length > 0) {
           setAssessmentData(assessment.sections);
           setCurrentSectionData(assessment.sections[currentSectionIndex]);
         } else {
           setAssessmentData([]);
           setCurrentSectionData([]);
+          setCurrentQuestionContent("");
+          setCurrentOptionsContent([]);
         }
       } catch (err) {
         if (err instanceof ApiError) {
+          toast({
+            title: `Error Occurred ${err.status}`,
+            description: `${err.message}`,
+            action: <ToastAction altText="error">ok</ToastAction>,
+          });
         } else {
         }
       } finally {
@@ -645,7 +656,10 @@ export default function Create({
   return (
     <div className="flex max-h-screen flex-row overflow-hidden">
       <div className="flex flex-col w-full">
-        <Header />
+        <Header
+          patchQuestion={patchQuestion}
+          refreshAssessment={handleRefreshAssessment}
+        />
         <main className="flex flex-1 flex-col lg:gap-2 p-4 overflow-y-scroll scrollbar-none">
           <div className="flex flex-col gap-2 w-full max-h-[calc(100vh-6rem)]">
             <Card className="border-none">
@@ -656,18 +670,22 @@ export default function Create({
                       {currentQuestionIndex + 1}
                     </Badge>
                   </div>
-                  <RemoveButton
-                    loading={removeQuestionLoading}
-                    onClick={handleRemoveQuestion}
-                    disabled={
-                      currentSectionData.length === 1 ||
-                      removeQuestionLoading ||
-                      allButtonsDisabled
-                    }
-                  />
+                  {currentSectionData && currentSectionData.length > 0 && (
+                    <RemoveButton
+                      loading={removeQuestionLoading}
+                      onClick={handleRemoveQuestion}
+                      disabled={
+                        currentSectionData.length === 1 ||
+                        removeQuestionLoading ||
+                        allButtonsDisabled
+                      }
+                    />
+                  )}
                 </div>
                 <Textarea
-                  disabled={currentSectionData.length === 0}
+                  disabled={
+                    currentSectionData && currentSectionData.length === 0
+                  }
                   className="w-full max-h-[10rem]"
                   placeholder="Enter your Question..."
                   value={currentQuestionContent}
@@ -761,17 +779,18 @@ export default function Create({
                   <Card className="flex flex-row items-center w-full lg:min-w-[calc(100vw-27rem)] p-2 gap-2 border border-dashed bg-transparent justify-between">
                     <div className="flex gap-2 flex-row items-center scrollbar-none">
                       <div className="flex flex-row items-center max-w-[calc(100vw-7rem)] md:max-w-[calc(100vw-21rem)] lg:max-w-[calc(100vw-32rem)] gap-2 overflow-x-scroll scrollbar-none">
-                        {currentSectionData.map((_, index) => (
-                          <QuestionButton
-                            disabled={allButtonsDisabled}
-                            isCurrentSection={currentQuestionIndex === index}
-                            key={index}
-                            index={index}
-                            onClick={() => {
-                              handleNavigateQuestion(index);
-                            }}
-                          />
-                        ))}
+                        {currentSectionData &&
+                          currentSectionData.map((_, index) => (
+                            <QuestionButton
+                              disabled={allButtonsDisabled}
+                              isCurrentSection={currentQuestionIndex === index}
+                              key={index}
+                              index={index}
+                              onClick={() => {
+                                handleNavigateQuestion(index);
+                              }}
+                            />
+                          ))}
                       </div>
                       <AddQuestionButton
                         disabled={
@@ -785,7 +804,8 @@ export default function Create({
                       loading={removeQuestionLoading}
                       onClick={handleRemoveQuestion}
                       disabled={
-                        currentSectionData.length <= 1 ||
+                        (currentSectionData &&
+                          currentSectionData.length <= 1) ||
                         removeQuestionLoading ||
                         allButtonsDisabled
                       }

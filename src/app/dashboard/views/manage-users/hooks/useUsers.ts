@@ -108,19 +108,87 @@ export const useUsers = () => {
     updateExisting: boolean;
   }
 
+  // const importUsersFromCSV = async ({ users, updateExisting }: ImportUsersFromCSVProps) => {
+  //   try {
+  //     // Validate file type
+  //     if (!users.name.toLowerCase().endsWith('.csv')) {
+  //       throw new ApiError(400, 'Invalid file type. Please upload a CSV file.', null);
+  //     }
+
+  //     // Validate file size (e.g., 10MB limit)
+  //     const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+  //     if (users.size > MAX_FILE_SIZE) {
+  //       throw new ApiError(413, 'File too large. Maximum size is 10MB.', null);
+  //     }
+
+  //     const response = await importUsers({ users, updateExisting });
+
+  //     // Handle successful response
+  //     if (response) {
+  //       // You might want to add success toast or notification here
+  //       console.log('Users imported successfully:', response.message);
+  //       return response;
+  //     }
+  //   } catch (err) {
+  //     if (err instanceof ApiError) {
+  //       // Handle specific API errors
+  //       switch (err.status) {
+  //         case 400:
+  //           console.error('Invalid file or parameters:', err.message);
+  //           // Add user notification for invalid file
+  //           break;
+  //         case 413:
+  //           console.error('File too large:', err.message);
+  //           // Add user notification for file size
+  //           break;
+  //         case 415:
+  //           console.error('Unsupported file type:', err.message);
+  //           // Add user notification for file type
+  //           break;
+  //         default:
+  //           console.error('Error importing users:', err.message);
+  //           // Add generic error notification
+  //       }
+  //       throw err;
+  //     } else {
+  //       console.error('Unexpected error:', err);
+  //       throw new ApiError(500, 'An unexpected error occurred while importing users', null);
+  //     }
+  //   }
+  // };
+
   const importUsersFromCSV = async ({ users, updateExisting }: ImportUsersFromCSVProps) => {
     try {
+      // Validate file type
+      if (!users.name.toLowerCase().endsWith('.csv')) {
+        throw new ApiError(400, 'Invalid file type. Please upload a CSV file.', null);
+      }
+
+      // Validate file size (e.g., 10MB limit)
+      const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+      if (users.size > MAX_FILE_SIZE) {
+        throw new ApiError(413, 'File too large. Maximum size is 10MB.', null);
+      }
+
       const response = await importUsers({ users, updateExisting });
+
+      // Handle successful response
       if (response) {
+        console.log('Users imported successfully:', response.message);
+        return response;
       }
     } catch (err) {
       if (err instanceof ApiError) {
+        // Handle specific API errors
+        console.error('API Error:', err.message);
+        throw err;
       } else {
+        console.error('Unexpected error:', err);
+        throw new ApiError(500, 'An unexpected error occurred while importing users', null);
       }
-    } finally {
-
     }
   };
+
 
   return {
     addUser,

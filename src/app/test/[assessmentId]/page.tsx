@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,16 +11,82 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "@/components/ui/use-toast";
+import { useAssessment } from "@/app/dashboard/views/manage-assessment/hooks/useAssessment";
+import { ToastAction } from "@/components/ui/toast";
+import { ApiError } from "@/lib/api/apiError";
+import useVerificationStore from "@/lib/stores/verification-store/verification-store";
+import { Loader } from "lucide-react";
 
-const Verification = () => {
+interface VerificationProps {
+  params: {
+    assessmentId: string;
+  };
+}
+
+const Verification: React.FC<VerificationProps> = ({ params }) => {
   const [pageIndex, setPageIndex] = useState("0");
   const router = useRouter();
-  const params = useParams();
-  const assessmentId = params.assessmentId as string;
+  const [description, setDescription] = useState("");
+  const { fetchAssessmentById } = useAssessment();
+  const { setAssessmentId } = useVerificationStore();
+  const [loading, setLoading] = useState(false);
+
+  const fetchAssessmentData = async () => {
+    {
+      try {
+        const data = await fetchAssessmentById({ id: params.assessmentId });
+        setDescription(data.description);
+      } catch (err) {
+        if (err instanceof ApiError) {
+          if (err.status === 400) {
+            router.push("/dashboard");
+            toast({
+              title: "Invalid Assessment ID",
+              description: "Please provide a valid assessment ID",
+              action: <ToastAction altText="Ok">Ok</ToastAction>,
+            });
+          } else if (err.status === 404) {
+            router.push("/dashboard");
+            toast({
+              title: "Assessment not found",
+              description: "The assessment you are looking for does not exist",
+              action: <ToastAction altText="Ok">Ok</ToastAction>,
+            });
+          } else {
+            router.push("/dashboard");
+            toast({
+              title: "An unexpected error occurred",
+              description: "Please try again later",
+              action: <ToastAction altText="Ok">Ok</ToastAction>,
+            });
+          }
+        }
+      }
+    }
+  };
 
   const handleTabChange = (value: string) => {
     setPageIndex(value);
   };
+
+  const handleVerifyAssessment = () => {
+    setAssessmentId(params.assessmentId);
+    router.push(`/assessment/${params.assessmentId}`);
+    setLoading(true);
+  };
+
+  useEffect(() => {
+    fetchAssessmentData();
+    if (!params.assessmentId) {
+      router.push("/dashboard");
+      toast({
+        title: "Invalid Assessment ID",
+        description: "Please provide a valid assessment ID",
+      });
+    } else {
+    }
+  });
 
   return (
     <main className="flex flex-col items-center justify-center h-screen">
@@ -112,15 +178,11 @@ const Verification = () => {
           <Card>
             <CardHeader>
               <CardTitle>Description for this Assessment</CardTitle>
-              <CardDescription>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Neque
-                laborum, ducimus iure officiis fuga repellat ipsa suscipit
-                repellendus est quas!
-              </CardDescription>
+              <CardDescription></CardDescription>
             </CardHeader>
             <CardContent className="space-y-2">
-              <div className="flex dark:bg-black p-4 rounded-lg border-2 border-dashed">
-                helo world
+              <div className="flex dark:bg-black p-4 rounded-lg border border-dashed text-xs">
+                {description}
               </div>
             </CardContent>
           </Card>
@@ -134,6 +196,7 @@ const Verification = () => {
             Previous
           </Button>
           <Button
+            disabled={loading}
             onClick={() => handleTabChange("1")}
             className={pageIndex === "1" ? "hidden" : "block"}
           >
@@ -141,9 +204,17 @@ const Verification = () => {
           </Button>
           <Button
             className={pageIndex === "1" ? "block" : "hidden"}
-            onClick={() => router.push(`/assessment/${assessmentId}/overview`)}
+            onClick={handleVerifyAssessment}
           >
-            Start Assessment
+            <>
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Loader className="h-4 w-4 animate-spin" />
+                </span>
+              ) : (
+                "Start Assessment"
+              )}
+            </>
           </Button>
         </div>
       </Tabs>

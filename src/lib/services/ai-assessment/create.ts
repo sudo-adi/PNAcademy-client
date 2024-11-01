@@ -54,12 +54,9 @@ export const saveAiGeneratedAssessment = async (
       '/v1/assessment/generate/save',
       data
     );
-
-    if (response.status === 200) {
+    if (response.status === 200 || 201) {
       return response.data;
     }
-
-    // If we get here, the response was not successful
     throw new ApiError(response.status, 'Unexpected response status', response.data);
   } catch (error) {
     if (error instanceof AxiosError && error.response) {

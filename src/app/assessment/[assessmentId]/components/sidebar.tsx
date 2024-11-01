@@ -1,5 +1,5 @@
 import React from "react";
-import TickComponent from "../../components/timer";
+import TickComponent from "./timer";
 import { Clock } from "lucide-react";
 
 const AttemptionViewSideBar = () => {

@@ -74,6 +74,7 @@ const ManageNotifications = () => {
           <Button
             onClick={refreshNotifications}
             disabled={refreshingNotifications}
+            className="dark:text-black text-white"
           >
             Refresh{" "}
             <RotateCw

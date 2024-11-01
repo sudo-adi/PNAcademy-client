@@ -1,7 +1,6 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,12 +36,11 @@ const AiCreate = () => {
   const [numberOfQuestions, setNumberOfQuestions] = useState<number>(0);
   const [difficultyLevel, setDifficultyLevel] = useState<string>("");
   const [generating, setGenerating] = useState<boolean>(false);
-  const [sectionMarks, setSectionMarks] = useState<number>(0);
+  const [markPerQuestion, setMarkPerQuestion] = useState<number>(0);
   const [disableGenerateButton, setDisableGenerateButton] =
     useState<boolean>(true);
   const { createQuestions, createSingleQuestion, questionsResponse } =
     useAICreate();
-  const [section, setSection] = useState<AiSection>();
   const [disableInputUi, setDisableInputUi] = useState<boolean>(false);
   const [generatingSingleQuestion, setGeneratingSingleQuestion] =
     useState<boolean>(false);
@@ -50,17 +48,10 @@ const AiCreate = () => {
     number | null
   >(null);
   const {
-    currentNumberOfQuestions,
-    currentDifficultyLevel,
-    currentMarksPerQuestion,
     currentSections,
     currentSectionIndex,
-    currentQuestionIndex,
     setCurrentNumberOfQuestions,
-    setCurrentDifficultyLevel,
-    setCurrentMarksPerQuestion,
     setCurrentSectionIndex,
-    setCurrentQuestionIndex,
     setCurrentSections,
   } = useAiCreateStore();
 
@@ -100,7 +91,7 @@ const AiCreate = () => {
     const newSection = {
       prompt: "",
       difficultyLevel: "" as "",
-      sectionMarks: 0,
+      markPerQuestion: 0,
       questions: [],
     };
     setCurrentSections([...currentSections, newSection]);
@@ -177,7 +168,7 @@ const AiCreate = () => {
         ),
       });
     } finally {
-      setRegeneratingQuestionIndex(null); // Reset after completion
+      setRegeneratingQuestionIndex(null);
     }
   };
 
@@ -198,7 +189,7 @@ const AiCreate = () => {
       const formattedSection: AiSection = {
         prompt: prompt,
         difficultyLevel: difficultyLevel as "easy" | "medium" | "hard" | "",
-        sectionMarks: sectionMarks,
+        markPerQuestion: markPerQuestion,
         questions: retrievedQuestions,
       };
 
@@ -235,14 +226,15 @@ const AiCreate = () => {
   }, [questionsResponse]);
 
   useEffect(() => {
-    if (numberOfQuestions > 0 && difficultyLevel && prompt) {
+    if (numberOfQuestions > 0 && difficultyLevel && prompt && markPerQuestion) {
       setDisableGenerateButton(false);
     } else {
       setDisableGenerateButton(true);
     }
-  }, [numberOfQuestions, difficultyLevel, prompt]);
+  }, [numberOfQuestions, difficultyLevel, prompt, markPerQuestion]);
 
   useEffect(() => {
+    console.log("currentSections:", currentSections);
     if (currentSections.length == 0) {
       setDisableInputUi(true);
     } else {
@@ -261,7 +253,7 @@ const AiCreate = () => {
       if (currentSection) {
         setPrompt(currentSection.prompt);
         setDifficultyLevel(currentSection.difficultyLevel);
-        setSectionMarks(currentSection.sectionMarks);
+        setMarkPerQuestion(currentSection.markPerQuestion);
         setNumberOfQuestions(currentSection.questions.length);
       }
     }
@@ -356,9 +348,9 @@ const AiCreate = () => {
                 <div className="flex flex-row w-full gap-2">
                   <Input
                     value={
-                      isNaN(sectionMarks) || sectionMarks === 0
+                      isNaN(markPerQuestion) || markPerQuestion === 0
                         ? ""
-                        : sectionMarks
+                        : markPerQuestion
                     }
                     disabled={generating || disableInputUi}
                     placeholder="Mark/Question"
@@ -366,7 +358,7 @@ const AiCreate = () => {
                     className="w-full min-w-[4rem] text-[12px] h-9"
                     onChange={(e) => {
                       const value = parseInt(e.target.value);
-                      setSectionMarks(isNaN(value) ? 0 : value);
+                      setMarkPerQuestion(isNaN(value) ? 0 : value);
                     }}
                   />
                   <Button

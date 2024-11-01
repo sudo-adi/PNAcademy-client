@@ -122,9 +122,25 @@ export interface AddGroupToAssessmentResponse {
 }
 
 
+
+export interface AssignedAssessment {
+  id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+  start_at: string;
+  end_at: string;
+  isSubmitted: boolean;
+  duration: number;
+  created_by: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+
 // interface for getAssignedAssessments Data
 export interface GetAssignedAssessmentsData {
-  assessments: Assessment[];
+  assessments: AssignedAssessment[];
   totalPages: number;
 }
 
@@ -157,7 +173,7 @@ export interface RemoveGroupFromAssessmentResponse {
 
 // interface for getAssignedAssessments Data
 export interface GetAssignedAssessmentsData {
-  assessments: Assessment[];
+  assessments: AssignedAssessment[];
   totalPages: number;
 }
 

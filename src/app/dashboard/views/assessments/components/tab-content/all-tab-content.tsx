@@ -1,18 +1,18 @@
 import React, { FC } from "react";
 import { Card } from "@/components/ui/card";
-import { Assessment } from "@/lib/types/assessmentTypes";
+import { AssignedAssessment } from "@/lib/types/assessmentTypes";
 import AssessmentCard from "../cards/assessment-card";
 import { Label } from "@/components/ui/label";
 
 interface AllTabContentProps {
-  assessments: Assessment[];
+  assessments: AssignedAssessment[];
 }
 
 const AllTabContent: FC<AllTabContentProps> = ({ assessments }) => {
   return (
     <div className="flex w-full flex-col gap-5">
-      <Card className="border-dashed h-[calc(100vh-21rem)] md:h-[calc(100vh-17rem)] w-full p-4 overflow-y-auto scrollbar-none bg-transparent">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <Card className="border-dashed h-[calc(100vh-13rem)] md:h-[calc(100vh-17rem)] w-full p-4 overflow-y-auto scrollbar-none bg-transparent">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
           {assessments.map((assessment) => (
             <AssessmentCard
               assessment={assessment}
@@ -32,7 +32,7 @@ const AllTabContent: FC<AllTabContentProps> = ({ assessments }) => {
           ))}
         </div>
       </Card>
-      <Label>{assessments.length} Assessments</Label>
+      <Label className="text-[10px]">{assessments.length} Assessments</Label>
     </div>
   );
 };

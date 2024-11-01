@@ -243,6 +243,7 @@ export const getAssignedAssessments = async (data: GetAssignedAssessmentsProps):
       );
 
       if (response.status === 200 || response.status === 201) {
+        console.log(response.data);
         return response.data;
       } else {
         throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);

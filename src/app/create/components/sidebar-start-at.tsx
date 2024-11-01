@@ -18,11 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect } from "react";
-import {
-  Assessment,
-  GetAssessmentByIdData,
-  UpdateAssessmentProps,
-} from "@/lib/types/assessmentTypes";
+import { Assessment, UpdateAssessmentProps } from "@/lib/types/assessmentTypes";
 
 interface SideBarStartAtDateTimePickerProps {
   assessment: Assessment;

@@ -19,14 +19,14 @@ const Schema: React.FC<SchemaProps> = ({
 }) => {
   return (
     <TableRow className="bg-">
-      <TableHead className="hidden sm:table-cell">
+      {/* <TableHead className="hidden sm:table-cell">
         <div className="flex w-4 items-center gap-2">
           <Checkbox
             checked={allSelected}
             onCheckedChange={(checked) => onSelectAll(checked as boolean)}
           />
         </div>
-      </TableHead>
+      </TableHead> */}
       <TableHead onClick={() => toggleSorting("name")} className="w-[280px]">
         <div className="flex gap-2 text-[10px] items-center cursor-pointer">
           <User className="h-4 w-4" />
