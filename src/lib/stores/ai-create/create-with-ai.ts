@@ -25,7 +25,6 @@ interface Actions {
 
 // Create the store with persistence
 const useAiCreateStore = create<State & Actions>()(
-  persist(
     (set) => ({
       currentNumberOfQuestions: 0,
       currentDifficultyLevel: '',
@@ -42,10 +41,6 @@ const useAiCreateStore = create<State & Actions>()(
       setCurrentSectionIndex: (index) => set({ currentSectionIndex: index }),
       setCurrentQuestionIndex: (index) => set({ currentQuestionIndex: index }),
     }),
-    {
-      name: 'aicreate',
-    }
-  )
 );
 
 export default useAiCreateStore;
