@@ -849,7 +849,7 @@ export default function Create({
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-row gap-2">
                 Powered by
-                <Badge variant="outline">proktr.ai</Badge>
+                <Badge variant="outline">PNAcademy</Badge>
               </div>
               <div className="flex gap-2">
                 <Button

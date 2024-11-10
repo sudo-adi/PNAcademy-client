@@ -453,7 +453,7 @@ const ViewAssessment: React.FC<ViewAssessmentProps> = ({ params }) => {
           </ResizablePanelGroup>
         </div>
         <div className="flex h-[4rem] flex-row items-center px-8 justify-between">
-          <Badge variant={"outline"}>proktr.ai</Badge>
+          <Badge variant={"outline"}>PNAcademy</Badge>
           <div className="flex items-center justify-center p-6">
             <Badge variant={"outline"}>Section 1</Badge>
           </div>

@@ -74,7 +74,7 @@ const LoginPage = () => {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="user@proktr.ai"
+                      placeholder="user@PNAcademy"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       required
