@@ -257,7 +257,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
           </div>
           <div className="flex">
             <div className="flex items-center justify-center p-4 border-dashed-2 border rounded-md border-primary/40 my-2 mx-4">
-              <span className="font-semibold">50</span>
+              <span className="font-semibold">{currentQuestion?.marks}</span>
             </div>
             <div className="flex items-center justify-center p-6 border-dashed-2 border-l">
               <span className="font-semibold">

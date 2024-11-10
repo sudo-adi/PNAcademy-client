@@ -2,6 +2,8 @@ import {
   GetAssignedAssessmentsProps,
   GetAssignedAssessmentsResponse,
   AssignedAssessment,
+  SearchAssessmentsResponse,
+  SearchAssessmentsProps,
 } from "@/lib/types/assessmentTypes";
 import { ApiError } from "@/lib/api/apiError";
 import { getAssignedAssessments } from "@/lib/services/assessment/assessment-service";
@@ -32,7 +34,30 @@ export const useAssignedAssessments = () => {
     }
   };
 
+  // Function to search assigned assessments
+  const searchAssignedAssessments = async (
+    searchPayload: SearchAssessmentsProps
+  ): Promise<SearchAssessmentsResponse> => {
+    try {
+      const response = await searchAssignedAssessments(searchPayload);
+      return response;
+    } catch (err) {
+      if (err instanceof ApiError) {
+        console.error("API Error:", err.message);
+        throw err;
+      } else {
+        console.error("Error:", err);
+        throw new ApiError(
+          500,
+          "An unexpected error occurred while searching assessments",
+          err
+        );
+      }
+    }
+  };
+
   return {
     fetchAssignedAssessments,
+    searchAssignedAssessments,
   };
 };

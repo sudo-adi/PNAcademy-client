@@ -87,9 +87,7 @@ export function ScoreRangeDistributionCard() {
           </PieChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-[10px]">
-        hello kitty
-      </CardFooter>
+      <CardFooter className="flex-col gap-2 text-[10px]">Group</CardFooter>
     </Card>
   );
 }

@@ -17,6 +17,7 @@ import { ToastAction } from "@/components/ui/toast";
 import { ApiError } from "@/lib/api/apiError";
 import useVerificationStore from "@/lib/stores/verification-store/verification-store";
 import { Loader } from "lucide-react";
+import { useTest } from "../hooks/useTest";
 
 interface VerificationProps {
   params: {
@@ -28,14 +29,14 @@ const Verification: React.FC<VerificationProps> = ({ params }) => {
   const [pageIndex, setPageIndex] = useState("0");
   const router = useRouter();
   const [description, setDescription] = useState("");
-  const { fetchAssessmentById } = useAssessment();
   const { setAssessmentId } = useVerificationStore();
   const [loading, setLoading] = useState(false);
+  const { geAssignedAssessmentDetails } = useTest();
 
   const fetchAssessmentData = async () => {
     {
       try {
-        const data = await fetchAssessmentById({ id: params.assessmentId });
+        const data = await geAssignedAssessmentDetails(params.assessmentId);
         setDescription(data.description);
       } catch (err) {
         if (err instanceof ApiError) {

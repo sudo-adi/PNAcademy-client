@@ -81,7 +81,7 @@ export function CompetitiveGroupReportCard() {
       </CardContent>
       <CardFooter className="flex-col gap-2 pt-4 text-sm">
         <div className="flex items-center gap-2 font-medium text-[9px] leading-none">
-          Hello Kitty leads with 34 avg.
+          group 1 leads with 34 avg.
           <TrendingUp className="h-4 w-4" />
         </div>
       </CardFooter>
