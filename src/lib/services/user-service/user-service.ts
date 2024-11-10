@@ -87,6 +87,40 @@ export const getUsers = async (data: BulkUserProps): Promise<GetUsersResponse> =
   });
 };
 
+// // Function to Search Users
+// export const searchUsers = async (data: SearchUsersProps): Promise<SearchUsersResponse> => {
+//   return retry(async () => {
+//     try {
+//       const response = await axiosInstance.get<SearchUsersResponse>('/v1/user/bulk', { params: data });
+
+//       if (response.status === 200 || response.status === 201) {
+//         return response.data;
+//       } else {
+//         throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);
+//       }
+//     } catch (error) {
+//       if (error instanceof AxiosError) {
+//         const { response } = error;
+//         const status = response?.status ?? 500;
+//         const errorData = response?.data;
+
+//         switch (status) {
+//           case 401:
+//             throw new ApiError(status, 'Unauthorized: Access is denied due to invalid credentials', errorData);
+//           case 500:
+//             throw new ApiError(status, 'Internal Server Error', errorData);
+//           default:
+//             throw new ApiError(status, `HTTP Error: ${status}`, errorData);
+//         }
+//       } else if (error instanceof Error) {
+//         throw new ApiError(500, 'An unexpected error occurred', { message: error.message });
+//       } else {
+//         throw new ApiError(500, 'An unknown error occurred', error);
+//       }
+//     }
+//   });
+// };
+
 // Function to update a user
 export const updateUser = async (data: UpdateUserProps): Promise<UpdateUserResponse> => {
   return retry(async () => {

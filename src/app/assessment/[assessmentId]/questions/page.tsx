@@ -338,7 +338,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
         <div className="flex h-[4rem] flex-row items-center px-8 justify-between">
           <div className="flex gap-2">
             Powered By
-            <Badge variant={"outline"}>PNAcademy</Badge>
+            <Badge variant={"outline"}>proktr.ai</Badge>
           </div>
           <Slider
             defaultValue={[16]}
@@ -444,7 +444,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
           </ResizablePanelGroup>
         </div>
         <div className="flex h-[4rem] flex-row items-center px-8 justify-between">
-          <Badge variant={"outline"}>PNAcademy</Badge>
+          <Badge variant={"outline"}>proktr.ai</Badge>
           <div className="flex items-center justify-center p-6">
             <Badge variant={"outline"}>Section 1</Badge>
           </div>

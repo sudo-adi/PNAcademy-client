@@ -14,14 +14,14 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { useThemeContext } from "@/lib/context/theme-data-provider";
 
-type ThemeColors = "Zinc" | "Rose" | "Blue" | "Green" | "Orange";
+type ThemeColors = "Slate" | "Rose" | "Blue" | "Green" | "Orange";
 
 const availableThemeColors: {
   name: ThemeColors;
   light: string;
   dark: string;
 }[] = [
-  { name: "Zinc", light: "bg-zinc-900", dark: "bg-zinc-700" },
+  { name: "Slate", light: "bg-slate-700", dark: "bg-slate-700" },
   { name: "Rose", light: "bg-rose-600", dark: "bg-rose-700" },
   { name: "Blue", light: "bg-blue-600", dark: "bg-blue-700" },
   { name: "Green", light: "bg-green-600", dark: "bg-green-500" },

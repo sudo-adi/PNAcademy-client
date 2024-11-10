@@ -1,1 +1,1 @@
-type ThemeColors = "Zinc" | "Rose" | "Blue" | "Green" | "Orange";
+type ThemeColors = "Slate" | "Rose" | "Blue" | "Green" | "Orange";

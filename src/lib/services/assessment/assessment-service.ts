@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import axiosInstance from '../../api/axiosInstance';
 import { ApiError } from '../../api/apiError';
-import { AddGroupToAssessmentProps, AddGroupToAssessmentResponse, CreateAssessmentProps, CreateAssessmentResponse, DeleteAssessmentProps, DeleteAssessmentResponse, GetAssessmentByIdProps, GetAssessmentByIdResponse, GetAssessmentsProps, GetAssessmentsResponse, GetAssignedAssessmentsProps, GetAssignedAssessmentsResponse, RemoveGroupFromAssessmentProps, RemoveGroupFromAssessmentResponse, UpdateAssessmentProps, UpdateAssessmentResponse } from '@/lib/types/assessmentTypes';
+import { AddGroupToAssessmentProps, AddGroupToAssessmentResponse, CreateAssessmentProps, CreateAssessmentResponse, DeleteAssessmentProps, DeleteAssessmentResponse, GetAssessmentByIdProps, GetAssessmentByIdResponse, GetAssessmentsProps, GetAssessmentsResponse, GetAssignedAssessmentsProps, GetAssignedAssessmentsResponse, RemoveGroupFromAssessmentProps, RemoveGroupFromAssessmentResponse, SearchAssessmentsProps, SearchAssessmentsResponse, UpdateAssessmentProps, UpdateAssessmentResponse } from '@/lib/types/assessmentTypes';
 import { retry } from '@/lib/api/retryApiCalls';
 
 
@@ -116,6 +116,46 @@ export const getAssessments = async (data: GetAssessmentsProps): Promise<GetAsse
     }
   });
 };
+
+
+// Function to get all assessments
+export const searchAssessment = async (data: SearchAssessmentsProps): Promise<SearchAssessmentsResponse> => {
+  return retry(async () => {
+    try {
+      const response = await axiosInstance.get<SearchAssessmentsResponse>('/v1/assessment/search', {
+        params: data,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      } else {
+        throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const { response } = error;
+        const status = response?.status ?? 500;
+        const errorData = response?.data;
+
+        switch (status) {
+          case 400:
+            throw new ApiError(status, 'Bad request: Invalid parameters provided', errorData);
+          case 401:
+            throw new ApiError(status, 'Unauthorized: User does not have the required permissions', errorData);
+          case 500:
+            throw new ApiError(status, 'Internal Server Error', errorData);
+          default:
+            throw new ApiError(status, `HTTP Error: ${status}`, errorData);
+        }
+      } else if (error instanceof Error) {
+        throw new ApiError(500, 'An unexpected error occurred', { message: error.message });
+      } else {
+        throw new ApiError(500, 'An unknown error occurred', error);
+      }
+    }
+  });
+};
+
 
 
 // Function to update an assessment

@@ -113,7 +113,7 @@ const Assessments = () => {
                 Previous
               </TabsTrigger>
             </TabsList>
-            {/* <div className="flex flex-row w-full  lg:w-auto gap-2">
+            <div className="flex flex-row w-full  lg:w-auto gap-2">
               <Input
                 type="email"
                 className="min-w-[22rem] w-full"
@@ -125,7 +125,7 @@ const Assessments = () => {
               >
                 Search
               </Button>
-            </div> */}
+            </div>
           </div>
           <div className="w-full">
             <TabsContent value="0">

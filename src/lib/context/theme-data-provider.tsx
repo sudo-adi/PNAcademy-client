@@ -4,34 +4,45 @@ import { ThemeProviderProps } from "next-themes/dist/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import setGlobalColorTheme from "../theme-config/theme-colors";
 
-type ThemeColors = "Zinc" | "Rose" | "Blue" | "Green" | "Orange";
+type ThemeColors = "Slate" | "Rose" | "Blue" | "Green" | "Orange";
 
 const ThemeContext = createContext<{
   themeColor: ThemeColors;
   setThemeColor: (color: ThemeColors) => void;
-}>({ themeColor: "Zinc", setThemeColor: () => {} });
+}>({ themeColor: "Slate", setThemeColor: () => {} });
 
 export default function ThemeDataProvider({ children }: ThemeProviderProps) {
-  const getSavedThemeColor = () => {
+  const getSavedThemeColor = (): ThemeColors => {
     try {
-      return (localStorage.getItem("themeColor") as ThemeColors) || "Zinc";
+      const savedColor = localStorage.getItem("themeColor") as ThemeColors;
+      return savedColor &&
+        ["Slate", "Rose", "Blue", "Green", "Orange"].includes(savedColor)
+        ? savedColor
+        : "Slate";
     } catch (error) {
-      return "Zinc" as ThemeColors;
+      return "Slate";
     }
   };
 
-  const [themeColor, setThemeColor] = useState(getSavedThemeColor());
+  const [themeColor, setThemeColor] = useState<ThemeColors>(
+    getSavedThemeColor()
+  );
   const [isMounted, setIsMounted] = useState(false);
-  const { theme } = useTheme();
+  const { theme, systemTheme } = useTheme();
 
   useEffect(() => {
-    localStorage.setItem("themeColor", themeColor);
-    setGlobalColorTheme(theme as "light" | "dark", themeColor);
+    setIsMounted(true);
+  }, []);
 
-    if (!isMounted) {
-      setIsMounted(true);
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem("themeColor", themeColor);
+      const currentTheme = theme === "system" ? systemTheme : theme;
+      if (currentTheme === "light" || currentTheme === "dark") {
+        setGlobalColorTheme(currentTheme, themeColor);
+      }
     }
-  }, [themeColor, theme]);
+  }, [themeColor, theme, systemTheme, isMounted]);
 
   if (!isMounted) {
     return null;

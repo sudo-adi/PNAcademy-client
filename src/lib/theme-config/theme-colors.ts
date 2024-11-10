@@ -179,7 +179,7 @@ const themes = {
       ring: "346.8 77.2% 49.8%",
     },
   },
-  Zinc: {
+  Slate: {
     light: {
       background: "0 0% 100%",
       foreground: "240 10% 3.9%",

@@ -314,3 +314,35 @@ export interface AddGroupToAssessmentProps {
 export interface AddGroupToAssessmentResponse {
   status: string;
 }
+
+
+export interface SearchAssessmentsProps  {
+  page: number;        // Page number to fetch, e.g., 1
+  pageSize: number;    // Number of items per page, e.g., 10
+  order: 'ASC' | 'DESC'; // Sort order, either 'ASC' or 'DESC'
+  query: string;       // The query string or ID for the search, e.g., "8dac33f2-e389-4f8d-8d8d-02da412b9b0a"
+};
+
+
+export interface SearchAssessmentResult  {
+  id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+  start_at: string;        // ISO date string
+  end_at: string;          // ISO date string
+  duration: number;        // Duration in milliseconds
+  created_by: string;
+  createdAt: string;       // ISO date string
+  updatedAt: string;       // ISO date string
+};
+
+export interface SearchAssessmentsData  {
+  searchResults: SearchAssessmentResult[];
+  totalPages: number;
+};
+
+export interface SearchAssessmentsResponse{
+  message: string;
+  data: SearchAssessmentsData;
+};

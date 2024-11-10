@@ -61,7 +61,7 @@ const Create = () => {
           </>
         </CardContent>
         <CardFooter className="flex flex-row justify-between">
-          <Badge variant="outline">PNAcademy</Badge>
+          <Badge variant="outline">proktr.ai</Badge>
           <div className="flex flex-row items-center justify-center gap-2">
             {goBackLoading ? (
               <Button variant={"outline"} disabled>

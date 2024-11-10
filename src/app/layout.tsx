@@ -8,7 +8,7 @@ import ThemeDataProvider from "@/lib/context/theme-data-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PNAcademy",
+  title: "proktr.ai",
   description: "",
 };
 

@@ -145,7 +145,7 @@ const ManageAssessments = () => {
             )}
           </Button>
         </div>
-        {/* <div className="flex w-full max-w-sm items-center space-x-2">
+        <div className="flex w-full max-w-sm items-center space-x-2">
           <Input
             type="email"
             placeholder="Search User with email, id or name..."
@@ -157,7 +157,7 @@ const ManageAssessments = () => {
             <Search className="h-4 w-4" />
             Search
           </Button>
-        </div> */}
+        </div>
       </Card>
       <Tabs
         defaultValue={activeTabIndex.toString()}
