@@ -20,10 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {process.env.NEXT_ENV === "prod" && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
+        {
+          // process.env.NEXT_ENV === "prod"
+          true && (
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
               // Disable right click
               document.addEventListener('contextmenu', (e) => e.preventDefault());
 
@@ -130,9 +132,10 @@ export default function RootLayout({
                 }
               }, true);
             `,
-            }}
-          />
-        )}
+              }}
+            />
+          )
+        }
       </head>
       <body className={inter.className}>
         <ThemeProvider

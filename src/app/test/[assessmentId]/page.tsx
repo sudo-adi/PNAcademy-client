@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/components/ui/use-toast";
-import { useAssessment } from "@/app/dashboard/views/manage-assessment/hooks/useAssessment";
 import { ToastAction } from "@/components/ui/toast";
 import { ApiError } from "@/lib/api/apiError";
 import useVerificationStore from "@/lib/stores/verification-store/verification-store";
@@ -112,8 +111,8 @@ const Verification: React.FC<VerificationProps> = ({ params }) => {
             </CardHeader>
             <CardContent>
               <div className="flex dark:bg-black p-4 rounded-lg border-2 border-dashed">
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col gap-2 text-muted-foreground text-sm max-h-[30rem] overflow-hidden overflow-y-scroll">
+                <div className="flex flex-col gap-2 w-full">
+                  <div className="flex flex-col gap-2 text-muted-foreground text-sm max-h-[40rem] overflow-hidden overflow-y-scroll w-full scrollbar-none">
                     <h1>Test Conduct Guidelines</h1>
                     <h2>Ensure a Fair and Secure Test Environment</h2>
                     <ul

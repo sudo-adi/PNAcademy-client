@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import useAttemptAssessmentsStore from "@/lib/stores/attempt-assessment/attempt-assessment.store";
 import {
   Dialog,
@@ -68,7 +68,11 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
   >([]);
   const [endedSections, setEndedSections] = useState<number[]>([]);
   const [lockedSections, setLockedSections] = useState<number[]>([]);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(
+    !!document.fullscreenElement ||
+      !!(document as any).webkitFullscreenElement ||
+      !!(document as any).mozFullScreenElement
+  );
   const [activeSectionQuestions, setActiveSectionQuestions] = useState<
     AssignedAssessmentQuestion[]
   >([]);
@@ -323,27 +327,53 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
     }
   };
 
-  // useEffect(() => {
-  //   const handleVisibilityChange = () => {
-  //     if (document.visibilityState === "hidden") {
-  //       setSwitchCount((prev) => prev + 1);
-  //     }
-  //   };
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        setSwitchCount((prev) => prev + 1);
+      }
+    };
 
-  //   document.addEventListener("visibilitychange", handleVisibilityChange);
-  //   return () =>
-  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
-  // }, []);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
 
-  // useEffect(() => {
-  //   const handleFullscreenChange = () => {
-  //     setIsFullScreen(!!document.fullscreenElement);
-  //   };
-  //   document.addEventListener("fullscreenchange", handleFullscreenChange);
-  //   handleFullscreenChange();
-  //   return () =>
-  //     document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  // }, []);
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const fullScreenStatus =
+        !!document.fullscreenElement ||
+        !!(document as any).webkitFullscreenElement ||
+        !!(document as any).mozFullScreenElement;
+
+      setIsFullScreen(fullScreenStatus);
+    };
+
+    // Initial check
+    handleFullscreenChange();
+
+    // Add all possible fullscreen change events
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
+    document.addEventListener("mozfullscreenchange", handleFullscreenChange);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        handleFullscreenChange
+      );
+      document.removeEventListener(
+        "mozfullscreenchange",
+        handleFullscreenChange
+      );
+    };
+  }, [
+    document.fullscreenElement,
+    (document as any).webkitFullscreenElement,
+    (document as any).mozFullScreenElement,
+  ]);
 
   useEffect(() => {
     const initialize = async () => {
@@ -417,7 +447,7 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
 
             <AttemptionViewSideBar />
           </div>
-          <Dialog open={isFullScreen} onOpenChange={setIsFullScreen}>
+          <Dialog open={!isFullScreen} onOpenChange={setIsFullScreen}>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Full Screen Mode Required</DialogTitle>

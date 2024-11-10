@@ -1,11 +1,8 @@
 import {
-  SearchAssessmentsResponse,
-  SearchAssessmentsProps,
   SearchAssessmentResult,
 } from "@/lib/types/assessmentTypes";
 import { ApiError } from "@/lib/api/apiError";
 import {  searchAssignedAssessments } from "@/lib/services/assessment/assessment-service";
-import { pages } from "next/dist/build/templates/app-page";
 
 
 
