@@ -16,7 +16,7 @@ import {
   AssignedAssessmentQuestion,
   GetAssessmentTimeDetailsResponse,
 } from "@/lib/types/attemptionTypes";
-import { Circle, CircleCheck, MoveRight } from "lucide-react";
+import { CircleCheck, MoveRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import PnaLoader from "@/components/common/custom-loading-animation";
 import TopBar from "./components/topbar";
@@ -293,40 +293,7 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
     }
   };
 
-  const checkIsAssessmentValid = async () => {
-    try {
-      const data = await fetchAssessmentById({ id: params.assessmentId });
-      if (data) {
-        return true;
-      }
-    } catch (err) {
-      if (err instanceof ApiError) {
-        if (err.status === 400) {
-          router.push("/test/" + params.assessmentId);
-          toast({
-            title: "Invalid Assessment ID",
-            description: "Please provide a valid assessment ID",
-            action: <ToastAction altText="error">Ok</ToastAction>,
-          });
-        } else if (err.status === 404) {
-          router.push("/dashboard");
-          toast({
-            title: "Assessment not found",
-            description: "Assessment not found",
-            action: <ToastAction altText="error">Ok</ToastAction>,
-          });
-        } else {
-          router.push("/dashboard");
-          toast({
-            title: "Error fetching assessment",
-            description: "Something Went Wrong",
-            action: <ToastAction altText="error">Ok</ToastAction>,
-          });
-        }
-      }
-    }
-  };
-
+  
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
@@ -377,12 +344,10 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
 
   useEffect(() => {
     const initialize = async () => {
-      if (await checkIsAssessmentValid()) {
-        if (await checkVerificationAssessment()) {
-          await initalizeOverViewData();
-          await fetchTimeDetails();
-          startTimer();
-        }
+      if (await checkVerificationAssessment()) {
+        await initalizeOverViewData();
+        await fetchTimeDetails();
+        startTimer();
       }
     };
     initialize();
