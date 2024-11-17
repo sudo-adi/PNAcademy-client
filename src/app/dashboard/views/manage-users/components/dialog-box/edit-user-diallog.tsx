@@ -1,29 +1,44 @@
 "use client";
-import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectTrigger, SelectContent, SelectItem } from '@/components/ui/select';
-import { Edit, Loader2 } from 'lucide-react'; // Import Lucide loader icon
-import { useForm, Controller } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useUsers } from '../../hooks/useUsers'; // Adjust import as needed
-import { useRoles } from '../../hooks/useRoles'; // Adjust import as needed
-import { SingleUser } from '@/lib/types/userTypes'; // Adjust import as needed
-import { Role } from '@/lib/types/roleTypes';
-import { ApiError } from 'next/dist/server/api-utils';
+import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Edit, Loader2 } from "lucide-react"; // Import Lucide loader icon
+import { useForm, Controller } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useUsers } from "../../hooks/useUsers"; // Adjust import as needed
+import { useRoles } from "../../hooks/useRoles"; // Adjust import as needed
+import { SingleUser } from "@/lib/types/userTypes"; // Adjust import as needed
+import { Role } from "@/lib/types/roleTypes";
+import { ApiError } from "next/dist/server/api-utils";
 
 // Define schema using zod
 const schema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string()
-    .length(10, 'Phone number must be exactly 10 digits long')
-    .regex(/^\d{10}$/, 'Phone number must be numeric'),
-  roleId: z.string().min(1, 'Role is required'),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z
+    .string()
+    .length(10, "Phone number must be exactly 10 digits long")
+    .regex(/^\d{10}$/, "Phone number must be numeric"),
+  roleId: z.string().min(1, "Role is required"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -32,12 +47,19 @@ interface EditUserDialogProps {
   refreshUsers: () => void;
 }
 
-const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) => {
-
+const EditUserDialog: React.FC<EditUserDialogProps> = ({
+  user,
+  refreshUsers,
+}) => {
   // all hooks here
   const { fetchRoles } = useRoles();
   const { editUser } = useUsers();
-  const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
       firstName: user.first_name,
@@ -60,7 +82,9 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
   const [editingRoles, setEditingRoles] = useState(false);
 
   // error states
-  const [errorEditingRoles, setErrorEditingRoles] = useState<ApiError | Error>();
+  const [errorEditingRoles, setErrorEditingRoles] = useState<
+    ApiError | Error
+  >();
   const [rolesError, setRolesError] = useState<ApiError | Error>();
 
   // disable states
@@ -69,7 +93,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
   // functions here
   const onSubmit = async (data: FormData) => {
     try {
-      setEditingRoles(true)
+      setEditingRoles(true);
       await editUser({
         ...data,
         id: user.id, // User ID
@@ -91,21 +115,19 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
         setErrorEditingRoles(err as Error);
       }
     } finally {
-      setEditingRoles(false)
+      setEditingRoles(false);
     }
   };
 
   const fetchRolesData = useCallback(async () => {
     try {
       setLoadingRoles(true);
-      const response = await fetchRoles(
-        {
-          page: 1,
-          pageSize: 999,
-          sortBy: "name",
-          order: "ASC"
-        }
-      )
+      const response = await fetchRoles({
+        page: 1,
+        pageSize: 999,
+        sortBy: "name",
+        order: "ASC",
+      });
       setRoles(response);
     } catch (err) {
       if (err instanceof ApiError) {
@@ -129,7 +151,7 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" className='bg-transparent'>
+          <Button variant="outline" className="bg-transparent">
             <Edit className="h-4 w-4" />
           </Button>
         </DialogTrigger>
@@ -147,14 +169,12 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
                 name="firstName"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    id="firstName"
-                    placeholder="John"
-                    {...field}
-                  />
+                  <Input id="firstName" placeholder="John" {...field} />
                 )}
               />
-              {errors.firstName && <p className="text-red-400">{errors.firstName.message}</p>}
+              {errors.firstName && (
+                <p className="text-red-400">{errors.firstName.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -163,14 +183,12 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
                 name="lastName"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    id="lastName"
-                    placeholder="Doe"
-                    {...field}
-                  />
+                  <Input id="lastName" placeholder="Doe" {...field} />
                 )}
               />
-              {errors.lastName && <p className="text-red-400">{errors.lastName.message}</p>}
+              {errors.lastName && (
+                <p className="text-red-400">{errors.lastName.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -187,7 +205,9 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
                   />
                 )}
               />
-              {errors.email && <p className="text-red-400">{errors.email.message}</p>}
+              {errors.email && (
+                <p className="text-red-400">{errors.email.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -196,14 +216,12 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
                 name="phone"
                 control={control}
                 render={({ field }) => (
-                  <Input
-                    id="phone"
-                    placeholder="98XXXXXX00"
-                    {...field}
-                  />
+                  <Input id="phone" placeholder="98XXXXXX00" {...field} />
                 )}
               />
-              {errors.phone && <p className="text-red-400">{errors.phone.message}</p>}
+              {errors.phone && (
+                <p className="text-red-400">{errors.phone.message}</p>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
@@ -212,19 +230,17 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
                 name="roleId"
                 control={control}
                 render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
                       <div>
                         {field.value
-                          ? roles.find(role => role.id === field.value)?.name || "Select Role"
+                          ? roles.find((role) => role.id === field.value)
+                              ?.name || "Select Role"
                           : "Select Role"}
                       </div>
                     </SelectTrigger>
                     <SelectContent>
-                      {roles.map(role => (
+                      {roles.map((role) => (
                         <SelectItem key={role.id} value={role.id}>
                           {role.name}
                         </SelectItem>
@@ -233,7 +249,9 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
                   </Select>
                 )}
               />
-              {errors.roleId && <p className="text-red-400">{errors.roleId.message}</p>}
+              {errors.roleId && (
+                <p className="text-red-400">{errors.roleId.message}</p>
+              )}
             </div>
 
             <DialogFooter>
@@ -244,7 +262,11 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
                   </DialogClose>
                 </div>
                 <Button variant="default" type="submit">
-                  {editingRoles ? <Loader2 className="animate-spin" /> : "Save Changes"}
+                  {editingRoles ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    "Save Changes"
+                  )}
                 </Button>
               </div>
             </DialogFooter>
@@ -256,9 +278,11 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({ user, refreshUsers }) =
       <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{'Success'}</DialogTitle>
+            <DialogTitle>{"Success"}</DialogTitle>
           </DialogHeader>
-          <DialogDescription>{errorEditingRoles?.message || 'User updated successfully.'}</DialogDescription>
+          <DialogDescription>
+            {errorEditingRoles?.message || "User updated successfully."}
+          </DialogDescription>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="default">Close</Button>

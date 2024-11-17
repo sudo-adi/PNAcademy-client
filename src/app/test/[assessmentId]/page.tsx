@@ -31,6 +31,7 @@ const Verification: React.FC<VerificationProps> = ({ params }) => {
   const { setAssessmentId } = useVerificationStore();
   const [loading, setLoading] = useState(false);
   const { geAssignedAssessmentDetails } = useTest();
+  const [totalMarks, setTotalMarks] = useState(0);
 
   const fetchAssessmentData = async () => {
     {

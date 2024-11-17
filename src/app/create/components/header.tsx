@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({
       <div className="flex gap-2">
         <button
           className="text-[10px] border p-2 text-xs rounded-[8px] hover:bg-secondary flex items-center justify-center"
-          onClick={() => router.back()}
+          onClick={() => router.push("/dashboard")}
         >
           <ArrowLeft className="h-3 w-3" />
         </button>

@@ -1,16 +1,26 @@
 "use client";
-import React, { useState, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Trash2, Loader2 } from 'lucide-react';
-import { useUsers } from '../../hooks/useUsers';
-import { DeleteUsersDialogProps } from '@/lib/types/userTypes';
-import { toast } from '@/components/ui/use-toast'
-import { ToastAction } from '@/components/ui/toast'
+import React, { useState, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Trash2, Loader2 } from "lucide-react";
+import { useUsers } from "../../hooks/useUsers";
+import { DeleteUsersDialogProps } from "@/lib/types/userTypes";
+import { toast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
-const DeleteUserDialog: React.FC<DeleteUsersDialogProps> = ({ refreshUsers, user }) => {
-  const { removeUsers
-  } = useUsers();
+const DeleteUserDialog: React.FC<DeleteUsersDialogProps> = ({
+  refreshUsers,
+  user,
+}) => {
+  const { removeUsers } = useUsers();
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -19,18 +29,16 @@ const DeleteUserDialog: React.FC<DeleteUsersDialogProps> = ({ refreshUsers, user
     try {
       await removeUsers({ userIds: [user.id] });
     } catch (err) {
-      console.error('Error deleting user:', err);
+      console.error("Error deleting user:", err);
     } finally {
       setLoading(false);
       refreshUsers();
       toast({
         title: `Role ${user.first_name} ${user.last_name} deleted successfully`,
-        action: (
-          <ToastAction altText="Goto schedule to undo">Ok</ToastAction>
-        ),
-      })
+        action: <ToastAction altText="Goto schedule to undo">Ok</ToastAction>,
+      });
     }
-  }, [removeUsers, user.id,]);
+  }, [removeUsers, user.id]);
 
   return (
     <>
@@ -44,16 +52,17 @@ const DeleteUserDialog: React.FC<DeleteUsersDialogProps> = ({ refreshUsers, user
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this user? This action cannot be undone.
+              Are you sure you want to delete this user? This action cannot be
+              undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button
-              variant="destructive"
-              onClick={onSubmit}
-              disabled={loading}
-            >
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
+            <Button variant="destructive" onClick={onSubmit} disabled={loading}>
+              {loading ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                "Delete"
+              )}
             </Button>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
               Cancel

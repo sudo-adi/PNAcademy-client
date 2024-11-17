@@ -110,3 +110,16 @@ export interface GetUserInfoResponse {
   message: string;
   data: SingleUser;
 }
+
+
+
+export interface ChangeUserPasswordProps {
+  userId?: string;
+  password: string;
+}
+
+
+export interface ChangeUserPasswordResponse {
+  status: string;
+  message: string;
+}

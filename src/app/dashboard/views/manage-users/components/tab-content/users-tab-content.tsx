@@ -32,6 +32,7 @@ import EditUserDialog from "../dialog-box/edit-user-diallog";
 import DeleteUserDialog from "../dialog-box/delete-user-dialog";
 import useUserTableStore from "@/lib/stores/manage-users-store/user-table-store";
 import { ApiError } from "@/lib/api/apiError";
+import ChangeUserPasswordDialog from "../dialog-box/change-user-password-dialog";
 
 const UsersTabContent: React.FC = () => {
   // all hooks here
@@ -372,6 +373,11 @@ const Row: React.FC<RowProps> = ({
             <Skeleton className="w-8 h-8" />
           ) : (
             <DeleteUserDialog user={user} refreshUsers={refreshUsers} />
+          )}
+          {loading ? (
+            <Skeleton className="w-8 h-8" />
+          ) : (
+            <ChangeUserPasswordDialog user={user} refreshUsers={refreshUsers} />
           )}
         </div>
       </TableCell>

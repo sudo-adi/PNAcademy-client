@@ -19,15 +19,10 @@ import {
   FileCog,
   FilePieChart,
   Files,
-  Home,
   LayoutDashboard,
-  LineChart,
   Menu,
-  Package,
-  Package2,
   PieChart,
   Settings,
-  ShoppingCart,
   UserCog,
   Users,
 } from "lucide-react";
@@ -36,9 +31,11 @@ import Nav from "./nav";
 import { ThemeColorToggle } from "@/components/common/theme-color-sitcher";
 
 const Header = () => {
+  const { activeNavIndex, setActiveNavIndex } = useStore();
   const handleLogOut = () => {
     clearTokens();
     window.location.href = "/login";
+    setActiveNavIndex(0);
   };
   const Title = [
     <HeaderTitle title={"Home"} icon={<LayoutDashboard />} />,
@@ -52,7 +49,6 @@ const Header = () => {
     <HeaderTitle title={"Settings"} icon={<Bell />} />,
     <HeaderTitle title={"Settings"} icon={<Settings />} />,
   ];
-  const { activeNavIndex } = useStore();
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
       <Sheet>

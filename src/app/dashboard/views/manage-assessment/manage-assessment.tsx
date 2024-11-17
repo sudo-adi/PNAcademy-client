@@ -16,7 +16,6 @@ import { useAssessment } from "./hooks/useAssessment";
 import { Assessment } from "@/lib/types/assessmentTypes";
 import { ApiError } from "@/lib/api/apiError";
 import useAssessmentsTableStore from "@/lib/stores/manage-assessment-store/assessments-table";
-import MultiDeleteDialog from "./components/dialog-box/multi-delete-dialog";
 
 const ManageAssessments = () => {
   // all hooks here

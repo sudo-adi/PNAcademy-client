@@ -10,6 +10,8 @@ import {
   SingleUser,
   GetUsersByRoleIdResponse,
   GetUsersByRoleIdProps,
+  ChangeUserPasswordProps,
+  ChangeUserPasswordResponse,
 } from '@/lib/types/userTypes';
 import {
   registerUser,
@@ -18,6 +20,7 @@ import {
   deleteUsers,
   importUsers,
   getUsersByRoleId,
+  changeUserPassword,
 } from '@/lib/services/user-service/user-service';
 import { ApiError } from '@/lib/api/apiError';
 
@@ -102,6 +105,28 @@ export const useUsers = () => {
 
     }
   };
+
+
+    // Hook Method to delete users
+    const changePassword = async (data: ChangeUserPasswordProps): Promise<String> => {
+      try {
+        const response: ChangeUserPasswordResponse = await changeUserPassword(data);
+        console.log("this is resposne", response);
+        return response.message;
+      } catch (err) {
+        if (err instanceof ApiError) {
+          throw err;
+        } else {
+          throw new Error('An unexpected error occurred');
+        }
+      } finally {
+
+      }
+    };
+
+
+
+
 
   interface ImportUsersFromCSVProps {
     users: File;
@@ -197,5 +222,6 @@ export const useUsers = () => {
     editUser,
     removeUsers,
     importUsersFromCSV,
+    changePassword,
   };
 };

@@ -4,6 +4,8 @@ import { retry } from '@/lib/api/retryApiCalls';
 import { GetUsersByGroupIdProps, GetUsersByGroupIdResponse } from '@/lib/types/groupTypes';
 import {
   BulkUserProps,
+  ChangeUserPasswordProps,
+  ChangeUserPasswordResponse,
   DeleteUsersProps,
   DeleteUsersResponse,
   GetUserInfoResponse,
@@ -322,7 +324,7 @@ export const getUsersByRoleId = async (data: GetUsersByRoleIdProps): Promise<Get
 
         switch (status) {
           case 400:
-            throw new ApiError(status, 'Bad Request - Invalid roleId', errorData);
+            throw new ApiError(status, 'Bad Request', errorData);
           case 401:
             throw new ApiError(status, 'Unauthorized - User doesn\'t have the required permissions', errorData);
           case 500:
@@ -338,3 +340,45 @@ export const getUsersByRoleId = async (data: GetUsersByRoleIdProps): Promise<Get
     }
   });
 };
+
+
+export const changeUserPassword = async (data: ChangeUserPasswordProps): Promise<ChangeUserPasswordResponse> => {
+  return retry(async () => {
+    try {
+      console.log("this is payload",data);
+      const response =
+        data.userId
+          ? await axiosInstance.post<ChangeUserPasswordResponse>('/v1/user/admin/password-reset', data)
+          : await axiosInstance.post<ChangeUserPasswordResponse>('/v1/user/password-reset', { password: data.password });
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      } else {
+        throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const { response } = error;
+        const status = response?.status ?? 500;
+        const errorData = response?.data;
+
+        switch (status) {
+          case 400:
+            throw new ApiError(status, 'Invalid Password Format, Please enter the correct format of the password', errorData);
+          case 401:
+            throw new ApiError(status, 'Unauthorized - User doesn\'t have the required permissions', errorData);
+          case 404:
+              throw new ApiError(status, 'User Not Found', errorData);
+          case 500:
+            throw new ApiError(status, 'Internal Server Error', errorData);
+          default:
+            throw new ApiError(status, `HTTP Error: ${status}`, errorData);
+        }
+      } else if (error instanceof Error) {
+        throw new ApiError(500, 'An unexpected error occurred', { message: error.message });
+      } else {
+        throw new ApiError(500, 'An unknown error occurred', error);
+      }
+    }
+  });
+};
+
