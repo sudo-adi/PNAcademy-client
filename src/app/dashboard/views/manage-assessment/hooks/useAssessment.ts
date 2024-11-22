@@ -23,6 +23,8 @@ import {
   UpdateAssessmentProps,
 } from '@/lib/types/assessmentTypes';
 import { ApiError } from '@/lib/api/apiError';
+import { SaveAiGeneratedAssessmentProps, SaveAiGeneratedAssessmentResponse } from '@/lib/types/ai-assessment';
+import { saveAiGeneratedAssessment } from '@/lib/services/ai-assessment/create';
 
 // Hook to manage assessments
 export const useAssessment = () => {
@@ -39,6 +41,25 @@ export const useAssessment = () => {
       }
     }
   };
+
+   const addAssessmentWithImport = async (data: SaveAiGeneratedAssessmentProps): Promise<string> => {
+    try {
+      const response: SaveAiGeneratedAssessmentResponse = await saveAiGeneratedAssessment(data);
+      if (response) {
+        return response.data.assessmentId;
+      }
+      throw new ApiError(500, 'An error occurred while saving the assessment', response);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        throw err;
+      } else {
+        throw new ApiError(500, 'An error occurred while saving the assessment', err);
+      }
+    } finally {
+      // Do something after the request is complete
+    }
+  };
+
 
   // Method to fetch an assessment by ID
   const fetchAssessmentById = async (data: GetAssessmentByIdProps): Promise<GetAssessmentByIdData> => {
@@ -141,6 +162,8 @@ export const useAssessment = () => {
     }
   };
 
+
+
   return {
     addAssessment,
     fetchAssessmentById,
@@ -150,5 +173,6 @@ export const useAssessment = () => {
     assignAssessmentToGroup,
     fetchAssignedAssessments,
     removeAssessmentFromGroup,
+    addAssessmentWithImport,
   };
 };
