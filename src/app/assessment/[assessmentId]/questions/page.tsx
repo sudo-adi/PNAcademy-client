@@ -323,7 +323,7 @@ const Assessment: React.FC<AssessmentProps> = ({ params }) => {
                         />
                       </div>
                       <div
-                        className="cursor-pointer flex h-full w-full p-5 border-l bg-background scrollbar-thin rounded-r-sm"
+                        className="cursor-pointer flex h-full items-center w-full p-5 border-l bg-background scrollbar-thin rounded-r-sm"
                         style={{ fontSize: `${fontSize}px` }}
                       >
                         {option.description}

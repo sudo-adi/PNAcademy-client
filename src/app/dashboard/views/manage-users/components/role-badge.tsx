@@ -1,54 +1,60 @@
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { DialogContent, DialogHeader, DialogTrigger } from '@/components/ui/dialog';
-import { Tooltip, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Dialog, DialogDescription, DialogTitle } from '@radix-ui/react-dialog';
-import React from 'react'
+import React from "react";
+import { cva, VariantProps } from "class-variance-authority";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
+// Define badge variants
+const badgeVariants = cva(
+  "flex items-center gap-2 cursor-pointer transition-all duration-200 ease-in-out",
+  {
+    variants: {
+      variant: {
+        default: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        outline: "border border-border hover:bg-accent",
+        subtle: "bg-accent text-accent-foreground hover:bg-accent/80",
+        destructive:
+          "bg-destructive text-destructive-foreground hover:bg-destructive/80",
+        success: "bg-green-500 text-white hover:bg-green-600",
+      },
+      size: {
+        default: "text-[10px] px-2 py-1",
+        sm: "text-[9px] px-1 py-0.5",
+        lg: "text-xs px-3 py-1.5",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
 
-interface RoleBadgeProps {
+interface RoleBadgeProps extends VariantProps<typeof badgeVariants> {
   text?: string;
   icon: React.ReactElement;
+  className?: string;
   onClick?: () => void;
 }
 
-const RoleBadge: React.FC<RoleBadgeProps> = ({ text, icon, onClick }) => {
-
+const RoleBadge: React.FC<RoleBadgeProps> = ({ text, icon, variant }) => {
   const iconWithClass = React.cloneElement(icon, {
-    className: `${icon.props.className || ''} h-3 w-3`
+    className: cn(
+      icon.props.className,
+      "h-3 w-3",
+      variant === "destructive" ? "text-white" : ""
+    ),
   });
 
-
   return (
-    <Dialog>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DialogTrigger asChild>
-              <>
-                <DialogTrigger asChild>
-                  <button >
-                    <Badge className='flex gap-2 text-[10px]'>
-                      {iconWithClass}
-                      {text}
-                    </Badge>
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="w-[800px]">
-                  <DialogHeader>
-                    <DialogTitle>Edit profile</DialogTitle>
-                    <DialogDescription>
-                      Make changes to your profile here. Click save when you're done.
-                    </DialogDescription>
-                  </DialogHeader>
-                </DialogContent>
-              </>
-            </DialogTrigger>
-          </TooltipTrigger>
-        </Tooltip>
-      </TooltipProvider>
-    </Dialog>
-  )
-}
+    <Badge
+      className="
+    flex flex-row gap-2"
+    >
+      {iconWithClass}
 
-export default RoleBadge
+      {text}
+    </Badge>
+  );
+};
+
+export default RoleBadge;

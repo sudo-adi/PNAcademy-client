@@ -1,8 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { ArchiveIcon, CircleDot, CircleIcon, UsersIcon } from "lucide-react";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDashboardStats } from "./hooks/useDashboard";
-import { getOngoingAssessmentsCount } from "@/lib/services/dashboard-service/dashboard-stats";
 
 const OverView = () => {
   const [totalAssessments, setTotalAssessments] = useState<number>(0);
@@ -12,9 +11,7 @@ const OverView = () => {
     useState<number>(0);
   const [pastAssessmentsCount, setPastAssessmentsCount] = useState<number>(0);
   const [draftAssessmentsCount, setDraftAssessmentsCount] = useState<number>(0);
-
   const { fetchAllDashboardStats } = useDashboardStats();
-
   const fetchStats = async () => {
     try {
       const stats = await fetchAllDashboardStats();
@@ -23,9 +20,7 @@ const OverView = () => {
       setScheduledAssessmentsCount(stats.scheduledAssessmentsCount);
       setPastAssessmentsCount(stats.pastAssessmentsCount);
       setDraftAssessmentsCount(stats.draftAssessmentsCount);
-    } catch (err) {
-
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {

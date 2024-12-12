@@ -9,9 +9,9 @@ import OnGoingTabContent from "./components/tab-content/ongoing-tab-content";
 import ScheduledTabContent from "./components/tab-content/scheduled-tab-content";
 import PreviousTabContent from "./components/tab-content/previous-tab-content";
 import { useAssignedAssessments } from "./hooks/useAssignedAssessments";
-import { Assessment, AssignedAssessment } from "@/lib/types/assessmentTypes";
+import { AssignedAssessment } from "@/lib/types/assessmentTypes";
 import { useRouter } from "next/navigation";
-import { Loader } from "lucide-react";
+import { Loader, RefreshCw, Search } from "lucide-react";
 
 const Assessments = () => {
   // all hooks here
@@ -68,16 +68,16 @@ const Assessments = () => {
 
   return (
     <>
-      <div className="flex flex-col gap-2 overflow-y-hidden">
-        <Card className="flex flex-col lg:flex-row w-full  justify-between items-center border-dashed gap-4 p-4 lg:p-2 overflow-hidden">
-          <div className="flex flex-row gap-2">
-            <div className="text-3xl">
-              <h1>Assessments</h1>
-            </div>
-          </div>
+      <div className="flex flex-col gap-1 overflow-y-hidden">
+        <Card className="flex flex-row w-full p-[2px] px-[3px] justify-between items-center border-dashed gap-1">
+          <Button className="flex items-center justify-center gap-1">
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
           <div className="flex w-7/10 h-full lg:w-auto items-center space-x-2">
             <Input
-              className="w-[22rem]"
+              className="min-w-[22rem] w-full min-h-[20px]"
+              variant="clean"
               type="email"
               placeholder="Join with assessment Id..."
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -98,7 +98,7 @@ const Assessments = () => {
           defaultValue={activeTabIndex.toString()}
           className="flex flex-col items-center"
         >
-          <div className="flex items-center lg:justify-between flex-col-reverse lg:flex-row px-2 lg:px-0 lg:w-full w-full gap-2">
+          <div className="flex items-top lg:justify-between flex-col-reverse lg:flex-row px-2 lg:px-0 lg:w-full w-full gap-2">
             <TabsList className="grid grid-cols-4 w-full lg:w-auto">
               <TabsTrigger value="0" onClick={() => setActiveTabIndex(0)}>
                 All
@@ -113,16 +113,18 @@ const Assessments = () => {
                 Previous
               </TabsTrigger>
             </TabsList>
-            <div className="flex flex-row w-full  lg:w-auto gap-2">
+            <div className="flex w-full max-w-lg items-center space-x-2 p-0">
               <Input
                 type="email"
-                className="min-w-[22rem] w-full"
-                placeholder="Search Assessment By Id or Name..."
+                className="min-h-[20px]ß"
+                variant="clean"
+                placeholder="Search User with email, id or name..."
               />
               <Button
                 type="submit"
                 className="flex items-center justify-center  gap-1"
               >
+                <Search className="h-4 w-4" />
                 Search
               </Button>
             </div>

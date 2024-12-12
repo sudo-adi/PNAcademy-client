@@ -118,7 +118,7 @@ const AllTabContent: React.FC<AllTabContentProps> = ({
     <>
       <Card className="my-2 h-[calc(100vh-17rem)] w-full flex flex-col">
         <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
-          <div className="absolute inset-0 overflow-y-scroll">
+          <div className="absolute inset-0 overflow-auto  scrollbar-thin">
             <table className="w-full">
               <thead className="sticky bg-background top-0 z-10">
                 <Schema
@@ -149,17 +149,21 @@ const AllTabContent: React.FC<AllTabContentProps> = ({
         <Label className="text-[10px]">
           {allAssessments.length} Assessments
         </Label>
-        {/* <div className="flex flex-row gap-2 items-center justify-center text-xs font-bold">
+        <div className="flex flex-row gap-2 items-center justify-center text-xs font-bold">
           <div className="flex p-2 rounded-xl border">
             {activePageIndex + 1} / {totalPages}
           </div>
-          <Button variant={"outline"} size="sm" onClick={handleNavigateToPreviousPage}>
+          <Button
+            variant={"outline"}
+            size="sm"
+            onClick={handleNavigateToPreviousPage}
+          >
             Previous
           </Button>
           <Button size="sm" onClick={handleNavigateToNextPage}>
             Next Page
           </Button>
-        </div> */}
+        </div>
       </div>
     </>
   );

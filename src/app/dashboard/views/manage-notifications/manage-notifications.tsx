@@ -23,15 +23,8 @@ const ManageNotifications = () => {
   const [notifications, setNotifications] = useState<SingleNotification[]>([]);
 
   // global states here
-  const {
-    activePageIndex,
-    displayNumberOfRows,
-    sortBy,
-    order,
-    setActivePageIndex,
-    setDisplayNumberOfRows,
-    setOrder,
-  } = useNotificationTableStore();
+  const { activePageIndex, displayNumberOfRows, sortBy, order } =
+    useNotificationTableStore();
 
   // all functions here
   const fetchNotifications = async () => {
@@ -90,7 +83,7 @@ const ManageNotifications = () => {
             refreshNotifications={refreshNotifications}
           />
         </div>
-        <Card className="my-2 h-[calc(100vh-11rem)] flex flex-col">
+        <Card className="mt-2 h-[calc(100vh-11rem)] flex flex-col">
           <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
             <div className="absolute inset-0 overflow-auto">
               <table className="w-full">
@@ -130,25 +123,25 @@ const ManageNotifications = () => {
 const Schema = () => {
   return (
     <TableRow>
-      <TableHead className="cursor-default">
+      <TableHead className="w-[20%] cursor-default">
         <div className="flex flex-row gap-2 items-center text-[10px]">
           <Bell className="h-3 w-3" />
           Notifications
         </div>
       </TableHead>
-      <TableHead>
+      <TableHead className="w-[25%]">
         <div className="flex flex-row gap-2 items-center text-[10px] cursor-pointer">
           <Calendar className="h-3 w-3" />
           Created At
         </div>
       </TableHead>
-      <TableHead className="md:table-cell cursor-default">
+      <TableHead className="w-[15%] md:table-cell cursor-default">
         <div className="flex flex-row gap-2 items-center text-[10px]">
           <Eye className="h-3 w-3" />
           View
         </div>
       </TableHead>
-      <TableHead className="md:table-cell cursor-default">
+      <TableHead className="w-[15%] md:table-cell cursor-default">
         <div className="flex flex-row gap-2 items-center text-[10px]">
           <Trash2 className="h-3 w-3" />
           Delete
@@ -168,7 +161,7 @@ const Row = ({ notification, removeNotification }: RowProps) => {
     <TableRow>
       <TableCell className="font-medium text-left max-w-[10rem]">
         <div className="flex flex-col gap-2 max-w-[8rem] md:max-w-[20rem]">
-          <div className="flex flex-col gap-2 items-start">
+          <div className="flex flex-col gap-2 items-start text-sm">
             {truncateText(notification.title, 100)}
           </div>
           <div className="text-[10px] text-secondary-foreground font-thin text line-clamp-2">
@@ -179,7 +172,7 @@ const Row = ({ notification, removeNotification }: RowProps) => {
       <TableCell className="">
         <Badge variant={"outline"}>
           {
-            <div className="flex flex-col gap-2 items-start">
+            <div className="flex flex-col gap-2 items-start text-[10px]">
               {formatDate(
                 new Date(notification.createdAt),
                 "do MMMM yyyy, hh:mm a"

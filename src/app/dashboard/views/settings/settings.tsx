@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { ApiError } from "@/lib/api/apiError";
 import { Label } from "@/components/ui/label";
+
 const Settings = () => {
   const { fetchUserInfo } = useUserInfo();
   const { changePassword } = useUsers();
@@ -24,6 +25,7 @@ const Settings = () => {
       setUserInfo(data);
     } catch (err) {}
   };
+
   useEffect(() => {
     initialize();
   }, []);
@@ -57,13 +59,11 @@ const Settings = () => {
   };
 
   return (
-    <div
-      className="flex flex-col flex-1 items-start justify-start rounded-lg border border-dashed shadow-sm"
-      x-chunk="dashboard-02-chunk-1"
-    >
-      <div className="flex p-4 gap-4 flex-col w-[30rem]">
-        <div className="flex flex-row gap-4">
-          <div className="flex-1 space-y-2">
+    <div className="container mx-auto px-4 py-6">
+      <div className="w-full max-w-md mx-auto space-y-6">
+        {/* Name Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
             <Label htmlFor="first_name">First Name</Label>
             <Input
               id="first_name"
@@ -71,10 +71,11 @@ const Settings = () => {
               placeholder="First Name"
               value={userInfo.first_name}
               disabled={true}
+              className="w-full"
             />
           </div>
 
-          <div className="flex-1 space-y-2">
+          <div className="space-y-2">
             <Label htmlFor="last_name">Last Name</Label>
             <Input
               id="last_name"
@@ -82,12 +83,14 @@ const Settings = () => {
               placeholder="Last Name"
               value={userInfo.last_name}
               disabled={true}
+              className="w-full"
             />
           </div>
         </div>
 
-        <div className="flex flex-row gap-4">
-          <div className="flex-1 space-y-2">
+        {/* Contact Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
@@ -95,10 +98,11 @@ const Settings = () => {
               placeholder="Email Address"
               value={userInfo.email}
               disabled={true}
+              className="w-full"
             />
           </div>
 
-          <div className="flex-1 space-y-2">
+          <div className="space-y-2">
             <Label htmlFor="phone">Phone</Label>
             <Input
               id="phone"
@@ -106,14 +110,16 @@ const Settings = () => {
               placeholder="Phone Number"
               value={userInfo.phone}
               disabled={true}
+              className="w-full"
             />
           </div>
         </div>
 
-        <Separator className="my-4" />
+        <Separator />
 
-        <div className="flex flex-row gap-4">
-          <div className="relative flex-grow space-y-2">
+        {/* Password Reset Section */}
+        <div className="space-y-4">
+          <div className="space-y-2">
             <Label htmlFor="new_password">New Password</Label>
             <div className="relative">
               <Input
@@ -122,12 +128,12 @@ const Settings = () => {
                 placeholder="Enter new password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="pr-10"
+                className="w-full pr-10"
               />
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                className="absolute right-0 top-1/2 -translate-y-1/2 h-full px-3 hover:bg-transparent"
                 onClick={() => setShowPassword(!showPassword)}
                 type="button"
                 aria-label={showPassword ? "Hide password" : "Show password"}
@@ -140,24 +146,23 @@ const Settings = () => {
               </Button>
             </div>
           </div>
-          <div className="flex items-end">
-            <Button onClick={handleResetPassword} size={"sm"}>
-              {changingPassword ? (
-                <>
-                  <Loader className="animate-spin mr-2" /> Resetting Password...
-                </>
-              ) : (
-                <>Reset Password</>
-              )}
-            </Button>
-          </div>
-        </div>
 
-        <p className="text-xs text-muted-foreground px-2 max-w-lg">
-          Note: Password must be at least 8 characters long and contain at least
-          one uppercase letter, one lowercase letter, one number and one special
-          character. e.g Password@123
-        </p>
+          <Button onClick={handleResetPassword} className="w-full">
+            {changingPassword ? (
+              <>
+                <Loader className="animate-spin mr-2" /> Resetting Password...
+              </>
+            ) : (
+              <>Reset Password</>
+            )}
+          </Button>
+
+          <p className="text-xs text-muted-foreground text-center">
+            Note: Password must be at least 8 characters long and contain at
+            least one uppercase letter, one lowercase letter, one number and one
+            special character. e.g Password@123
+          </p>
+        </div>
       </div>
     </div>
   );

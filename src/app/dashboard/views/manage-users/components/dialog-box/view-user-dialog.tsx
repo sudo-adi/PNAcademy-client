@@ -1,9 +1,18 @@
-import { useState } from 'react';
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Eye } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { SingleUser } from '@/lib/types/userTypes'; // Adjust the import path as needed
-import { Card } from '@/components/ui/card';
+import { useState } from "react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SingleUser } from "@/lib/types/userTypes"; // Adjust the import path as needed
+import { Card } from "@/components/ui/card";
 
 interface ViewRoleDialogProps {
   user: SingleUser;
@@ -34,7 +43,9 @@ const ViewUserDialog: React.FC<ViewRoleDialogProps> = ({ user }) => {
             </Card>
             <Card className="p-4  ">
               <div className="font-semibold">Name:</div>
-              <div>{user.first_name} {user.last_name}</div>
+              <div>
+                {user.first_name} {user.last_name}
+              </div>
             </Card>
             <Card className="p-4  ">
               <div className="font-semibold">Email:</div>
@@ -55,7 +66,9 @@ const ViewUserDialog: React.FC<ViewRoleDialogProps> = ({ user }) => {
           </DialogDescription>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" onClick={() => setOpen(false)}>Close</Button>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Close
+              </Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

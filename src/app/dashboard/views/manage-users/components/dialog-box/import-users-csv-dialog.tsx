@@ -70,9 +70,9 @@ const ImportCsvDialog = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button size={"sm"} variant="outline">
           <FileUpIcon className="h-4 w-4 mr-2" />
-          Import as CSV
+          Import
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

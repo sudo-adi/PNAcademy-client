@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import AllReportsSingleCard from "../cards/all-reports-single-card";
 import { useReportDataProviders } from "../../hooks/useReportsDataProvider";
 import { assessmentReport } from "@/lib/types/reportTypes";
 import { Loader } from "lucide-react";
+import { AssessmentReportCard } from "../cards/assessment-report-card";
 
 const AllAssessmentReportsTab = () => {
   const { fetchAllAssessmentsReportsData } = useReportDataProviders();
@@ -41,10 +41,19 @@ const AllAssessmentReportsTab = () => {
       )}
 
       {!loading && (
-        <main className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-2 p-2">
+        <main className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 xxl:grid-cols-4 gap-2 p-2">
           {reportsData.length > 0 ? (
             reportsData.map((report) => (
-              <AllReportsSingleCard key={report.assessmentId} {...report} />
+              <AssessmentReportCard
+                assessmentName={report.assessmentName}
+                isPublished={false}
+                assessmentId={""}
+                totalParticipants={0}
+                totalMarks={0}
+                assessmentDate={report.assessmentDate}
+                averageMarksPercentage={0}
+                averageMarks={0}
+              />
             ))
           ) : (
             <div>No reports available</div> // Optional: Display a message when there are no reports

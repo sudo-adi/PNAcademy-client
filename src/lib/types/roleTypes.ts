@@ -96,3 +96,40 @@ export interface DeleteRoleDialogProps {
   refreshRoles: () => void;
   role: Role;
 }
+
+
+export interface RoleTableRowProps {
+  role: Role;
+  selected: boolean;
+  loading: boolean;
+  onSelectRole: (roleId: string, checked: boolean) => void;
+  refreshRoles: () => void;
+}
+
+export interface ToggleSortingProps {
+  field: "name" | "createdAt" | "updatedAt";
+}
+
+
+
+export interface RolesTableSchemaProps {
+  toggleSorting: (field: ToggleSortingProps) => void;
+  sortBy:
+    | "id"
+    | "name"
+    | "canManageAssessment"
+    | "canManageUser"
+    | "canManageRole"
+    | "canManageNotification"
+    | "canManageLocalGroup"
+    | "canManageReports"
+    | "canAttemptAssessment"
+    | "canViewReport"
+    | "canManageMyAccount"
+    | "canViewNotification"
+    | "createdAt"
+    | "updatedAt";
+  order: "ASC" | "DESC";
+  allSelected: boolean;
+  onSelectAll: (checked: boolean) => void;
+}

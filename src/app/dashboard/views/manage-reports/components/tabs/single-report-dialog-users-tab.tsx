@@ -1,6 +1,15 @@
 import React from "react";
 import { TableCell, TableHead, TableRow } from "@/components/ui/table";
-import { Check, CirclePercent, CircleX, Hash, User, Users } from "lucide-react";
+import {
+  Check,
+  CirclePercent,
+  CircleX,
+  ClipboardList,
+  Eye,
+  Hash,
+  User,
+  Users,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface SingleUserReport {
@@ -46,6 +55,7 @@ const SingleReportDialogUsersTab: React.FC<SingleReportDialogUsersTabProps> = ({
                     wrongAnswers={user.wrongAnswers}
                     totalScore={user.totalScore}
                     percentage={user.percentage}
+                    view={() => {}}
                   />
                 ))}
               </tbody>
@@ -96,13 +106,18 @@ const Schema: React.FC<SchemaProps> = ({ toggleSorting }) => (
         Total Score
       </div>
     </TableHead>
+    <TableHead className="w-1/6" onClick={() => toggleSorting("first_name")}>
+      <div className="flex gap-2 items-center cursor-pointer text-[10px]">
+        <CirclePercent className="h-3 w-3" />
+        Percentage
+      </div>
+    </TableHead>
     <TableHead
       className="w-1/6 rounded-tr-md"
       onClick={() => toggleSorting("first_name")}
     >
       <div className="flex gap-2 items-center cursor-pointer text-[10px]">
-        <CirclePercent className="h-3 w-3" />
-        Percentage %
+        View
       </div>
     </TableHead>
   </TableRow>
@@ -116,6 +131,7 @@ interface RowProps {
   wrongAnswers: number;
   totalScore: number;
   percentage: number;
+  view: () => void;
 }
 
 const Row: React.FC<RowProps> = ({
@@ -154,6 +170,11 @@ const Row: React.FC<RowProps> = ({
       </TableCell>
       <TableCell className="w-1/6 font-medium text-left text-xs">
         {percentage}
+      </TableCell>
+      <TableCell className="w-1/6 font-medium text-left text-xs">
+        <div className="p-2 border rounded-sm hover:bg-secondary cursor-pointer">
+          <ClipboardList className="h-4 w-4" />
+        </div>
       </TableCell>
     </TableRow>
   );

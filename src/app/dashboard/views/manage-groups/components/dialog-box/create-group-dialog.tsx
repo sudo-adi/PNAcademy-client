@@ -386,7 +386,7 @@ const CreateGroupDialog: React.FC<CreateGroupDialogProps> = ({
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="default">
+          <Button size="sm" variant="default">
             <Plus className="h-4 w-4 mr-2" />
             Create
           </Button>

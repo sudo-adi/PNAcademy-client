@@ -69,7 +69,7 @@ const Header = () => {
           <ToggleThemeSwitch />
         </div>
       </div>
-      <DropdownMenu>
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="icon" className="rounded-full">
             <CircleUser className="h-5 w-5" />
@@ -85,7 +85,7 @@ const Header = () => {
             <button onClick={handleLogOut}>Logout</button>
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
     </header>
   );
 };

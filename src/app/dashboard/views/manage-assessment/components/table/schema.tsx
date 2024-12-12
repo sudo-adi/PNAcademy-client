@@ -1,4 +1,3 @@
-import { Checkbox } from "@/components/ui/checkbox";
 import { TableHead, TableRow } from "@/components/ui/table";
 import { Assessment } from "@/lib/types/assessmentTypes";
 import { CircleDotDashed, User, Wand } from "lucide-react";
@@ -10,6 +9,7 @@ interface SchemaProps {
   toggleSorting: (field: keyof Assessment) => void;
   onSelectAll: (checked: boolean) => void;
 }
+
 const Schema: React.FC<SchemaProps> = ({
   toggleSorting,
   sortBy,
@@ -17,57 +17,86 @@ const Schema: React.FC<SchemaProps> = ({
   allSelected,
   onSelectAll,
 }) => {
+  // Helper function to render sort arrow with consistent width
+  const renderSortIndicator = (field: keyof Assessment) => {
+    if (sortBy === field) {
+      return (
+        <span className="inline-block w-4 text-center">
+          {order === "ASC" ? "↓" : "↑"}
+        </span>
+      );
+    }
+    return <span className="inline-block w-4" />;
+  };
+
   return (
-    <TableRow>
-      {/* <TableHead className="hidden sm:table-cell">
-        <div className="flex w-4 items-center gap-2">
-          <Checkbox
-            checked={allSelected}
-            onCheckedChange={(checked) => onSelectAll(checked as boolean)} />
-        </div>
-      </TableHead> */}
-      <TableHead onClick={() => toggleSorting("name")} className="w-[270px]">
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
-          Assessment Name {sortBy === "name" && (order === "ASC" ? "↓" : "↑")}
+    <TableRow className="w-full">
+      <TableHead
+        onClick={() => toggleSorting("name")}
+        className="w-[200px] min-w-[200px]"
+      >
+        <div className="flex items-center gap-2 text-[10px] cursor-pointer whitespace-nowrap">
+          <User className="h-4 w-4 flex-shrink-0" />
+          <span className="flex-grow">Assessment Name</span>
+          {renderSortIndicator("name")}
         </div>
       </TableHead>
-      <TableHead onClick={() => toggleSorting("start_at")}>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
-          Started at {sortBy === "start_at" && (order === "ASC" ? "↓" : "↑")}
+
+      <TableHead
+        onClick={() => toggleSorting("start_at")}
+        className="w-[150px] min-w-[150px] hidden md:table-cell"
+      >
+        <div className="flex items-center gap-2 text-[10px] cursor-pointer whitespace-nowrap">
+          <User className="h-4 w-4 flex-shrink-0" />
+          <span className="flex-grow">Started at</span>
+          {renderSortIndicator("start_at")}
         </div>
       </TableHead>
-      <TableHead onClick={() => toggleSorting("end_at")}>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
-          Ended at {sortBy === "end_at" && (order === "ASC" ? "↓" : "↑")}
+
+      <TableHead
+        onClick={() => toggleSorting("end_at")}
+        className="w-[150px] min-w-[150px] hidden md:table-cell"
+      >
+        <div className="flex items-center gap-2 text-[10px] cursor-pointer whitespace-nowrap">
+          <User className="h-4 w-4 flex-shrink-0" />
+          <span className="flex-grow">Ended at</span>
+          {renderSortIndicator("end_at")}
         </div>
       </TableHead>
-      <TableHead onClick={() => toggleSorting("createdAt")}>
-        <div className="gap-2 text-[10px] items-center cursor-pointer flex">
-          <User className="h-4 w-4" />
-          <div className="inline-block">
-            Created at {sortBy === "createdAt" && (order === "ASC" ? "↓" : "↑")}
-          </div>
+
+      <TableHead
+        onClick={() => toggleSorting("createdAt")}
+        className="w-[150px] min-w-[150px] hidden md:table-cell"
+      >
+        <div className="flex items-center gap-2 text-[10px] cursor-pointer whitespace-nowrap">
+          <User className="h-4 w-4 flex-shrink-0" />
+          <span className="flex-grow">Created at</span>
+          {renderSortIndicator("createdAt")}
         </div>
       </TableHead>
-      <TableHead onClick={() => toggleSorting("updatedAt")}>
-        <div className="flex gap-2 text-[10px] items-center cursor-pointer">
-          <User className="h-4 w-4" />
-          Updated at {sortBy === "updatedAt" && (order === "ASC" ? "↓" : "↑")}
+
+      <TableHead
+        onClick={() => toggleSorting("updatedAt")}
+        className="w-[150px] min-w-[150px] hidden md:table-cell"
+      >
+        <div className="flex items-center gap-2 text-[10px] cursor-pointer whitespace-nowrap">
+          <User className="h-4 w-4 flex-shrink-0" />
+          <span className="flex-grow">Updated at</span>
+          {renderSortIndicator("updatedAt")}
         </div>
       </TableHead>
-      <TableHead className="md:table-cell">
-        <div className="flex text-[10px] flex-row gap-2 items-center">
-          <CircleDotDashed className="h-4 w-4" />
-          Status
+
+      <TableHead className="w-[100px] min-w-[100px]">
+        <div className="flex items-center gap-2 text-[10px] whitespace-nowrap">
+          <CircleDotDashed className="h-4 w-4 flex-shrink-0" />
+          <span className="flex-grow">Status</span>
         </div>
       </TableHead>
-      <TableHead className="md:table-cell ">
-        <div className="flex text-[10px] flex-row items-center justify-start">
-          <Wand className="w-4 h-4 mr-2" />
-          Actions
+
+      <TableHead className="w-[100px] min-w-[100px]">
+        <div className="flex items-center gap-2 text-[10px] whitespace-nowrap">
+          <Wand className="w-4 h-4 flex-shrink-0" />
+          <span className="flex-grow">Actions</span>
         </div>
       </TableHead>
     </TableRow>

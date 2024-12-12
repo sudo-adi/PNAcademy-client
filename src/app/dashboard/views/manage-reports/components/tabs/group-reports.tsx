@@ -6,7 +6,6 @@ import ReportGroupCard from "../cards/report-group-card";
 
 const ReportsByGroups = () => {
   const { fetchGroups } = useGroups();
-  // Initialize reportsData as an empty array
   const [groups, setGroups] = useState<Group[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -20,7 +19,6 @@ const ReportsByGroups = () => {
     };
     try {
       const response = await fetchGroups(payload);
-      console.log(response);
       if (response) {
         setGroups(response.groups);
       }
@@ -35,28 +33,30 @@ const ReportsByGroups = () => {
     fetchData();
   }, []);
 
-  return (
-    <div className="flex h-[calc(100vh-12rem)] overflow-y-auto scrollbar-thin">
-      {loading && (
-        <div className="flex h-full w-full items-center justify-center">
-          <Loader className="h-6 w-6 animate-spin" />
-        </div>
-      )}
+  if (loading) {
+    return (
+      <div className="flex h-[calc(100vh-12rem)] w-full items-center justify-center">
+        <Loader className="h-6 w-6 animate-spin" />
+      </div>
+    );
+  }
 
-      {!loading && (
-        <main className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xxl:grid-cols-4 gap-2 p-2">
-          {groups.length > 0 ? (
-            groups.map((group) => (
-              <ReportGroupCard
-                key={group.id}
-                groupId={group.id}
-                groupName={group.name}
-              />
-            ))
-          ) : (
-            <div>No reports available</div> // Optional: Display a message when there are no reports
-          )}
-        </main>
+  return (
+    <div className="w-full h-[calc(100vh-12rem)] overflow-y-auto scrollbar-thin">
+      {groups.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-3 2xl:grid-cols-4 gap-4 p-0">
+          {groups.map((group) => (
+            <ReportGroupCard
+              key={group.id}
+              groupId={group.id}
+              groupName={group.name}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="flex h-full w-full items-center justify-center text-gray-500">
+          No groups available
+        </div>
       )}
     </div>
   );

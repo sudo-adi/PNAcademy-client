@@ -4,7 +4,6 @@ import { Separator } from "@/components/ui/separator";
 import { Users2 } from "lucide-react";
 import ViewReportDialogBox from "../../../manage-reports/components/dialogs/view-report-dialog-box";
 import { Card } from "@/components/ui/card";
-import { formatDate } from "date-fns";
 
 interface ReportCardProps {
   assessmentName: string;
@@ -74,10 +73,10 @@ const ReportCard: React.FC<ReportCardProps> = (props: ReportCardProps) => {
         </div>
       </div>
       <div className="flex p-2">
-        <ViewReportDialogBox
+        {/* <ViewReportDialogBox
           assessmentId={props.assessmentId}
           data={{ ...props }}
-        />
+        /> */}
       </div>
     </Card>
   );

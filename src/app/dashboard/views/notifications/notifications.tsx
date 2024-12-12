@@ -2,16 +2,8 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { TableCell, TableHead, TableRow } from "@/components/ui/table";
-import {
-  Bell,
-  CalendarDays,
-  Eye,
-  RotateCcw,
-  RotateCw,
-  Trash2,
-} from "lucide-react";
+import { Bell, CalendarDays, Eye, RotateCw } from "lucide-react";
 import useNotificationTableStore from "@/lib/stores/manage-notification-store/notifications-table-store";
 import { SingleNotification } from "@/lib/types/notifications";
 import { Badge } from "@/components/ui/badge";
@@ -30,15 +22,8 @@ const ManageNotifications = () => {
     useState<boolean>(false);
 
   // global states here
-  const {
-    activePageIndex,
-    displayNumberOfRows,
-    sortBy,
-    order,
-    setActivePageIndex,
-    setDisplayNumberOfRows,
-    setOrder,
-  } = useNotificationTableStore();
+  const { activePageIndex, displayNumberOfRows, sortBy, order } =
+    useNotificationTableStore();
 
   // all functions here
   const fetchNotifications = async () => {
@@ -76,15 +61,15 @@ const ManageNotifications = () => {
             disabled={refreshingNotifications}
             className="dark:text-black text-white"
           >
-            Refresh{" "}
             <RotateCw
-              className={`h-4 w-4 ml-2 ${
+              className={`h-4 w-4 mr-2 ${
                 refreshingNotifications && "animate-spin clock"
               }`}
             />
+            Refresh{" "}
           </Button>
         </div>
-        <Card className="my-2 h-[calc(100vh-11rem)] flex flex-col">
+        <Card className="mt-2 h-[calc(100vh-11rem)] flex flex-col">
           <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
             <div className="absolute inset-0 overflow-auto">
               <table className="w-full">
@@ -103,8 +88,7 @@ const ManageNotifications = () => {
         {/* <div className="flex h-[calc(4rem-6px)] items-center justify-between gap-2">
           <Label className="text-xs">
             Showing <strong>1-10</strong> of <strong>32</strong> Roles
-          </Label>
-          <div className="flex gap-2">
+          </Label>    <div className="flex gap-2">
             <Button variant="outline">Previous</Button>
             <Button>Next</Button>
           </div>
@@ -127,7 +111,7 @@ const Schema = () => {
       <TableHead>
         <div className="flex flex-row gap-2 items-center text-[10px] cursor-pointer">
           <CalendarDays className="h-3 w-3" />
-          TimeStamp
+          Received At
         </div>
       </TableHead>
       <TableHead className="md:table-cell cursor-default">

@@ -121,8 +121,8 @@ const ManageAssessments = () => {
   }, [fetchAssessmentsData]);
 
   return (
-    <div className="flex flex-col gap-2">
-      <Card className="flex flex-row w-full p-2 justify-between items-center border-dashed gap-2">
+    <div className="flex flex-col gap-1">
+      <Card className="flex flex-row w-full p-1 justify-between items-center border-dashed gap-1">
         <div className="flex flex-row gap-2">
           <CreateAssessmentDialog />
           <Button
@@ -144,9 +144,10 @@ const ManageAssessments = () => {
             )}
           </Button>
         </div>
-        <div className="flex w-full max-w-sm items-center space-x-2">
+        <div className="flex w-full max-w-sm items-center space-x-2 p-0 max-h-[20px]">
           <Input
             type="email"
+            className="min-h-[20px]"
             placeholder="Search User with email, id or name..."
           />
           <Button

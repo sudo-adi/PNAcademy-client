@@ -1,7 +1,6 @@
 import useStatusIndicator from "@/app/hooks/global hooks/useStatusIndicator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
@@ -38,7 +36,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface RowProps {
   assessment: Assessment;
@@ -48,7 +46,6 @@ interface RowProps {
   refreshAssessments: () => void;
 }
 
-// Single table row
 const Row: React.FC<RowProps> = ({
   assessment,
   selected,
@@ -56,7 +53,35 @@ const Row: React.FC<RowProps> = ({
   loading,
   refreshAssessments,
 }) => {
-  // all hooks here
+  const [isDleting, setIsDeleting] = useState(false);
+  const [loadingTimer, setLoadingTimer] = useState<NodeJS.Timeout | null>(null);
+  const { removeAssessment } = useAssessment();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => {
+        toast({
+          title: "Loading Assessments",
+          description:
+            "This is taking longer than usual. Please check your network connection.",
+          duration: 3000,
+          action: <ToastAction altText="loading">Ok</ToastAction>,
+        });
+      }, 3000);
+      setLoadingTimer(timer);
+    } else {
+      if (loadingTimer) {
+        clearTimeout(loadingTimer);
+      }
+    }
+    return () => {
+      if (loadingTimer) {
+        clearTimeout(loadingTimer);
+      }
+    };
+  }, [loading]);
+
   const handleCopyAssessmentID = (
     assessmentId: string,
     assessmentName: string
@@ -69,20 +94,12 @@ const Row: React.FC<RowProps> = ({
     });
   };
 
-  const { removeAssessment } = useAssessment();
-  const router = useRouter();
-
-  // local states here
-  const [isDleting, setIsDeleting] = useState(false);
-
-  // local vars here
   const isLive =
     assessment.start_at &&
     assessment.end_at &&
     new Date(assessment.start_at) < new Date() &&
     new Date(assessment.end_at) > new Date();
 
-  // all event handlers here
   const handleViewAssessmentById = (assessmentId: string) => {
     router.push("/view-assessment/" + assessmentId);
   };
@@ -130,71 +147,48 @@ const Row: React.FC<RowProps> = ({
   };
 
   const statusColor = useStatusIndicator(assessment);
+
+  if (loading) {
+    return null; // Don't render anything while loading
+  }
+
   return (
     <TableRow>
-      {/* <TableCell className="hidden sm:table-cell">
-        <Checkbox
-          checked={selected}
-          onCheckedChange={(checked) =>
-            onSelectAssessment(assessment.id, checked as boolean)
-          }
-        />
-      </TableCell> */}
       <TableCell className="font-medium text-left">
         <div className="flex flex-col gap-2">
-          <div className="flex flex-row gap-2 text-xs items-center ">
-            {loading ? (
-              <Skeleton className="w-32 h-4" />
-            ) : (
-              <p className="line-clamp-2"> {assessment.name}</p>
-            )}
+          <div className="flex flex-row gap-2 text-xs items-center">
+            <p className="line-clamp-2">{assessment.name}</p>
           </div>
           <div className="flex">
             <button
-              className="hidden lg:flex px-2 py-1 rounded-sm border-2 border-dashed gap-2 text-[8px] italic hover:bg-muted"
+              className="hidden bg-secondary hover:bg-transparent lg:flex px-2 py-1 rounded-sm border-2 border-dashed gap-2 text-[8px] italic"
               onClick={() =>
                 handleCopyAssessmentID(assessment.id, assessment.name)
               }
             >
-              {loading ? <Skeleton className="w-32 h-4" /> : assessment.id}
+              {assessment.id}
             </button>
           </div>
         </div>
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        <Badge variant={"outline"} className="text-[10px] text-center">
-          {loading ? (
-            <Skeleton className="w-32 h-4" />
-          ) : (
-            formatDateInIST(assessment.start_at)
-          )}
+        <Badge variant="ghost" className="text-[10px] text-center">
+          {formatDateInIST(assessment.start_at)}
         </Badge>
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        <Badge variant={"outline"} className="text-[10px] text-center">
-          {loading ? (
-            <Skeleton className="w-32 h-4" />
-          ) : (
-            formatDateInIST(assessment.end_at)
-          )}
+        <Badge variant="ghost" className="text-[10px] text-center">
+          {formatDateInIST(assessment.end_at)}
         </Badge>
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        <Badge variant={"outline"} className="text-[10px] text-center">
-          {loading ? (
-            <Skeleton className="w-32 h-4" />
-          ) : (
-            formatDateInIST(assessment.createdAt)
-          )}
+        <Badge variant="ghost" className="text-[10px] text-center">
+          {formatDateInIST(assessment.createdAt)}
         </Badge>
       </TableCell>
       <TableCell className="hidden md:table-cell">
-        <Badge variant={"outline"} className="text-[10px] text-center">
-          {loading ? (
-            <Skeleton className="w-32 h-4" />
-          ) : (
-            formatDateInIST(assessment.updatedAt)
-          )}
+        <Badge variant="ghost" className="text-[10px] text-center">
+          {formatDateInIST(assessment.updatedAt)}
         </Badge>
       </TableCell>
       <TableCell>
@@ -271,9 +265,7 @@ const Row: React.FC<RowProps> = ({
                           onClick={() => handleDeleteAssessment(assessment.id)}
                         >
                           {isDleting ? (
-                            <>
-                              <Loader className="h-4 w-4 animate-spin" />
-                            </>
+                            <Loader className="h-4 w-4 animate-spin" />
                           ) : (
                             <>
                               <Trash2Icon className="h-4 w-4 mr-2" />

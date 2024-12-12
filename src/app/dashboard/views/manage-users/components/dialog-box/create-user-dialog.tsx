@@ -29,11 +29,7 @@ import { ApiError } from "@/lib/api/apiError";
 import { useUsers } from "../../hooks/useUsers";
 import { Card } from "@/components/ui/card";
 import { Role } from "@/lib/types/roleTypes";
-import { SingleUser } from "@/lib/types/userTypes";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { formatDateInIST } from "@/lib/helpers/time-converter";
-import { set } from "lodash";
+import { useToast } from "@/components/ui/use-toast";
 
 // Define schema using zod
 const schema = z.object({
@@ -65,7 +61,23 @@ interface CreateUserDialogProps {
 const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   refreshUsers,
 }) => {
-  // all hooks here
+  // Toast hook
+  const { toast } = useToast();
+
+  // Responsive state
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // Resize handler
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Hooks
   const { fetchRoles } = useRoles();
   const { addUser } = useUsers();
   const {
@@ -86,46 +98,42 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
     },
   });
 
-  // global states here
-
-  // local states here
-  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  // Local states
   const [roles, setRoles] = useState<Role[]>([]);
-  const [createdUser, setCreatedUser] = useState<SingleUser>();
-
-  // loading states
-  const [loadingRoles, setLoadingRoles] = useState<boolean>(true);
   const [creatingUser, setCreatingUser] = useState<boolean>(false);
+  const [loadingRoles, setLoadingRoles] = useState<boolean>(true);
 
-  // error states
-  const [createError, setCreateError] = useState<ApiError | null>(null);
-  const [rolesError, setRolesError] = useState<ApiError | Error>();
-
-  // disable states
-  const [isFormValid, setIsFormValid] = useState<boolean>(false);
-
-  // local functions here
+  // Submission handler
   const onSubmit = async (data: FormData) => {
     try {
-      setCreateError(null);
-      setCreatedUser(undefined);
       setCreatingUser(true);
-      setStatusDialogOpen(true);
-      reset();
       const res = await addUser(data);
-      setCreatedUser(res);
+
+      // Success toast
+      toast({
+        title: "User Created",
+        description: "New user has been successfully created.",
+        variant: "default",
+      });
+
       refreshUsers();
+      reset();
     } catch (err) {
-      if (err instanceof ApiError) {
-        setCreateError(err);
-      } else {
-        setCreateError(new ApiError(500, "An unexpected error occurred", err));
-      }
+      // Error toast
+      toast({
+        title: "Error Creating User",
+        description:
+          err instanceof ApiError
+            ? err.message
+            : "An unexpected error occurred",
+        variant: "destructive",
+      });
     } finally {
       setCreatingUser(false);
     }
   };
 
+  // Fetch roles
   const fetchRolesData = useCallback(async () => {
     try {
       setLoadingRoles(true);
@@ -135,30 +143,26 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
         sortBy: "name",
         order: "ASC",
       });
-      console.log(response);
       setRoles(response);
     } catch (err) {
-      if (err instanceof ApiError) {
-        setRolesError(err);
-      } else {
-        setRolesError(err as Error);
-      }
+      toast({
+        title: "Error Fetching Roles",
+        description: "Unable to load roles",
+        variant: "destructive",
+      });
     } finally {
       setLoadingRoles(false);
     }
   }, []);
 
-  // handlers here
-  const handleClear = () => {
-    reset(); // Clear form values
-  };
-
-  // useEffects here
+  // Effects
   useEffect(() => {
     fetchRolesData();
   }, [fetchRolesData]);
 
+  // Form validation
   const formValues = watch();
+  const [isFormValid, setIsFormValid] = useState<boolean>(false);
   useEffect(() => {
     const isFormValid = !!(
       formValues.firstName &&
@@ -172,215 +176,262 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
     setIsFormValid(isFormValid);
   }, [formValues, errors]);
 
+  // Form fields configuration
+  const formFields = [
+    {
+      name: "firstName",
+      label: "First Name",
+      placeholder: "John",
+      type: "text",
+    },
+    {
+      name: "lastName",
+      label: "Last Name",
+      placeholder: "Doe",
+      type: "text",
+    },
+    {
+      name: "email",
+      label: "Email",
+      placeholder: "johndoe@example.com",
+      type: "email",
+    },
+    {
+      name: "password",
+      label: "Password",
+      placeholder: "********",
+      type: "password",
+    },
+    {
+      name: "phone",
+      label: "Phone",
+      placeholder: "98XXXXXX00",
+      type: "text",
+    },
+  ];
+
   return (
-    <>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="default">
-            <UserPlus className="h-4 w-4 mr-2" />
-            Create
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="w-[800px]">
-          <DialogHeader>
-            <DialogTitle>Create New User</DialogTitle>
-            <DialogDescription>
-              Please fill in the details to create a new user profile.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="firstName">First Name</Label>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          size="sm"
+          variant="default"
+          className={isMobile ? "text-xs h-8" : ""}
+        >
+          <UserPlus
+            className={`${isMobile ? "h-3 w-3 mr-1" : "h-4 w-4 mr-2"}`}
+          />
+          Create
+        </Button>
+      </DialogTrigger>
+      <DialogContent
+        className={`
+          ${isMobile ? "min-w-[95%] max-w-[95%] rounded-lg" : "w-[800px]"}
+          ${!isMobile ? "p-6 space-y-4" : ""}
+        `}
+      >
+        <DialogHeader>
+          <DialogTitle
+            className={`
+              ${isMobile ? "text-lg" : "text-xl"}
+            `}
+          >
+            Create New User
+          </DialogTitle>
+          <DialogDescription
+            className={`
+              ${isMobile ? "text-xs" : ""}
+            `}
+          >
+            Please fill in the details to create a new user profile.
+          </DialogDescription>
+        </DialogHeader>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className={`
+            space-y-4
+            ${isMobile ? "space-y-2" : ""}
+          `}
+        >
+          {formFields.map((field) => (
+            <div
+              key={field.name}
+              className={`
+                flex flex-col
+                ${isMobile ? "gap-1" : "gap-2"}
+              `}
+            >
+              <Label
+                htmlFor={field.name}
+                className={`
+                  ${isMobile ? "text-sm" : ""}
+                `}
+              >
+                {field.label}
+              </Label>
               <Controller
-                name="firstName"
+                name={field.name as keyof FormData}
                 control={control}
-                render={({ field }) => (
-                  <Input id="firstName" placeholder="John" {...field} />
-                )}
-              />
-              {errors.firstName && (
-                <p className="text-red-400">{errors.firstName.message}</p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Controller
-                name="lastName"
-                control={control}
-                render={({ field }) => (
-                  <Input id="lastName" placeholder="Doe" {...field} />
-                )}
-              />
-              {errors.lastName && (
-                <p className="text-red-400">{errors.lastName.message}</p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Controller
-                name="email"
-                control={control}
-                render={({ field }) => (
+                render={({ field: inputField }) => (
                   <Input
-                    id="email"
-                    type="email"
-                    placeholder="johndoe@example.com"
-                    {...field}
+                    id={field.name}
+                    type={field.type}
+                    placeholder={field.placeholder}
+                    {...inputField}
+                    className={`
+                      ${isMobile ? "text-sm h-9" : ""}
+                    `}
                   />
                 )}
               />
-              {errors.email && (
-                <p className="text-red-400">{errors.email.message}</p>
+              {errors[field.name as keyof typeof errors] && (
+                <p className="text-red-400 text-xs">
+                  {errors[field.name as keyof typeof errors]?.message as string}
+                </p>
               )}
             </div>
+          ))}
 
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Password</Label>
-              <Controller
-                name="password"
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="********"
-                    {...field}
-                  />
-                )}
-              />
-              {errors.password && (
-                <p className="text-red-400">{errors.password.message}</p>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="phone">Phone</Label>
-              <Controller
-                name="phone"
-                control={control}
-                render={({ field }) => (
-                  <Input id="phone" placeholder="98XXXXXX00" {...field} />
-                )}
-              />
-              {errors.phone && (
-                <p className="text-red-400">{errors.phone.message}</p>
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="roleId">Role</Label>
-              {loadingRoles ? (
-                <Card className="w-full h-12 flex items-center justify-center">
-                  <Loader2 className="animate-spin" />
-                </Card>
-              ) : (
-                <Controller
-                  name="roleId"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <div>
-                          {field.value
-                            ? roles.find((role) => role.id === field.value)
-                                ?.name || "Select Role"
-                            : "Select Role"}
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {roles.map((role) => (
-                          <SelectItem key={role.id} value={role.id}>
-                            {role.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
+          {/* Role Selection */}
+          <div
+            className={`
+              flex flex-col
+              ${isMobile ? "gap-1" : "gap-2"}
+            `}
+          >
+            <Label
+              htmlFor="roleId"
+              className={`
+                ${isMobile ? "text-sm" : ""}
+              `}
+            >
+              Role
+            </Label>
+            {loadingRoles ? (
+              <Card
+                className={`
+                  w-full
+                  ${isMobile ? "h-9" : "h-12"}
+                  flex items-center justify-center
+                `}
+              >
+                <Loader2
+                  className={`
+                    animate-spin
+                    ${isMobile ? "h-4 w-4" : ""}
+                  `}
                 />
-              )}
-              {errors.roleId && (
-                <p className="text-red-400">{errors.roleId.message}</p>
-              )}
-            </div>
+              </Card>
+            ) : (
+              <Controller
+                name="roleId"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger
+                      className={`
+                        ${isMobile ? "text-sm h-9" : ""}
+                      `}
+                    >
+                      <div>
+                        {field.value
+                          ? roles.find((role) => role.id === field.value)
+                              ?.name || "Select Role"
+                          : "Select Role"}
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roles.map((role) => (
+                        <SelectItem
+                          key={role.id}
+                          value={role.id}
+                          className={`
+                            ${isMobile ? "text-sm" : ""}
+                          `}
+                        >
+                          {role.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            )}
+            {errors.roleId && (
+              <p className="text-red-400 text-xs">{errors.roleId.message}</p>
+            )}
+          </div>
 
-            <DialogFooter>
-              <div className="flex w-full justify-between gap-2">
-                <div className="flex gap-2">
-                  <DialogClose asChild>
-                    <Button variant="outline">Cancel</Button>
-                  </DialogClose>
-                  <Button type="button" variant="outline" onClick={handleClear}>
-                    Clear
+          <DialogFooter>
+            <div
+              className={`
+                flex
+                ${isMobile ? "flex-col" : "flex-row"}
+                w-full
+                justify-between
+                ${isMobile ? "gap-2" : "gap-4"}
+              `}
+            >
+              <div
+                className={`
+                  flex
+                  ${isMobile ? "flex-col" : "flex-row"}
+                  ${isMobile ? "gap-2" : "gap-2"}
+                  w-full
+                `}
+              >
+                <DialogClose asChild>
+                  <Button
+                    variant="outline"
+                    className={`
+                      ${isMobile ? "w-full text-xs h-8" : ""}
+                    `}
+                  >
+                    Cancel
                   </Button>
-                </div>
+                </DialogClose>
                 <Button
-                  variant="default"
-                  type="submit"
-                  disabled={!isFormValid || creatingUser}
+                  type="button"
+                  variant="outline"
+                  onClick={() => reset()}
+                  className={`
+                    ${isMobile ? "w-full text-xs h-8" : ""}
+                  `}
                 >
-                  {creatingUser ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    "Create User"
-                  )}
+                  Clear
                 </Button>
               </div>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Success Dialog */}
-      <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {creatingUser
-                ? "Creating User"
-                : createError
-                ? "Error"
-                : "Success"}{" "}
-            </DialogTitle>
-          </DialogHeader>
-          <DialogDescription className="flex flex-row justify-between w-full">
-            <div>
-              {creatingUser ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : createError ? (
-                createError.message
-              ) : (
-                "User Created Successfully"
-              )}
+              <Button
+                variant="default"
+                type="submit"
+                disabled={!isFormValid || creatingUser}
+                className={`
+                  ${isMobile ? "w-full text-xs h-8" : ""}
+                `}
+              >
+                {creatingUser ? (
+                  <Loader2
+                    className={`
+                      animate-spin
+                      ${isMobile ? "h-4 w-4" : ""}
+                    `}
+                  />
+                ) : (
+                  <>
+                    <UserPlus
+                      className={`${
+                        isMobile ? "h-3 w-3 mr-1" : "h-4 w-4 mr-2"
+                      }`}
+                    />
+                    Create
+                  </>
+                )}
+              </Button>
             </div>
-
-            {createdUser && (
-              <Badge>
-                {createdUser?.createdAt
-                  ? formatDateInIST(createdUser.createdAt)
-                  : ""}
-              </Badge>
-            )}
-          </DialogDescription>
-          {createdUser && (
-            <Card className="flex flex-col gap-2 w-full p-4">
-              First Name : {createdUser?.first_name}
-              <Separator />
-              Last Name : {createdUser?.last_name}
-              <Separator />
-              Email : {createdUser?.email}
-              <Separator />
-              Phone Number : {createdUser?.phone}
-            </Card>
-          )}
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="default">Close</Button>
-            </DialogClose>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 

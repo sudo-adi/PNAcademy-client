@@ -42,7 +42,7 @@ interface AttemptAssessmentProps {
 const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
   const { assessmentId } = useVerificationStore();
   const router = useRouter();
-  const { timeLeft, startTimer, resetTimer, setTimeLeft } = useTimerStore();
+  const { timeLeft, startTimer, setTimeLeft } = useTimerStore();
   const {
     startAssessment,
     startSection,
@@ -53,10 +53,9 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
 
   const { setAssessmentId } = useVerificationStore();
 
-  const { fetchAssessmentById } = useAssessment();
-
   const [isVerified, setIsVerified] = useState(false);
   const [isAssessmentValid, setIsAssessmentValid] = useState(false);
+  const [isEndSectionDialogOpen, setIsEndSectionDialogOpen] = useState(false);
 
   const { currentSectionId, setCurrentQuestionIndex, setCurrentSectionId } =
     useAttemptAssessmentsStore();
@@ -235,14 +234,24 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
   };
 
   const endSectionAttempt = async () => {
+    setIsEndSectionDialogOpen(true);
+  };
+
+  const confirmEndSection = async () => {
     try {
       await stopSection({
         assessmentId: params.assessmentId,
         section: currentSectionId,
       });
       await initalizeOverViewData();
+      setIsEndSectionDialogOpen(false);
     } catch (err) {
-      console.error("Error ending section:", err);
+      toast({
+        title: "Error",
+        description: "Something went wrong while ending the section",
+        action: <ToastAction altText="error">Ok</ToastAction>,
+        variant: "destructive",
+      });
     }
   };
 
@@ -293,7 +302,6 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
     }
   };
 
-  
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
@@ -387,7 +395,8 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
                     />
                     <Button
                       onClick={endSectionAttempt}
-                      className="flex items-center gap-2"
+                      variant={"default"}
+                      className="flex min-h-[2rem] items-center gap-2"
                     >
                       Submit This Section
                       <MoveRight className="h-4 w-4" />
@@ -437,6 +446,30 @@ const AttemptAssessment: React.FC<AttemptAssessmentProps> = ({ params }) => {
           <PnaLoader />
         </div>
       )}
+
+      <Dialog
+        open={isEndSectionDialogOpen}
+        onOpenChange={setIsEndSectionDialogOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>End Section Confirmation</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to end this section? Once ended, you cannot
+              return to this section.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsEndSectionDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button onClick={confirmEndSection}>End Section</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 };

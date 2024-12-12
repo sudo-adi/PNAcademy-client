@@ -123,3 +123,21 @@ export interface ChangeUserPasswordResponse {
   status: string;
   message: string;
 }
+
+
+export interface UserTableSchemaProps {
+  toggleSorting: (field: keyof SingleUser) => void;
+  sortBy: keyof SingleUser;
+  order: "ASC" | "DESC";
+  allSelected: boolean;
+  onSelectAll: (checked: boolean) => void;
+}
+
+
+export interface UserTableRowProps {
+  user: SingleUser;
+  selected: boolean;
+  onSelectUser: (userId: string, checked: boolean) => void;
+  refreshUsers: () => void;
+  loading: boolean;
+}

@@ -1,4 +1,8 @@
+import { plugin } from "postcss"
 import type { Config } from "tailwindcss"
+import { PluginAPI } from "tailwindcss/types/config"
+
+
 
 const config: Config = {
 	darkMode: ["class"],
@@ -80,6 +84,15 @@ const config: Config = {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 
+			},
+			scrollbar: {
+				hide: {
+					'-ms-overflow-style': 'none',
+					'scrollbar-width': 'none',
+					'&::-webkit-scrollbar': {
+						display: 'none'
+					}
+				}
 			}
 		}
 	},

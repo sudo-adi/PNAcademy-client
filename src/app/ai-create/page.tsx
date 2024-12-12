@@ -387,7 +387,7 @@ const AiCreate = () => {
               </div>
             ) : currentSections.length == 0 ? (
               <div className="flex flex-col border-2 border-dashed rounded-xl flex-grow items-center justify-center overflow-y-scroll scrollbar-none  h-[calc(100vh-21rem)] md:h-[calc(100vh-15rem)] w-full">
-                <div className="flex h-full w-full flex-col items-center justify-end">
+                <div className="flex h-full w-full flex-col items-center justify-end text-center">
                   Add a new sections by clicking down below the plus [+] icon
                 </div>
                 <div className="flex mt-1 border-black dark:border-[#e6e6e6] h-full w-[2px] border-l border-dashed "></div>

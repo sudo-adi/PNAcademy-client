@@ -44,7 +44,6 @@ const ManageGroups = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [loadingGroups, setLoadingGroups] = useState<boolean>(false);
-  const [error, setError] = useState<ApiError | Error>();
 
   // local vars
   const allSelected =
@@ -63,9 +62,7 @@ const ManageGroups = () => {
       setTotalPages(response.totalPages);
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err);
       } else {
-        setError(err as Error);
       }
     }
   }, [sortBy, order]);
@@ -117,29 +114,34 @@ const ManageGroups = () => {
 
   return (
     <>
-      <div className="flex flex-col h-[calc(100vh-10rem)] w-full gap-2">
-        <div className="flex flex-row w-full justify-between border-dashed">
-          <div className="flex gap-2">
+      <div className="flex flex-col h-[calc(100vh-10rem)] w-full">
+        <div className="flex flex-row w-full items-center justify-between border-dashed gap-2">
+          <div className="flex flex-row gap-2">
             <CreateGroupDialog refreshGroups={refreshGroups} />
             {selectedGroups.size > 0 && (
-              <Button variant="destructive" onClick={handleDeleteSelected}>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDeleteSelected}
+              >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete Groups
               </Button>
             )}
           </div>
-          <div className="flex w-full max-w-sm items-center space-x-2">
+          <div className="flex w-full max-w-sm items-center space-x-2 p-0 max-h-[20px]">
             <Input type="email" placeholder="Search Group..." />
             <Button
+              size="sm"
               type="submit"
-              className="flex items-center justify-center  gap-1"
+              className="flex items-center justify-center gap-1"
             >
               <Search className="h-4 w-4" />
               Search
             </Button>
           </div>
         </div>
-        <Card className=" h-[calc(100vh-11rem)] flex flex-col">
+        <Card className=" h-[calc(100vh-11rem)] flex flex-col mt-2">
           <div className="relative flex-grow overflow-hidden rounded-2xl scrollbar-none">
             <div className="absolute inset-0 overflow-auto">
               <table className="w-full">

@@ -69,11 +69,6 @@ const CreateAiDialog = () => {
   // loading states here
   const [loading, setLoading] = useState<boolean>(false);
 
-  // error states here
-  const [createAssessmentError, setCreateAssessmentError] = useState<
-    ApiError | Error
-  >();
-
   // disable states here
   const [disableCreateAssessment, setDisableCreateAssessment] =
     useState<boolean>(false);
@@ -117,14 +112,12 @@ const CreateAiDialog = () => {
       setCurrentSections([]);
     } catch (err) {
       if (err instanceof ApiError) {
-        setCreateAssessmentError(err);
         toast({
           title: "Error",
           description: `An error occurred while creating Assessment ${err.message}`,
           action: <ToastAction altText="error">ok</ToastAction>,
         });
       } else {
-        setCreateAssessmentError(err as Error);
         const error = err as Error;
         toast({
           title: "Error",
@@ -156,6 +149,7 @@ const CreateAiDialog = () => {
       <DialogTrigger asChild>
         <Button
           variant="default"
+          size="sm"
           disabled={
             !currentSections ||
             currentSections.length === 0 ||
