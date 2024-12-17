@@ -6,15 +6,15 @@ const Reports = () => {
   return (
     <Tabs defaultValue="1" className="w-full h-full">
       <div className="flex w-full items-start justify-start">
-        <TabsList className="grid max-w-[400px] grid-cols-2">
-          <TabsTrigger value="0">OverView</TabsTrigger>
-          <TabsTrigger value="1">All</TabsTrigger>
+        <TabsList className="grid max-w-[400px] grid-cols-1">
+          {/* <TabsTrigger value="0">OverView</TabsTrigger> */}
+          <TabsTrigger value="1">All Reports</TabsTrigger>
         </TabsList>
       </div>
       <div className="flex w-full">
-        <TabsContent value="0" className="w-full">
+        {/* <TabsContent value="0" className="w-full">
           <ReportsOverViewTab />
-        </TabsContent>
+        </TabsContent> */}
         <TabsContent value="1" className="w-full">
           <AllReports />
         </TabsContent>

@@ -10,10 +10,10 @@ export const useReports = () => {
   // Hook Method to get user assessment results
   const fetchMyResults = async (
     params: GetMyResultsProps
-  ): Promise<GetMyResultsResponse> => {
+  ): Promise<GetMyResultsResponse["data"]["results"]> => {
     try {
       const response: GetMyResultsResponse = await getMyResults(params);
-      return response; // Return the results directly
+      return response.data.results;
     } catch (err) {
       if (err instanceof ApiError) {
         throw err; // Rethrow the ApiError for handling at a higher level

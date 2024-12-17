@@ -20,6 +20,8 @@ import { useManageReports } from "../../hooks/useManageReports";
 import Leaderboards, { LeaderboardData } from "../charts/leaderboards";
 
 export interface ViewReportDialogBoxProps {
+  isOpen: boolean;
+  onClose: () => void;
   assessmentId: string;
   data: {
     assessmentName: string;
@@ -33,9 +35,11 @@ export interface ViewReportDialogBoxProps {
   };
 }
 
-const ViewReportDialogBox: React.FC<ViewReportDialogBoxProps> = ({
+const ViewReportByGroupDialog: React.FC<ViewReportDialogBoxProps> = ({
   assessmentId,
   data,
+  isOpen,
+  onClose,
 }) => {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardData[]>([]);
 
@@ -84,7 +88,7 @@ const ViewReportDialogBox: React.FC<ViewReportDialogBoxProps> = ({
   ];
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogTrigger asChild>
         <Button
           className="w-full transition-all duration-300"
@@ -208,4 +212,4 @@ const ViewReportDialogBox: React.FC<ViewReportDialogBoxProps> = ({
   );
 };
 
-export default ViewReportDialogBox;
+export default ViewReportByGroupDialog;

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   CalendarIcon,
   UsersIcon,
@@ -16,8 +16,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import ViewReportDialogBox from "../dialogs/view-report-dialog-box";
+import { AssessmentResult } from "@/lib/types/reportTypes";
 
-interface AssessmentCardProps {
+export interface AssessmentCardProps {
   assessmentName: string;
   assessmentId: string;
   assessmentDate: string;
@@ -29,18 +30,20 @@ interface AssessmentCardProps {
 }
 
 export const AssessmentReportCard: React.FC<AssessmentCardProps> = (props) => {
+  // all hooks here
+
   const truncateText = (text: string, maxLength: number) => {
     if (text.length <= maxLength) return text;
     return text.substr(0, maxLength) + "...";
   };
 
   return (
-    <Card className="overflow-hidden transition-all duration-300 h-60 hover:shadow-md dark:hover:shadow-slate-700 min-w-[250px] max-w-[300px] flex flex-col justify-between">
+    <Card className="overflow-hidden transition-all duration-300 max-h-72 h-60 hover:shadow-md dark:hover:shadow-slate-700 min-w-[250px] max-w-[300px] flex flex-col justify-between">
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-2">
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger asChild>
+              <TooltipTrigger>
                 <Badge className="text-[10px]">
                   {truncateText(props.assessmentId, 20)}
                 </Badge>
@@ -52,7 +55,7 @@ export const AssessmentReportCard: React.FC<AssessmentCardProps> = (props) => {
           </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger asChild>
+              <TooltipTrigger>
                 <Badge
                   variant={props.isPublished ? "default" : "secondary"}
                   className="text-[10px] font-medium"
@@ -88,7 +91,7 @@ export const AssessmentReportCard: React.FC<AssessmentCardProps> = (props) => {
           </Badge>
           <Badge variant="outline" className="text-[10px]">
             <Percent className="w-2 h-2 mr-1" />
-            {props.averageMarksPercentage}%
+            {props.averageMarksPercentage.toFixed(2)}%
           </Badge>
         </div>
         <div className="grid grid-cols-2 gap-2 mb-2">
@@ -123,40 +126,16 @@ export const AssessmentReportCard: React.FC<AssessmentCardProps> = (props) => {
   );
 };
 
-const dummyAssessments: AssessmentCardProps[] = [
-  {
-    assessmentName: "Midterm Exam 2024",
-    assessmentId: "A1234567890",
-    assessmentDate: "2024-12-10",
-    totalParticipants: 30,
-    totalMarks: 100,
-    averageMarks: 75,
-    averageMarksPercentage: 75,
-    isPublished: true,
-  },
-  {
-    assessmentName: "Final Exam 2024",
-    assessmentId: "B0987654321",
-    assessmentDate: "2024-12-20",
-    totalParticipants: 25,
-    totalMarks: 100,
-    averageMarks: 80,
-    averageMarksPercentage: 80,
-    isPublished: false,
-  },
-  {
-    assessmentName: "Mock Test",
-    assessmentId: "C1122334455",
-    assessmentDate: "2024-12-15",
-    totalParticipants: 20,
-    totalMarks: 50,
-    averageMarks: 40,
-    averageMarksPercentage: 80,
-    isPublished: true,
-  },
-];
+interface AssessmentCardListProps {
+  // all props here
+  loading: boolean;
+  reportsData: AssessmentResult[];
+}
 
-const AssessmentCardList: React.FC = () => {
+const AssessmentCardList: React.FC<AssessmentCardListProps> = ({
+  loading,
+  reportsData,
+}) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
@@ -191,19 +170,25 @@ const AssessmentCardList: React.FC = () => {
         WebkitOverflowScrolling: "touch",
       }}
     >
-      {dummyAssessments.map((assessment, index) => (
-        <div
-          key={`${assessment.assessmentId}-${index}`}
-          className="
-            flex-shrink-0
-            scroll-snap-align-start
-            scroll-ml-4
-            last:mr-4
-          "
-        >
-          <AssessmentReportCard {...assessment} />
+      {reportsData.length > 0 ? (
+        reportsData.map((report) => (
+          <AssessmentReportCard
+            key={report.assessment_id}
+            assessmentName={report.assessment.name || ""}
+            isPublished={report.is_published || false} // Example: dynamically assign
+            assessmentId={report.assessment_id || ""}
+            totalParticipants={report.total_participants || 0}
+            totalMarks={report.total_marks || 0}
+            assessmentDate={report.createdAt || ""}
+            averageMarksPercentage={report.average_marks_percentage || 0}
+            averageMarks={report.average_marks || 0}
+          />
+        ))
+      ) : (
+        <div className="flex w-full items-center justify-center text-gray-500">
+          No reports available
         </div>
-      ))}
+      )}
     </div>
   );
 };

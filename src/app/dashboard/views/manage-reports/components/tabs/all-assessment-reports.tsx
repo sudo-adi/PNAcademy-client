@@ -1,64 +1,49 @@
-import React, { useState, useEffect } from "react";
-import { useReportDataProviders } from "../../hooks/useReportsDataProvider";
-import { assessmentReport } from "@/lib/types/reportTypes";
 import { Loader } from "lucide-react";
 import { AssessmentReportCard } from "../cards/assessment-report-card";
+import { useEffect } from "react";
+import { AssessmentResult } from "@/lib/types/reportTypes";
 
-const AllAssessmentReportsTab = () => {
-  const { fetchAllAssessmentsReportsData } = useReportDataProviders();
+interface AllAssessmentReportsTabProps {
+  loading: boolean;
+  reportsData: AssessmentResult[];
+}
 
-  // Initialize reportsData as an empty array
-  const [reportsData, setReportsData] = useState<assessmentReport[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const fetchData = async () => {
-    const payload = {
-      page: 1,
-      pageSize: 10,
-      sortBy: "name" as "name",
-      orderBy: "ASC" as "ASC",
-    };
-    try {
-      const response = await fetchAllAssessmentsReportsData(payload);
-      setReportsData(response);
-    } catch (err) {
-      console.error("Error fetching assessment reports:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+const AllAssessmentReportsTab: React.FC<AllAssessmentReportsTabProps> = ({
+  loading,
+  reportsData,
+}) => {
   useEffect(() => {
-    fetchData();
-  }, []);
+    reportsData && console.log(reportsData);
+  }, [reportsData, loading]);
 
   return (
-    <div className="flex h-[calc(100vh-12rem)] overflow-y-auto scrollbar-thin">
-      {loading && (
+    <div className="flex h-[calc(100vh-12rem)] w-full overflow-y-auto scrollbar-thin">
+      {loading ? (
         <div className="flex h-full w-full items-center justify-center">
           <Loader className="h-6 w-6 animate-spin" />
         </div>
-      )}
-
-      {!loading && (
-        <main className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 xxl:grid-cols-4 gap-2 p-2">
-          {reportsData.length > 0 ? (
+      ) : (
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 xxl:grid-cols-4 gap-2 p-2">
+          {reportsData && reportsData.length > 0 ? (
             reportsData.map((report) => (
               <AssessmentReportCard
-                assessmentName={report.assessmentName}
-                isPublished={false}
-                assessmentId={""}
-                totalParticipants={0}
-                totalMarks={0}
-                assessmentDate={report.assessmentDate}
-                averageMarksPercentage={0}
-                averageMarks={0}
+                key={report.assessment_id}
+                assessmentName={report.assessment.name || ""}
+                isPublished={report.is_published || false} // Example: dynamically assign
+                assessmentId={report.assessment_id || ""}
+                totalParticipants={report.total_participants || 0}
+                totalMarks={report.total_marks || 0}
+                assessmentDate={report.createdAt || ""}
+                averageMarksPercentage={report.average_marks_percentage || 0}
+                averageMarks={report.average_marks || 0}
               />
             ))
           ) : (
-            <div>No reports available</div> // Optional: Display a message when there are no reports
+            <div className="flex w-full items-center justify-center text-gray-500">
+              No reports available
+            </div>
           )}
-        </main>
+        </div>
       )}
     </div>
   );

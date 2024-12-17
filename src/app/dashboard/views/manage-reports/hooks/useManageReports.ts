@@ -7,11 +7,20 @@ import {
   GetAnalyticsChartProps,
   GetAnalyticsChartResponse,
   AssessmentResult,
+  GetReportsByAssessmentIdResponse,
+  GetReportsByAssessmentIdProps,
+  GetAllReportsByGroupProps,
+  GroupReportResult,
+  GetAllReportGroupsResponse,
 } from "@/lib/types/reportTypes";
 import { ApiError } from "@/lib/api/apiError";
 import { getAssessmentAnalyticsChart,  getMyResults,
   getAssessmentResults,
-  getAssessmentAnalytics, } from "@/lib/services/reports/reports-service";
+  getAssessmentAnalytics,
+  getReportsByAssessmentId,
+  getAllReportsInAGroup,
+  getAllReportGroups, } from "@/lib/services/reports/reports-service";
+import { GetGroupsProps } from "@/lib/types/groupTypes";
 
 // Hook to manage reports
 export const useManageReports = () => {
@@ -73,9 +82,76 @@ export const useManageReports = () => {
   };
 
 
+  // Hook Method to get assessment analytics chart data
+  const fetchReportByAssessmentId = async (params: GetReportsByAssessmentIdProps): Promise<GetReportsByAssessmentIdResponse> => {
+    try {
+      const response: GetReportsByAssessmentIdResponse = await getReportsByAssessmentId(params);
+      return response; // Return the chart data directly
+    } catch (err) {
+      if (err instanceof ApiError) {
+        throw err; // Rethrow the ApiError for handling at a higher level
+      } else {
+        throw new Error('An unexpected error occurred');
+      }
+    }
+  };
+
+    // Hook Method to get assessment analytics chart data
+    const fetchAllReportGroups = async (params: GetGroupsProps): Promise<GetAllReportGroupsResponse['data']['groups']> => {
+      try {
+        const response: GetAllReportGroupsResponse = await getAllReportGroups(params);
+        return response.data.groups; // Return the chart data directly
+      } catch (err) {
+        if (err instanceof ApiError) {
+          throw err; // Rethrow the ApiError for handling at a higher level
+        } else {
+          throw new Error('An unexpected error occurred');
+        }
+      }
+    };
+
+
+  const fetchAllReportsByGroup = async (params: GetAllReportsByGroupProps): Promise<GroupReportResult[]> => {
+    try {
+      const response = await getAllReportsInAGroup(params);
+      if (response.data && response.data.results) {
+        console.log(response.data.results);
+        return response.data.results; // Return the results array
+      } else {
+        throw new Error("No results found in the response.");
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        throw err; // Rethrow the ApiError for handling at a higher level
+      } else {
+        throw new Error('An unexpected error occurred');
+      }
+    }
+  };
+
+  const fetchAllAssessmentsReportsData = async (params: GetAllReportsByGroupProps): Promise<GroupReportResult[]> => {
+    try {
+      const response = await getAllReportsInAGroup(params);
+      if (response.data && response.data.results) {
+        console.log(response.data.results);
+        return response.data.results; // Return the results array
+      } else {
+        throw new Error("No results found in the response.");
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        throw err; // Rethrow the ApiError for handling at a higher level
+      } else {
+        throw new Error('An unexpected error occurred');
+      }
+    }
+    };
 
   // Return the hook methods
   return {
+    fetchReportByAssessmentId,
+    fetchAllReportsByGroup,
+    fetchAllReportGroups,
     fetchMyResults,
     fetchAssessmentResults,
     fetchAssessmentAnalytics,

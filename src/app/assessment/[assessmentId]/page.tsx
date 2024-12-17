@@ -31,8 +31,6 @@ import useVerificationStore from "@/lib/stores/verification-store/verification-s
 import { ApiError } from "@/lib/api/apiError";
 import { ToastAction } from "@/components/ui/toast";
 import { toast } from "@/components/ui/use-toast";
-import { useAssessment } from "@/app/dashboard/views/manage-assessment/hooks/useAssessment";
-
 interface AttemptAssessmentProps {
   params: {
     assessmentId: string;
