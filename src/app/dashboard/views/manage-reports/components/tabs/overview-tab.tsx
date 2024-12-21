@@ -15,6 +15,7 @@ interface ReportsOverViewTabProps {
   reportsData: AssessmentResult[];
   loadingGroups: boolean;
   groups: ReportsSingleGroup[];
+  refreshReports: () => void;
 }
 
 const ReportsOverViewTab: React.FC<ReportsOverViewTabProps> = ({
@@ -22,6 +23,7 @@ const ReportsOverViewTab: React.FC<ReportsOverViewTabProps> = ({
   reportsData,
   loadingGroups,
   groups,
+  refreshReports,
 }) => {
   const currentDate = new Date();
 
@@ -67,7 +69,11 @@ const ReportsOverViewTab: React.FC<ReportsOverViewTabProps> = ({
           </h1>
           <div className="flex underline">View All</div>
         </div>
-        <AssessmentCardList loading={loading} reportsData={reportsData} />
+        <AssessmentCardList
+          loading={loading}
+          reportsData={reportsData}
+          refreshReports={refreshReports}
+        />
       </div>
       <div className="flex flex-col gap-2 mt-5 w-[calc(100vw-21rem)]">
         <div className="flex flex-row justify-between">

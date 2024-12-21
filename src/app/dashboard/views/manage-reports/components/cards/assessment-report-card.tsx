@@ -27,6 +27,7 @@ export interface AssessmentCardProps {
   averageMarks: number;
   averageMarksPercentage: number;
   isPublished: boolean;
+  refreshReports: () => void;
 }
 
 export const AssessmentReportCard: React.FC<AssessmentCardProps> = (props) => {
@@ -120,7 +121,11 @@ export const AssessmentReportCard: React.FC<AssessmentCardProps> = (props) => {
         </div>
       </CardContent>
       <CardFooter className="bg-slate-50 dark:bg-slate-800/50 p-2">
-        <ViewReportDialogBox assessmentId={props.assessmentId} data={props} />
+        <ViewReportDialogBox
+          assessmentId={props.assessmentId}
+          data={props}
+          refreshReports={props.refreshReports}
+        />
       </CardFooter>
     </Card>
   );
@@ -130,11 +135,13 @@ interface AssessmentCardListProps {
   // all props here
   loading: boolean;
   reportsData: AssessmentResult[];
+  refreshReports: () => void;
 }
 
 const AssessmentCardList: React.FC<AssessmentCardListProps> = ({
   loading,
   reportsData,
+  refreshReports,
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -182,6 +189,7 @@ const AssessmentCardList: React.FC<AssessmentCardListProps> = ({
             assessmentDate={report.createdAt || ""}
             averageMarksPercentage={report.average_marks_percentage || 0}
             averageMarks={report.average_marks || 0}
+            refreshReports={refreshReports}
           />
         ))
       ) : (

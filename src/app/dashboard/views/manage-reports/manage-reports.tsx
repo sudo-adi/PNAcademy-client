@@ -125,12 +125,14 @@ const ManageReports = () => {
             reportsData={reportsData}
             loadingGroups={loadingGroups}
             groups={groups}
+            refreshReports={fetchData}
           />
         </TabsContent>
         <TabsContent value="1" className="w-full">
           <AllAssessmentReportsTab
             loading={loading}
             reportsData={reportsData}
+            refreshReports={fetchData}
           />
         </TabsContent>
         <TabsContent value="2" className="w-full">

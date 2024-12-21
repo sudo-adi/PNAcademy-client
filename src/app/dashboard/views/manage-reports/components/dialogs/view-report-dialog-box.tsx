@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,13 +31,18 @@ export interface ViewReportDialogBoxProps {
     averageMarksPercentage: number;
     isPublished: boolean;
   };
+  refreshReports: () => void;
 }
 
 const ViewReportDialogBox: React.FC<ViewReportDialogBoxProps> = ({
   assessmentId,
   data,
+  refreshReports,
 }) => {
+  const { publishAssessmentReport } = useManageReports();
+
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardData[]>([]);
+  const [publishing, setPublishing] = useState<boolean>(false);
 
   const COLORS = ["#00C49F", "#FFBB28"];
 
@@ -82,6 +87,21 @@ const ViewReportDialogBox: React.FC<ViewReportDialogBoxProps> = ({
     { name: "Above Average", value: aboveAverageCount },
     { name: "Below Average", value: belowAverageCount },
   ];
+
+  const publishReports = async (assessmentId: string) => {
+    const payload = {
+      assessmentId: assessmentId,
+      publish: true,
+    };
+    setPublishing(true);
+    try {
+      await publishAssessmentReport(payload);
+    } catch (err) {
+      console.error("Error publishing reports:", err);
+    } finally {
+      setPublishing(false);
+    }
+  };
 
   return (
     <Dialog>
@@ -191,6 +211,7 @@ const ViewReportDialogBox: React.FC<ViewReportDialogBoxProps> = ({
           <TabsContent value="1" className="py-2 h-full">
             <AllUsersInAssessmentLeaderboardsTable
               data={{
+                assessmentId: assessmentId,
                 users: leaderboardData,
                 totalMarks: data.totalMarks,
               }}
@@ -198,9 +219,20 @@ const ViewReportDialogBox: React.FC<ViewReportDialogBoxProps> = ({
           </TabsContent>
         </Tabs>
         <DialogFooter className="flex justify-end">
-          <Button>
-            <Upload className="h-4 w-4 mr-2" />
-            Publish Reports
+          <Button
+            variant={data.isPublished ? "outline" : "default"}
+            disabled={data.isPublished || publishing}
+            onClick={() => {
+              publishReports(assessmentId);
+              refreshReports();
+            }}
+          >
+            <Upload className={data.isPublished ? "hidden" : "h-4 w-4 mr-2"} />
+            {data.isPublished
+              ? "Report Published"
+              : publishing
+              ? "Publishing..."
+              : "Publish"}
           </Button>
         </DialogFooter>
       </DialogContent>

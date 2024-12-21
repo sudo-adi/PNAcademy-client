@@ -59,6 +59,8 @@ const AllReports = () => {
               wrongAnswersCount={report.wrong_answers_count}
               assessmentName={report.assessment.name}
               assessmentDescription={report.assessment.description}
+              totalMarks={report.assessment.total_marks}
+              assessmentId={report.assessment.id}
             />
           ))}
       </main>

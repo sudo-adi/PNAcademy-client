@@ -30,6 +30,8 @@ export interface ResultCardProps {
   wrongAnswersCount: number;
   assessmentName: string;
   assessmentDescription: string;
+  totalMarks: number;
+  assessmentId: string;
 }
 
 export const ResultCard: React.FC<ResultCardProps> = (props) => {
@@ -119,7 +121,6 @@ export const ResultCard: React.FC<ResultCardProps> = (props) => {
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         data={props}
-        onViewAnswerKey={() => {}}
       />
     </Card>
   );

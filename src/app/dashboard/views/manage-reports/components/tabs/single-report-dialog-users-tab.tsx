@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { TableCell, TableHead, TableRow } from "@/components/ui/table";
 import {
   Check,
@@ -6,14 +6,17 @@ import {
   CircleX,
   ClipboardList,
   Hash,
+  Loader2,
   User,
   Users,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { LeaderboardData } from "../charts/leaderboards";
+import { useRouter } from "next/navigation";
 
 interface SingleReportDialogUsersTabProps {
   data: {
+    assessmentId: string;
     users: LeaderboardData[];
     totalMarks: number;
   };
@@ -22,6 +25,11 @@ interface SingleReportDialogUsersTabProps {
 const AllUsersInAssessmentLeaderboardsTable: React.FC<
   SingleReportDialogUsersTabProps
 > = ({ data }) => {
+  const router = useRouter();
+  const viewAnswerKey = (userId: string) => {
+    router.push(`/answer-key/${data.assessmentId}/${userId}`);
+  };
+
   return (
     <div className="text-xs flex flex-col h-full border rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
@@ -40,7 +48,7 @@ const AllUsersInAssessmentLeaderboardsTable: React.FC<
                 totalScore={user.marks_scored}
                 percentage={user.correct_percentage}
                 scorePercentage={(user.marks_scored / data.totalMarks) * 100}
-                view={() => {}}
+                view={() => viewAnswerKey(user.user_id)}
               />
             ))}
           </tbody>
@@ -138,7 +146,10 @@ const Row: React.FC<RowProps> = ({
   totalScore,
   percentage,
   scorePercentage,
+  view,
 }) => {
+  const [isViewing, setIsViewing] = useState(false);
+
   return (
     <TableRow>
       <TableCell className="w-[15%] px-2 py-1">
@@ -165,9 +176,19 @@ const Row: React.FC<RowProps> = ({
         {scorePercentage.toFixed(2)}
       </TableCell>
       <TableCell className="w-[10%] px-2 py-1">
-        <div className="p-1 h-8 w-8 flex items-center justify-center border rounded-sm hover:bg-secondary cursor-pointer">
-          <ClipboardList className="h-4 w-4" />
-        </div>
+        <button
+          className="p-1 h-8 w-8 flex items-center justify-center border rounded-sm hover:bg-secondary cursor-pointer"
+          onClick={() => {
+            setIsViewing(true);
+            view();
+          }}
+        >
+          {isViewing ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <ClipboardList className="h-4 w-4" />
+          )}
+        </button>
       </TableCell>
     </TableRow>
   );

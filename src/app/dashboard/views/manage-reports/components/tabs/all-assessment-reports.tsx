@@ -6,11 +6,13 @@ import { AssessmentResult } from "@/lib/types/reportTypes";
 interface AllAssessmentReportsTabProps {
   loading: boolean;
   reportsData: AssessmentResult[];
+  refreshReports: () => void;
 }
 
 const AllAssessmentReportsTab: React.FC<AllAssessmentReportsTabProps> = ({
   loading,
   reportsData,
+  refreshReports,
 }) => {
   useEffect(() => {
     reportsData && console.log(reportsData);
@@ -36,6 +38,7 @@ const AllAssessmentReportsTab: React.FC<AllAssessmentReportsTabProps> = ({
                 assessmentDate={report.createdAt || ""}
                 averageMarksPercentage={report.average_marks_percentage || 0}
                 averageMarks={report.average_marks || 0}
+                refreshReports={refreshReports}
               />
             ))
           ) : (

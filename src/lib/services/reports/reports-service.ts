@@ -1,8 +1,25 @@
 import { ApiError } from "@/lib/api/apiError";
 import axiosInstance from "@/lib/api/axiosInstance";
 import { retry } from "@/lib/api/retryApiCalls";
+import {  ExplainAnswerProps, ExplainAnswerResponse, GetAnswerKeyProps, GetAnswerKeyResponse } from "@/lib/types/answer-keyTypes";
 import { GetGroupsProps } from "@/lib/types/groupTypes";
-import { GetAllReportGroupsResponse, GetAllReportsByGroupProps, GetAnalyticsChartProps, GetAnalyticsChartResponse, GetAssessmentAnalyticsResponse, GetAssessmentResponsesProps, GetAssessmentResponsesResponse, GetAssessmentResultsProps, GetAssessmentResultsResponse, GetMyResponsesProps, GetMyResponsesResponse, GetMyResultsProps, GetMyResultsResponse, GetReportsByAssessmentIdProps, GetReportsByAssessmentIdResponse, GetReportsByGroupResponse } from "@/lib/types/reportTypes";
+import {
+  GetAllReportGroupsResponse,
+  GetAllReportsByGroupProps,
+  GetAnalyticsChartProps,
+  GetAnalyticsChartResponse,
+  GetAssessmentAnalyticsResponse,
+  GetAssessmentResponsesProps,
+  GetAssessmentResultsProps,
+  GetAssessmentResultsResponse,
+  GetMyResultsProps,
+  GetMyResultsResponse,
+  GetReportsByAssessmentIdProps,
+  GetReportsByAssessmentIdResponse,
+  GetReportsByGroupResponse,
+  publishReportsProps,
+  publishReportsResponse
+} from "@/lib/types/reportTypes";
 import { AxiosError } from "axios";
 
 // Function to get user assessment results
@@ -129,10 +146,11 @@ export const getAssessmentAnalyticsChart = async (params: GetAnalyticsChartProps
 
 
 // Function to get user assessment responses for a specific assessment and user
-export const getAssessmentUserResponses = async (params: GetAssessmentResponsesProps): Promise<GetAssessmentResponsesResponse> => {
+export const getAssessmentUserResponses = async (params: GetAnswerKeyProps): Promise<GetAnswerKeyResponse> => {
   return retry(async () => {
     try {
-      const response = await axiosInstance.get<GetAssessmentResponsesResponse>(`/v1/assessment/${params.assessmentId}/${params.userId}/responses`, { params });
+      const response = await axiosInstance.get<GetAnswerKeyResponse>(`/v1/assessment/${params.assessmentId}/${params.userId}/responses`, { params });
+      console.log("response", response);
       if (response.status === 200 || response.status === 201) {
         return response.data;
       } else {
@@ -159,10 +177,10 @@ export const getAssessmentUserResponses = async (params: GetAssessmentResponsesP
 };
 
 // Function to get user responses for a specific assessment
-export const getMyResponses = async (params: GetMyResponsesProps): Promise<GetMyResponsesResponse> => {
+export const getMyResponses = async (params: GetAnswerKeyProps): Promise<GetAnswerKeyResponse> => {
   return retry(async () => {
     try {
-      const response = await axiosInstance.get<GetMyResponsesResponse>(`/v1/assessment/${params.assessmentId}/my-responses`, { params });
+      const response = await axiosInstance.get<GetAnswerKeyResponse>(`/v1/assessment/${params.assessmentId}/my-responses`, { params });
       if (response.status === 200 || response.status === 201) {
         return response.data;
       } else {
@@ -317,6 +335,67 @@ export const getAllReportsInAGroup = async (
         }
       } else {
         throw new ApiError(500, "An unexpected error occurred", error);
+      }
+    }
+  });
+};
+
+
+// Function to add users to a group
+export const publishResults = async (data: publishReportsProps): Promise<publishReportsResponse> => {
+  return retry(async () => {
+    try {
+      const response = await axiosInstance.post<publishReportsResponse>('/v1/assessment/result/publish', data);
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      } else {
+        throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const { status, data } = error.response || {};
+        switch (status) {
+          case 400:
+            throw new ApiError(status, 'Invalid assessment ID or publish flag', data);
+          case 403:
+            throw new ApiError(status, 'Not authorized to publish/unpublish this assessment result', data);
+          case 404:
+            throw new ApiError(status, 'Assessment with this ID does not exist', data);
+          case 500:
+            throw new ApiError(status, 'Internal Server Error', data);
+          default:
+            throw new ApiError(status!, 'An unexpected error occurred', data);
+        }
+      } else {
+        throw new ApiError(500, 'An unexpected error occurred', error);
+      }
+    }
+  });
+};
+
+// Function to add users to a group
+export const explainAnswer = async (data: ExplainAnswerProps): Promise<ExplainAnswerResponse> => {
+  return retry(async () => {
+    try {
+      const response = await axiosInstance.get<ExplainAnswerResponse>(`/v1/assessment/${data.questionId}/explain`);
+      if (response.status === 200 || response.status === 201) {
+        return response.data;
+      } else {
+        throw new ApiError(response.status, `Unexpected response status: ${response.status}`, response.data);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const { status, data } = error.response || {};
+        switch (status) {
+          case 404:
+            throw new ApiError(status, 'Question not found', data);
+          case 500:
+            throw new ApiError(status, 'Internal Server Error', data);
+          default:
+            throw new ApiError(status!, 'An unexpected error occurred', data);
+        }
+      } else {
+        throw new ApiError(500, 'An unexpected error occurred', error);
       }
     }
   });

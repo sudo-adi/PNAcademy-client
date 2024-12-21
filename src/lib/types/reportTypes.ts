@@ -10,6 +10,7 @@ export interface MyAssessmentResult {
   correct_percentage: number;
   wrong_answers_count: number;
   assessment: {
+    id: string;
     name: string;
     description: string;
     total_marks: number;
@@ -341,4 +342,16 @@ interface AssessmentDetails {
   start_at: string;
   end_at: string;
   duration: number;
+}
+
+
+
+export interface publishReportsProps {
+  assessmentId: string;
+  publish: boolean;
+}
+
+
+export interface publishReportsResponse {
+  status: string;
 }

@@ -12,6 +12,8 @@ import {
   GetAllReportsByGroupProps,
   GroupReportResult,
   GetAllReportGroupsResponse,
+  publishReportsProps,
+  publishReportsResponse,
 } from "@/lib/types/reportTypes";
 import { ApiError } from "@/lib/api/apiError";
 import { getAssessmentAnalyticsChart,  getMyResults,
@@ -19,7 +21,8 @@ import { getAssessmentAnalyticsChart,  getMyResults,
   getAssessmentAnalytics,
   getReportsByAssessmentId,
   getAllReportsInAGroup,
-  getAllReportGroups, } from "@/lib/services/reports/reports-service";
+  getAllReportGroups,
+  publishResults, } from "@/lib/services/reports/reports-service";
 import { GetGroupsProps } from "@/lib/types/groupTypes";
 
 // Hook to manage reports
@@ -145,7 +148,25 @@ export const useManageReports = () => {
         throw new Error('An unexpected error occurred');
       }
     }
-    };
+  };
+
+
+  const publishAssessmentReport = async (params: publishReportsProps): Promise<publishReportsResponse> => {
+    try {
+      const response = await publishResults(params);
+      if (response && response) {
+        return response;
+      } else {
+        throw new Error("No results found in the response.");
+      }
+    } catch (err) {
+      if (err instanceof ApiError) {
+        throw err; // Rethrow the ApiError for handling at a higher level
+      } else {
+        throw new Error('An unexpected error occurred');
+      }
+    }
+  }
 
   // Return the hook methods
   return {
@@ -156,5 +177,7 @@ export const useManageReports = () => {
     fetchAssessmentResults,
     fetchAssessmentAnalytics,
     fetchAssessmentAnalyticsChart,
+    fetchAllAssessmentsReportsData,
+    publishAssessmentReport,
   };
 };

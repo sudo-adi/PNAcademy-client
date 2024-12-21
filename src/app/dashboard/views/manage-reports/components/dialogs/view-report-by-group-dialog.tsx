@@ -195,18 +195,13 @@ const ViewReportByGroupDialog: React.FC<ViewReportDialogBoxProps> = ({
           <TabsContent value="1" className="py-2 h-full">
             <AllUsersInAssessmentLeaderboardsTable
               data={{
+                assessmentId: assessmentId,
                 users: leaderboardData,
                 totalMarks: data.totalMarks,
               }}
             />
           </TabsContent>
         </Tabs>
-        <DialogFooter className="flex justify-end">
-          <Button>
-            <Upload className="h-4 w-4 mr-2" />
-            Publish Reports
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
